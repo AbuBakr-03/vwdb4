@@ -1,0 +1,59 @@
+{% extends "base.html" %} {% block title %}{% block page_title %}{% endblock %}
+- Tickets{% endblock %} {% block content %}
+<div class="container mx-auto px-4 py-8">
+  <!-- Breadcrumb -->
+  <div class="breadcrumbs text-sm mb-6">
+    <ul>
+      <li>
+        <a href="{% url 'tickets:dashboard' %}" class="link link-hover"
+          >Tickets</a
+        >
+      </li>
+      {% block breadcrumb %}{% endblock %}
+    </ul>
+  </div>
+
+  <!-- Page Header -->
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">{% block page_header %}{% endblock %}</h1>
+      {% block page_subtitle %}{% endblock %}
+    </div>
+    <div class="flex gap-2">{% block page_actions %}{% endblock %}</div>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="mb-6">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mb-2">
+      <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Main Content -->
+  {% block tickets_content %}{% endblock %}
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  // Common JavaScript for tickets app
+  document.addEventListener("DOMContentLoaded", function () {
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function () {
+      const alerts = document.querySelectorAll(".alert");
+      alerts.forEach(function (alert) {
+        alert.style.opacity = "0";
+        setTimeout(function () {
+          alert.remove();
+        }, 300);
+      });
+    }, 5000);
+  });
+</script>
+{% endblock %}
+
+
+
+

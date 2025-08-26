@@ -1,0 +1,502 @@
+{% load data_table_tags %}
+
+<div class="space-y-6">
+    <!-- Page header -->
+    {% if title or subtitle %}
+    <div class="text-center">
+        {% if title %}
+        <h1 class="text-4xl font-bold mb-4">{{ title }}</h1>
+        {% endif %}
+        {% if subtitle %}
+        <p class="text-xl text-base-content/70">{{ subtitle }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Data Table -->
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+            <!-- Search and Controls -->
+            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-6">
+                <!-- Search Bar and Filter -->
+                <div class="flex flex-col sm:flex-row gap-3 flex-1">
+                    <!-- Search Form -->
+                    <form method="GET" class="flex">
+                        <div class="join w-full">
+                            <input type="text" name="search" value="{{ search_query }}" placeholder="Search..." class="input input-bordered join-item flex-1" />
+                            {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}" />{% endif %}
+                            {% if current_order %}<input type="hidden" name="order" value="{{ current_order }}" />{% endif %}
+                            {% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}<input type="hidden" name="{{ filter_name }}" value="{{ value }}" />{% endfor %}{% endfor %}{% endif %}
+                            <input type="hidden" name="page" value="1" />
+                            <input type="hidden" name="per_page" value="{{ per_page }}" />
+                            <button type="submit" class="btn btn-primary join-item">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </button>
+                            {% if search_query %}
+                            <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% endif %}" class="btn btn-outline join-item">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+
+                    <!-- Filter Dropdown -->
+                    {% if filters %}
+                    <div class="relative" id="filterDropdown">
+                        <!-- Filter Button -->
+                        <button type="button" onclick="toggleFilterDropdown()" class="btn btn-outline relative">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
+                            </svg>
+                            Filters
+                            <span id="filterBadge" class="badge badge-primary badge-sm ml-2 hidden">0</span>
+                        </button>
+
+                        <!-- Filter Dropdown Card -->
+                        <div id="filterCard" class="absolute top-full left-0 mt-2 w-96 bg-base-100 border border-base-300 rounded-lg shadow-lg z-50 hidden">
+                            <div class="p-4">
+                                <!-- Filter Search -->
+                                <div class="mb-4">
+                                    <input type="text" id="filterSearch" placeholder="Search filters..." class="input input-sm input-bordered w-full" oninput="searchFilters(this.value)" />
+                                </div>
+
+                                <!-- Filter Form -->
+                                <form method="GET" id="filterForm">
+                                    <!-- Preserve search and sort -->
+                                    {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}" />{% endif %}
+                                    {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}" />{% endif %}
+                                    {% if current_order %}<input type="hidden" name="order" value="{{ current_order }}" />{% endif %}
+                                    <input type="hidden" name="page" value="1" />
+                                    <input type="hidden" name="per_page" value="{{ per_page }}" />
+
+                                    <div class="space-y-4 max-h-64 overflow-y-auto">
+                                        {% for filter_name, filter_config in filters.items %}
+                                        <div class="filter-group" data-group="{{ filter_name }}">
+                                            <h4 class="font-semibold text-sm text-base-content/70 mb-2">{{ filter_config.title|default:filter_name|title }}</h4>
+                                            <div class="space-y-2">
+                                                {% for option in filter_config.options %}
+                                                <label class="flex items-center gap-2 cursor-pointer filter-option" data-text="{{ option.search_text|default:option.label|lower }}">
+                                                    <input type="checkbox" name="{{ filter_name }}" value="{{ option.value }}" class="checkbox checkbox-sm" {% if active_filters and option.value|stringformat:"s" in active_filters|get_item:filter_name %}checked{% endif %} />
+                                                    <span class="text-sm">{{ option.label }}</span>
+                                                </label>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    <!-- Filter Actions -->
+                                    <div class="flex justify-between items-center pt-4 border-t border-base-300 mt-4">
+                                        <button type="button" onclick="clearAllFilters()" class="btn btn-sm btn-ghost">Clear All</button>
+                                        <div class="flex gap-2">
+                                            <button type="button" onclick="toggleFilterDropdown()" class="btn btn-sm btn-outline">Cancel</button>
+                                            <button type="submit" class="btn btn-sm btn-primary">Apply Filters</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Column Visibility Dropdown -->
+                    <div class="relative" id="columnDropdown">
+                        <!-- Column Visibility Button -->
+                        <button type="button" onclick="toggleColumnDropdown()" class="btn btn-outline relative">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            Columns
+                            <span id="columnBadge" class="badge badge-secondary badge-sm ml-2 hidden">0</span>
+                        </button>
+
+                        <!-- Column Visibility Dropdown Card -->
+                        <div id="columnCard" class="absolute top-full left-0 mt-2 w-80 bg-base-100 border border-base-300 rounded-lg shadow-lg z-50 hidden">
+                            <div class="p-4">
+                                <!-- Column Search -->
+                                <div class="mb-4">
+                                    <input type="text" id="columnSearch" placeholder="Search columns..." class="input input-sm input-bordered w-full" oninput="searchColumns(this.value)" />
+                                </div>
+
+                                <!-- Column Visibility Form -->
+                                <form method="GET" id="columnForm">
+                                    <!-- Preserve search, sort, and filters -->
+                                    {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}" />{% endif %}
+                                    {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}" />{% endif %}
+                                    {% if current_order %}<input type="hidden" name="order" value="{{ current_order }}" />{% endif %}
+                                    {% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}<input type="hidden" name="{{ filter_name }}" value="{{ value }}" />{% endfor %}{% endfor %}{% endif %}
+                                    <input type="hidden" name="page" value="1" />
+                                    <input type="hidden" name="per_page" value="{{ per_page }}" />
+
+                                    <div class="space-y-3 max-h-64 overflow-y-auto">
+                                        <h4 class="font-semibold text-sm text-base-content/70 mb-2">Visible Columns</h4>
+                                        
+                                        <!-- Column Options -->
+                                        <div class="space-y-2">
+                                            {% for column in columns %}
+                                            <label class="flex items-center gap-2 cursor-pointer column-option" data-text="{{ column.name|lower }} {{ column.key|lower }}">
+                                                <input type="checkbox" name="columns" value="{{ column.key }}" class="checkbox checkbox-sm" {% if not visible_columns or column.key in visible_columns %}checked{% endif %} />
+                                                <span class="text-sm">{{ column.name }}</span>
+                                            </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Column Actions -->
+                                    <div class="flex justify-between items-center pt-4 border-t border-base-300 mt-4">
+                                        <button type="button" onclick="resetColumnVisibility()" class="btn btn-sm btn-ghost">Reset</button>
+                                        <div class="flex gap-2">
+                                            <button type="button" onclick="toggleColumnDropdown()" class="btn btn-sm btn-outline">Cancel</button>
+                                            <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Button -->
+                {% if create_url %}
+                <a href="{{ create_url }}" class="btn btn-primary">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                    {{ create_text|default:"Create New" }}
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Active Filters Display -->
+            {% if active_filters %}
+            <div class="mb-6 p-3 bg-base-200 rounded-lg">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm font-medium">Active Filters:</span>
+                    {% for filter_name, filter_values in active_filters.items %}
+                        {% for value in filter_values %}
+                        <div class="badge badge-outline gap-2">
+                            <span class="text-xs">{{ value }}</span>
+                            <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if current_sort %}sort={{ current_sort }}&{% endif %}{% if current_order %}order={{ current_order }}&{% endif %}{% if active_filters %}{% for fname, fvalues in active_filters.items %}{% if fname != filter_name %}{% for fvalue in fvalues %}{{ fname }}={{ fvalue }}&{% endfor %}{% elif fvalue != value %}{% for fvalue in fvalues %}{% if fvalue != value %}{{ fname }}={{ fvalue }}&{% endif %}{% endfor %}{% endif %}{% endfor %}{% endif %}" class="text-error hover:bg-error hover:text-error-content rounded-full p-0.5 transition-colors">✕</a>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                    <a href="?{% if search_query %}search={{ search_query }}{% endif %}{% if current_sort %}{% if search_query %}&{% endif %}sort={{ current_sort }}{% endif %}{% if current_order %}{% if search_query or current_sort %}&{% endif %}order={{ current_order }}{% endif %}" class="text-primary hover:text-primary-focus text-sm ml-2">Clear all filters</a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Search Results Info -->
+            {% if search_query %}
+            <div class="mb-6 p-3 bg-base-200 rounded-lg flex items-center justify-between">
+                <span class="text-sm">
+                    <span class="font-medium">{{ table_data|length }}</span>
+                    result{{ table_data|length|pluralize }} found for
+                    <span class="font-medium">"{{ search_query }}"</span>
+                </span>
+                <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% endif %}" class="text-sm text-primary hover:text-primary-focus">Clear search</a>
+            </div>
+            {% endif %}
+
+            {% if table_data %}
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                {% for column in columns %}
+                                {% if not visible_columns or column.key in visible_columns %}
+                                <th>
+                                    {% if column.sortable %}
+                                    <a href="?sort={{ column.key }}{% if current_sort == column.key and current_order != 'desc' %}&order=desc{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% endif %}{% if visible_columns %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}{% endif %}&page=1&per_page={{ per_page }}" class="flex items-center gap-2 hover:text-primary transition-colors">
+                                        {{ column.name }}
+                                        {% if current_sort == column.key %}
+                                            {% if current_order == 'desc' %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            {% endif %}
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                            </svg>
+                                        {% endif %}
+                                    </a>
+                                    {% else %}
+                                    <span class="flex items-center gap-2">{{ column.name }}</span>
+                                    {% endif %}
+                                </th>
+                                {% endif %}
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in table_data %}
+                                <tr>
+                                    {% for column in columns %}
+                                    {% if not visible_columns or column.key in visible_columns %}
+                                    <td>
+                                        {% if column.template %}
+                                            {% include column.template with item=item column=column %}
+                                        {% else %}
+                                            {% if column.key == "username" %}
+                                                {{ item.user.username|default:"Unknown" }}
+                                            {% elif column.key == "user__email" %}
+                                                {{ item.user.email|default:"" }}
+                                            {% elif column.key == "is_root_user" %}
+                                                {% if item.is_root_user %}<div class="badge badge-warning">Root User</div>{% else %}<div class="badge badge-info">Sub User</div>{% endif %}
+                                            {% elif column.key == "created_at" %}
+                                                {{ item.created_at|date:"M d, Y" }}
+                                            {% elif column.key == "created_by" %}
+                                                {{ item.created_by.username|default:"System" }}
+                                            {% else %}
+                                                {{ column.key }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <!-- Pagination Info -->
+                    <div class="text-sm text-base-content/70">
+                        {% if paginator %}
+                            Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} items
+                        {% else %}
+                            Showing all items
+                        {% endif %}
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div class="flex items-center gap-2">
+                        <!-- First Page -->
+                        {% if paginator and page_obj.has_previous %}
+                            <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% if search_query %}{% if current_sort or current_order %}&{% endif %}search={{ search_query }}{% endif %}{% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% endif %}{% if visible_columns %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}{% endif %}&page=1&per_page={{ per_page }}" class="btn btn-sm btn-outline">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm btn-outline" disabled>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                        {% endif %}
+
+                        <!-- Previous Page -->
+                        {% if paginator and page_obj.has_previous %}
+                            <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% if search_query %}{% if current_sort or current_order %}&{% endif %}search={{ search_query }}{% endif %}{% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% endif %}{% if visible_columns %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}{% endif %}&page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" class="btn btn-sm btn-outline">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm btn-outline" disabled>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                        {% endif %}
+
+                        <!-- Page Numbers -->
+                        <div class="flex items-center gap-1">
+                            {% if paginator %}
+                                {% for page_num in paginator.page_range %}
+                                    {% if page_num == page_obj.number %}
+                                        <span class="btn btn-sm btn-primary">{{ page_num }}</span>
+                                    {% else %}
+                                        {% if page_num <= 3 or page_num > paginator.num_pages|add:"-3" or page_num|add:"-2" <= page_obj.number and page_num|add:"2" >= page_obj.number %}
+                                            <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% if search_query %}{% if current_sort or current_order %}&{% endif %}search={{ search_query }}{% endif %}{% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% endif %}{% if visible_columns %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}{% endif %}&page={{ page_num }}&per_page={{ per_page }}" class="btn btn-sm btn-outline">{{ page_num }}</a>
+                                        {% elif page_num == 4 and page_obj.number > 6 or page_num == paginator.num_pages|add:"-3" and page_obj.number < paginator.num_pages|add:"-5" %}
+                                            <span class="btn btn-sm btn-outline" disabled>...</span>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span class="btn btn-sm btn-primary">1</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Next Page -->
+                        {% if paginator and page_obj.has_next %}
+                            <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% if search_query %}{% if current_sort or current_order %}&{% endif %}search={{ search_query }}{% endif %}{% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% endif %}{% if visible_columns %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}{% endif %}&page={{ page_obj.next_page_number }}&per_page={{ per_page }}" class="btn btn-sm btn-outline">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm btn-outline" disabled>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        {% endif %}
+
+                        <!-- Last Page -->
+                        {% if paginator and page_obj.has_next %}
+                            <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% if search_query %}{% if current_sort or current_order %}&{% endif %}search={{ search_query }}{% endif %}{% if active_filters %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% endif %}{% if visible_columns %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}{% endif %}&page={{ paginator.num_pages }}&per_page={{ per_page }}" class="btn btn-sm btn-outline">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm btn-outline" disabled>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Items Per Page Selector -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-base-content/70">Show:</span>
+                        <select onchange="changePerPage(this.value)" class="select select-sm select-bordered">
+                            <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+                            <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                            <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                            <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+                        </select>
+                        <span class="text-sm text-base-content/70">per page</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <div class="text-base-content/50 text-lg mb-4">{{ empty_message|default:"No data found" }}</div>
+                    {% if empty_action_url %}
+                    <a href="{{ empty_action_url }}" class="btn btn-primary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                        {{ empty_action_text|default:"Create First Item" }}
+                    </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Filter dropdown functionality
+function toggleFilterDropdown() {
+    const filterCard = document.getElementById('filterCard');
+    if (filterCard) {
+        filterCard.classList.toggle('hidden');
+    }
+}
+
+// Column visibility dropdown functionality
+function toggleColumnDropdown() {
+    const columnCard = document.getElementById('columnCard');
+    if (columnCard) {
+        columnCard.classList.toggle('hidden');
+    }
+}
+
+// Search within filters
+function searchFilters(searchTerm) {
+    const filterGroups = document.querySelectorAll('.filter-group');
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    filterGroups.forEach(function(group) {
+        const groupTitle = group.querySelector('h4').textContent.toLowerCase();
+        const options = group.querySelectorAll('.filter-option');
+        let hasVisibleOptions = false;
+        
+        const groupMatches = groupTitle.includes(searchTermLower);
+        
+        options.forEach(function(option) {
+            const optionText = option.getAttribute('data-text').toLowerCase();
+            const optionLabel = option.querySelector('span').textContent.toLowerCase();
+            
+            if (searchTerm === '' || optionText.includes(searchTermLower) || optionLabel.includes(searchTermLower) || groupMatches) {
+                option.style.display = 'flex';
+                hasVisibleOptions = true;
+            } else {
+                option.style.display = 'none';
+            }
+        });
+        
+        if (hasVisibleOptions || searchTerm === '') {
+            group.style.display = 'block';
+        } else {
+            group.style.display = 'none';
+        }
+    });
+}
+
+// Search within columns
+function searchColumns(searchTerm) {
+    const columnOptions = document.querySelectorAll('.column-option');
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    columnOptions.forEach(function(option) {
+        const optionText = option.getAttribute('data-text').toLowerCase();
+        const optionLabel = option.querySelector('span').textContent.toLowerCase();
+        
+        if (searchTerm === '' || optionText.includes(searchTermLower) || optionLabel.includes(searchTermLower)) {
+            option.style.display = 'flex';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+}
+
+// Clear all filters
+function clearAllFilters() {
+    const checkboxes = document.querySelectorAll('#filterForm input[type="checkbox"]');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = false;
+    });
+}
+
+// Reset column visibility
+function resetColumnVisibility() {
+    const checkboxes = document.querySelectorAll('#columnForm input[type="checkbox"]');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = true;
+    });
+}
+
+// Change items per page
+function changePerPage(value) {
+    const url = new URL(window.location);
+    url.searchParams.set('per_page', value);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+// Initialize everything on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        const filterDropdown = document.getElementById('filterDropdown');
+        const filterCard = document.getElementById('filterCard');
+        const columnDropdown = document.getElementById('columnDropdown');
+        const columnCard = document.getElementById('columnCard');
+        
+        if (filterDropdown && filterCard && !filterDropdown.contains(event.target)) {
+            filterCard.classList.add('hidden');
+        }
+        
+        if (columnDropdown && columnCard && !columnDropdown.contains(event.target)) {
+            columnCard.classList.add('hidden');
+        }
+    });
+});
+</script>

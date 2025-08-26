@@ -1,0 +1,992 @@
+{% extends 'base.html' %}
+
+{% block title %}Company Users - Watchtower{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page header -->
+    <div class="text-center">
+        <h1 class="text-4xl font-bold mb-4">Company Users</h1>
+        <p class="text-xl text-base-content/70">Manage users in your company</p>
+
+        <!-- Sorting indicator -->
+        {% if current_sort %}
+            <div class="mt-4 flex justify-center items-center gap-2 text-sm text-base-content/60">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12">
+                    </path>
+                </svg>
+                <span>
+                    Sorted by
+                    <span class="font-medium text-base-content">
+                        {% if current_sort == 'username' %}
+                            Username
+                        {% elif current_sort == 'email' %}
+                            Email
+                        {% elif current_sort == 'role' %}
+                            Role
+                        {% elif current_sort == 'created_at' %}
+                            Creation Date
+                        {% elif current_sort == 'created_by' %}
+                            Created By
+                        {% else %}
+                            {{ current_sort|title }}
+                        {% endif %}
+                    </span>
+                    <span class="text-base-content/50">({{ current_order|upper }})</span>
+                </span>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="stat bg-base-200 rounded-lg">
+            <div class="stat-title">Total Users</div>
+            <div class="stat-value text-primary">{{ total_users }}</div>
+            <div class="stat-desc">All company users</div>
+        </div>
+        <div class="stat bg-base-200 rounded-lg">
+            <div class="stat-title">Root Users</div>
+            <div class="stat-value text-success">{{ root_users }}</div>
+            <div class="stat-desc">Administrators</div>
+        </div>
+        <div class="stat bg-base-200 rounded-lg">
+            <div class="stat-title">Sub Users</div>
+            <div class="stat-value text-info">{{ sub_users }}</div>
+            <div class="stat-desc">Regular users</div>
+        </div>
+    </div>
+
+    <!-- Users List -->
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+            <h3 class="card-title mb-6">Company Users</h3>
+
+            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-6">
+                <!-- Search Bar and Filter -->
+                <div class="flex flex-col sm:flex-row gap-3 flex-1">
+                    <!-- Search Form -->
+                    <form method="GET" class="flex">
+                        <div class="join w-full">
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ request.GET.search }}"
+                                   placeholder="Search users..." 
+                                   class="input input-bordered join-item flex-1" />
+                            <!-- Preserve current sorting and filters when searching -->
+                            {% if current_sort %}
+                                <input type="hidden" name="sort" value="{{ current_sort }}" />
+                            {% endif %}
+                            {% if current_order %}
+                                <input type="hidden" name="order" value="{{ current_order }}" />
+                            {% endif %}
+                            {% for filter_name, filter_values in active_filters.items %}
+                                {% for value in filter_values %}
+                                    <input type="hidden" name="{{ filter_name }}" value="{{ value }}" />
+                                {% endfor %}
+                            {% endfor %}
+                            <input type="hidden" name="page" value="1" />
+                            <input type="hidden" name="per_page" value="{{ per_page }}" />
+                            <button type="submit" class="btn btn-primary join-item">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
+                                    </path>
+                                </svg>
+                            </button>
+                            {% if request.GET.search %}
+                                <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}" 
+                                   class="btn btn-outline join-item">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M6 18L18 6M6 6l12 12">
+                                    </path>
+                                </svg>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+
+                    <!-- Filter Dropdown -->
+                    <div class="relative" id="filterDropdown">
+                        <!-- Filter Button -->
+                        <button type="button" 
+                                onclick="toggleFilterDropdown()" 
+                                class="btn btn-outline relative">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z">
+                                </path>
+                            </svg>
+                            Filters
+                            <span id="filterBadge" class="badge badge-primary badge-sm ml-2 hidden">0</span>
+                        </button>
+
+                        <!-- Filter Dropdown Card -->
+                        <div id="filterCard" 
+                             class="absolute top-full left-0 mt-2 w-96 bg-base-100 border border-base-300 rounded-lg shadow-lg z-50 hidden">
+                            <div class="p-4">
+                                <!-- Filter Search -->
+                                <div class="mb-4">
+                                    <input type="text" 
+                                           id="filterSearch" 
+                                           placeholder="Search filters..." 
+                                           class="input input-sm input-bordered w-full" 
+                                           oninput="searchFilters(this.value)" />
+                                </div>
+
+                                <!-- Filter Form -->
+                                <form method="GET" id="filterForm">
+                                    <!-- Preserve search and sort -->
+                                    {% if request.GET.search %}
+                                        <input type="hidden" name="search" value="{{ request.GET.search }}" />
+                                    {% endif %}
+                                    {% if current_sort %}
+                                        <input type="hidden" name="sort" value="{{ current_sort }}" />
+                                    {% endif %}
+                                                                            {% if current_order %}
+                                            <input type="hidden" name="order" value="{{ current_order }}" />
+                                        {% endif %}
+                                        <input type="hidden" name="page" value="1" />
+                                        <input type="hidden" name="per_page" value="{{ per_page }}" />
+
+                                        <div class="space-y-4 max-h-64 overflow-y-auto">
+                                        <!-- Role Filters -->
+                                        <div class="filter-group" data-group="role">
+                                            <h4 class="font-semibold text-sm text-base-content/70 mb-2">Role</h4>
+                                            <div class="space-y-2">
+                                                <label class="flex items-center gap-2 cursor-pointer filter-option" 
+                                                       data-text="root users root user administrator admin">
+                                                    <input type="checkbox" 
+                                                           name="role" 
+                                                           value="root" 
+                                                           class="checkbox checkbox-sm" 
+                                                           {% if 'root' in role_filters %}checked{% endif %} />
+                                                    <span class="text-sm">Root Users</span>
+                                                </label>
+                                                <label class="flex items-center gap-2 cursor-pointer filter-option" 
+                                                       data-text="sub users sub user regular standard">
+                                                    <input type="checkbox" 
+                                                           name="role" 
+                                                           value="sub" 
+                                                           class="checkbox checkbox-sm" 
+                                                           {% if 'sub' in role_filters %}checked{% endif %} />
+                                                    <span class="text-sm">Sub Users</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Created By Filters -->
+                                        <div class="filter-group" data-group="created_by">
+                                            <h4 class="font-semibold text-sm text-base-content/70 mb-2">Created By</h4>
+                                            <div class="space-y-2">
+                                                <label class="flex items-center gap-2 cursor-pointer filter-option" 
+                                                       data-text="system automatic auto">
+                                                    <input type="checkbox" 
+                                                           name="created_by" 
+                                                           value="system" 
+                                                           class="checkbox checkbox-sm" 
+                                                           {% if 'system' in created_by_filters %}checked{% endif %} />
+                                                    <span class="text-sm">System</span>
+                                                </label>
+                                                <!-- Dynamic creator options would be populated from backend -->
+                                                {% for creator in available_creators %}
+                                                    <label class="flex items-center gap-2 cursor-pointer filter-option" 
+                                                           data-text="{{ creator.username }} user creator">
+                                                        <input type="checkbox" 
+                                                               name="created_by" 
+                                                               value="{{ creator.id }}" 
+                                                               class="checkbox checkbox-sm" 
+                                                               {% if creator.id|stringformat:"s" in created_by_filters %}checked{% endif %} />
+                                                        <span class="text-sm">{{ creator.username }}</span>
+                                                    </label>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+
+                                        <!-- Date Filters -->
+                                        <div class="filter-group" data-group="date">
+                                            <h4 class="font-semibold text-sm text-base-content/70 mb-2">Created Date</h4>
+                                            <div class="space-y-2">
+                                                <label class="flex items-center gap-2 cursor-pointer filter-option" 
+                                                       data-text="today recent current">
+                                                    <input type="checkbox" 
+                                                           name="date_filter" 
+                                                           value="today" 
+                                                           class="checkbox checkbox-sm" 
+                                                           {% if 'today' in date_filters %}checked{% endif %} />
+                                                    <span class="text-sm">Today</span>
+                                                </label>
+                                                <label class="flex items-center gap-2 cursor-pointer filter-option" 
+                                                       data-text="this week recent current seven days">
+                                                    <input type="checkbox" 
+                                                           name="date_filter" 
+                                                           value="week" 
+                                                           class="checkbox checkbox-sm" 
+                                                           {% if 'week' in date_filters %}checked{% endif %} />
+                                                    <span class="text-sm">This Week</span>
+                                                </label>
+                                                <label class="flex items-center gap-2 cursor-pointer filter-option" 
+                                                       data-text="this month recent current thirty days">
+                                                    <input type="checkbox" 
+                                                           name="date_filter" 
+                                                           value="month" 
+                                                           class="checkbox checkbox-sm" 
+                                                           {% if 'month' in date_filters %}checked{% endif %} />
+                                                    <span class="text-sm">This Month</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Filter Actions -->
+                                    <div class="flex justify-between items-center pt-4 border-t border-base-300 mt-4">
+                                        <button type="button" 
+                                                onclick="clearAllFilters()" 
+                                                class="btn btn-sm btn-ghost">
+                                            Clear All
+                                        </button>
+                                        <div class="flex gap-2">
+                                            <button type="button" 
+                                                    onclick="toggleFilterDropdown()" 
+                                                    class="btn btn-sm btn-outline">
+                                                Cancel
+                                            </button>
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                Apply Filters
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column Visibility Dropdown -->
+                    <div class="relative" id="columnDropdown">
+                        <!-- Column Visibility Button -->
+                        <button type="button" 
+                                onclick="toggleColumnDropdown()" 
+                                class="btn btn-outline relative">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M4 6h16M4 10h16M4 14h16M4 18h16">
+                                </path>
+                            </svg>
+                            Columns
+                            <span id="columnBadge" class="badge badge-secondary badge-sm ml-2 hidden">0</span>
+                        </button>
+
+                        <!-- Column Visibility Dropdown Card -->
+                        <div id="columnCard" 
+                             class="absolute top-full left-0 mt-2 w-80 bg-base-100 border border-base-300 rounded-lg shadow-lg z-50 hidden">
+                            <div class="p-4">
+                                <!-- Column Search -->
+                                <div class="mb-4">
+                                    <input type="text" 
+                                           id="columnSearch" 
+                                           placeholder="Search columns..." 
+                                           class="input input-sm input-bordered w-full" 
+                                           oninput="searchColumns(this.value)" />
+                                </div>
+
+                                <!-- Column Visibility Form -->
+                                <form method="GET" id="columnForm">
+                                    <!-- Preserve search, sort, and filters -->
+                                    {% if request.GET.search %}
+                                        <input type="hidden" name="search" value="{{ request.GET.search }}" />
+                                    {% endif %}
+                                    {% if current_sort %}
+                                        <input type="hidden" name="sort" value="{{ current_sort }}" />
+                                    {% endif %}
+                                    {% if current_order %}
+                                        <input type="hidden" name="order" value="{{ current_order }}" />
+                                    {% endif %}
+                                                                            {% for filter_name, filter_values in active_filters.items %}
+                                            {% for value in filter_values %}
+                                                <input type="hidden" name="{{ filter_name }}" value="{{ value }}" />
+                                            {% endfor %}
+                                        {% endfor %}
+                                        <input type="hidden" name="page" value="1" />
+                                        <input type="hidden" name="per_page" value="{{ per_page }}" />
+
+                                        <div class="space-y-3 max-h-64 overflow-y-auto">
+                                        <h4 class="font-semibold text-sm text-base-content/70 mb-2">Visible Columns</h4>
+                                        
+                                        <!-- Column Options -->
+                                        <div class="space-y-2">
+                                            <label class="flex items-center gap-2 cursor-pointer column-option" 
+                                                   data-text="user username name">
+                                                <input type="checkbox" 
+                                                       name="columns" 
+                                                       value="username" 
+                                                       class="checkbox checkbox-sm" 
+                                                       {% if 'username' in visible_columns or not visible_columns %}checked{% endif %} />
+                                                <span class="text-sm">Username</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer column-option" 
+                                                   data-text="email mail contact">
+                                                <input type="checkbox" 
+                                                       name="columns" 
+                                                       value="email" 
+                                                       class="checkbox checkbox-sm" 
+                                                       {% if 'email' in visible_columns or not visible_columns %}checked{% endif %} />
+                                                <span class="text-sm">Email</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer column-option" 
+                                                   data-text="role admin root sub user">
+                                                <input type="checkbox" 
+                                                       name="columns" 
+                                                       value="role" 
+                                                       class="checkbox checkbox-sm" 
+                                                       {% if 'role' in visible_columns or not visible_columns %}checked{% endif %} />
+                                                <span class="text-sm">Role</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer column-option" 
+                                                   data-text="created date time created_at">
+                                                <input type="checkbox" 
+                                                       name="columns" 
+                                                       value="created_at" 
+                                                       class="checkbox checkbox-sm" 
+                                                       {% if 'created_at' in visible_columns or not visible_columns %}checked{% endif %} />
+                                                <span class="text-sm">Created Date</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer column-option" 
+                                                   data-text="created by creator author">
+                                                <input type="checkbox" 
+                                                       name="columns" 
+                                                       value="created_by" 
+                                                       class="checkbox checkbox-sm" 
+                                                       {% if 'created_by' in visible_columns or not visible_columns %}checked{% endif %} />
+                                                <span class="text-sm">Created By</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Column Actions -->
+                                    <div class="flex justify-between items-center pt-4 border-t border-base-300 mt-4">
+                                        <button type="button" 
+                                                onclick="resetColumnVisibility()" 
+                                                class="btn btn-sm btn-ghost">
+                                            Reset
+                                        </button>
+                                        <div class="flex gap-2">
+                                            <button type="button" 
+                                                    onclick="toggleColumnDropdown()" 
+                                                    class="btn btn-sm btn-outline">
+                                                Cancel
+                                            </button>
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                Apply
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create User Button -->
+                <a href="{% url 'accounts:create_sub_user' %}" class="btn btn-primary">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                        </path>
+                    </svg>
+                    Create New User
+                </a>
+            </div>
+
+            <!-- Active Filters Display -->
+            {% if active_filters %}
+                <div class="mb-6 p-3 bg-base-200 rounded-lg">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-sm font-medium">Active Filters:</span>
+
+                        {% for filter_name, filter_values in active_filters.items %}
+                            {% for value in filter_values %}
+                                <div class="badge badge-outline gap-2">
+                                    <span class="text-xs">
+                                        {% if filter_name == 'role' %}
+                                            {% if value == 'root' %}
+                                                Root Users
+                                            {% else %}
+                                                Sub Users
+                                            {% endif %}
+                                        {% elif filter_name == 'created_by' %}
+                                            {% if value == 'system' %}
+                                                System
+                                            {% else %}
+                                                {{ value }}
+                                            {% endif %}
+                                        {% elif filter_name == 'date_filter' %}
+                                            {% if value == 'today' %}
+                                                Today
+                                            {% elif value == 'week' %}
+                                                This Week
+                                            {% else %}
+                                                This Month
+                                            {% endif %}
+                                        {% else %}
+                                            {{ value }}
+                                        {% endif %}
+                                    </span>
+                                    <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if current_sort %}sort={{ current_sort }}&{% endif %}{% if current_order %}order={{ current_order }}&{% endif %}{% for fname, fvalues in active_filters.items %}{% if fname != filter_name %}{% for fvalue in fvalues %}{{ fname }}={{ fvalue }}&{% endfor %}{% elif fvalue != value %}{% for fvalue in fvalues %}{% if fvalue != value %}{{ fname }}={{ fvalue }}&{% endif %}{% endfor %}{% endif %}{% endfor %}" 
+                                       class="text-error hover:bg-error hover:text-error-content rounded-full p-0.5 transition-colors">
+                                        ✕
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+
+                        <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if current_sort %}sort={{ current_sort }}&{% endif %}{% if current_order %}order={{ current_order }}{% endif %}" 
+                           class="text-primary hover:text-primary-focus text-sm ml-2">
+                            Clear all filters
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Search Results Info -->
+            {% if request.GET.search %}
+                <div class="mb-6 p-3 bg-base-200 rounded-lg flex items-center justify-between">
+                    <span class="text-sm">
+                        <span class="font-medium">{{ company_users|length }}</span>
+                        result{{ company_users|length|pluralize }} found for
+                        <span class="font-medium">"{{ request.GET.search }}"</span>
+                    </span>
+                    <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order and current_sort %}&order={{ current_order }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}" 
+                       class="text-sm text-primary hover:text-primary-focus">
+                        Clear search
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if company_users %}
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                {% if 'username' in visible_columns or not visible_columns %}
+                                <th>
+                                    <a href="?sort=username{% if current_sort == 'username' and current_order != 'desc' %}&order=desc{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page=1&per_page={{ per_page }}" 
+                                       class="flex items-center gap-2 hover:text-primary transition-colors">
+                                        User
+                                        {% if current_sort == 'username' %}
+                                            {% if current_order == 'desc' %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M19 9l-7 7-7-7">
+                                                    </path>
+                                                </svg>
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M5 15l7-7 7 7">
+                                                    </path>
+                                                </svg>
+                                            {% endif %}
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4">
+                                                </path>
+                                            </svg>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                {% endif %}
+                                {% if 'email' in visible_columns or not visible_columns %}
+                                <th>
+                                    <a href="?sort=email{% if current_sort == 'email' and current_order != 'desc' %}&order=desc{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page=1&per_page={{ per_page }}" 
+                                       class="flex items-center gap-2 hover:text-primary transition-colors">
+                                        Email
+                                        {% if current_sort == 'email' %}
+                                            {% if current_order == 'desc' %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M19 9l-7 7-7-7">
+                                                    </path>
+                                                </svg>
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M5 15l7-7 7 7">
+                                                    </path>
+                                                </svg>
+                                            {% endif %}
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4">
+                                                </path>
+                                            </svg>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                {% endif %}
+                                {% if 'role' in visible_columns or not visible_columns %}
+                                <th>
+                                    <a href="?sort=role{% if current_sort == 'role' and current_order != 'desc' %}&order=desc{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page=1&per_page={{ per_page }}" 
+                                       class="flex items-center gap-2 hover:text-primary transition-colors">
+                                        Role
+                                        {% if current_sort == 'role' %}
+                                            {% if current_order == 'desc' %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M19 9l-7 7-7-7">
+                                                    </path>
+                                                </svg>
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M5 15l7-7 7 7">
+                                                    </path>
+                                                </svg>
+                                            {% endif %}
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4">
+                                                </path>
+                                            </svg>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                {% endif %}
+                                {% if 'created_at' in visible_columns or not visible_columns %}
+                                <th>
+                                    <a href="?sort=created_at{% if current_sort == 'created_at' and current_order != 'desc' %}&order=desc{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page=1&per_page={{ per_page }}" 
+                                       class="flex items-center gap-2 hover:text-primary transition-colors">
+                                        Created
+                                        {% if current_sort == 'created_at' %}
+                                            {% if current_order == 'desc' %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M19 9l-7 7-7-7">
+                                                    </path>
+                                                </svg>
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M5 15l7-7 7 7">
+                                                    </path>
+                                                </svg>
+                                            {% endif %}
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4">
+                                                </path>
+                                            </svg>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                {% endif %}
+                                {% if 'created_by' in visible_columns or not visible_columns %}
+                                <th>
+                                    <a href="?sort=created_by{% if current_sort == 'created_by' and current_order != 'desc' %}&order=desc{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page=1&per_page={{ per_page }}" 
+                                       class="flex items-center gap-2 hover:text-primary transition-colors">
+                                        Created By
+                                        {% if current_sort == 'created_by' %}
+                                            {% if current_order == 'desc' %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M19 9l-7 7-7-7">
+                                                    </path>
+                                                </svg>
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                          d="M5 15l7-7 7 7">
+                                                    </path>
+                                                </svg>
+                                            {% endif %}
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4">
+                                                </path>
+                                            </svg>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for company_user in company_users %}
+                                <tr>
+                                    {% if 'username' in visible_columns or not visible_columns %}
+                                    <td>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="avatar placeholder">
+                                                <div class="bg-primary text-primary-content rounded-full w-8">
+                                                    <span class="text-sm">
+                                                        {{ company_user.user.username|first|upper }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold">
+                                                    {{ company_user.user.username }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endif %}
+                                    {% if 'email' in visible_columns or not visible_columns %}
+                                    <td>{{ company_user.user.email|default:"No email" }}</td>
+                                    {% endif %}
+                                    {% if 'role' in visible_columns or not visible_columns %}
+                                    <td>
+                                        {% if company_user.is_root_user %}
+                                            <div class="badge badge-warning">Root User</div>
+                                        {% else %}
+                                            <div class="badge badge-info">Sub User</div>
+                                        {% endif %}
+                                    </td>
+                                    {% endif %}
+                                    {% if 'created_at' in visible_columns or not visible_columns %}
+                                    <td>{{ company_user.created_at|date:"M d, Y" }}</td>
+                                    {% endif %}
+                                    {% if 'created_by' in visible_columns or not visible_columns %}
+                                    <td>
+                                        {% if company_user.created_by %}
+                                            <div class="flex items-center space-x-2">
+                                                <div class="avatar placeholder">
+                                                    <div class="bg-secondary text-secondary-content rounded-full w-6">
+                                                        <span class="text-xs">
+                                                            {{ company_user.created_by.username|first|upper }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span class="text-sm">
+                                                    {{ company_user.created_by.username }}
+                                                </span>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-base-content/50 text-sm">System</span>
+                                        {% endif %}
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <!-- Pagination Info -->
+                        <div class="text-sm text-base-content/70">
+                            Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} users
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        <div class="flex items-center gap-2">
+                            <!-- First Page -->
+                            {% if page_obj.has_previous %}
+                                <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order %}order={{ current_order }}{% endif %}{% if search_query %}search={{ search_query }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page=1&per_page={{ per_page }}" 
+                                   class="btn btn-sm btn-outline">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M11 19l-7-7 7-7m8 14l-7-7 7-7">
+                                        </path>
+                                    </svg>
+                                </a>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline" disabled>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M11 19l-7-7 7-7m8 14l-7-7 7-7">
+                                        </path>
+                                    </svg>
+                                </button>
+                            {% endif %}
+
+                            <!-- Previous Page -->
+                            {% if page_obj.has_previous %}
+                                <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order %}order={{ current_order }}{% endif %}{% if search_query %}search={{ search_query }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" 
+                                   class="btn btn-sm btn-outline">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M15 19l-7-7 7-7">
+                                        </path>
+                                    </svg>
+                                </a>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline" disabled>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M15 19l-7-7 7-7">
+                                        </path>
+                                    </svg>
+                                </button>
+                            {% endif %}
+
+                            <!-- Page Numbers -->
+                            <div class="flex items-center gap-1">
+                                {% for page_num in paginator.page_range %}
+                                    {% if page_num == page_obj.number %}
+                                        <span class="btn btn-sm btn-primary">{{ page_num }}</span>
+                                    {% elif paginator.num_pages > 1 %}
+                                        {% if page_num <= 3 or page_num > paginator.num_pages|add:"-3" or page_num|add:"-2" <= page_obj.number and page_num|add:"2" >= page_obj.number %}
+                                            <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order %}order={{ current_order }}{% endif %}{% if search_query %}search={{ search_query }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page={{ page_num }}&per_page={{ per_page }}" 
+                                               class="btn btn-sm btn-outline">{{ page_num }}</a>
+                                        {% elif page_num == 4 and page_obj.number > 6 or page_num == paginator.num_pages|add:"-3" and page_obj.number < paginator.num_pages|add:"-5" %}
+                                            <span class="btn btn-sm btn-outline" disabled>...</span>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <!-- Next Page -->
+                            {% if page_obj.has_next %}
+                                <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order %}order={{ current_order }}{% endif %}{% if search_query %}search={{ search_query }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page={{ page_obj.next_page_number }}&per_page={{ per_page }}" 
+                                   class="btn btn-sm btn-outline">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M9 5l7 7-7 7">
+                                        </path>
+                                    </svg>
+                                </a>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline" disabled>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M9 5l7 7-7 7">
+                                        </path>
+                                    </svg>
+                                </button>
+                            {% endif %}
+
+                            <!-- Last Page -->
+                            {% if page_obj.has_next %}
+                                <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}{% if current_order %}order={{ current_order }}{% endif %}{% if search_query %}search={{ search_query }}{% endif %}{% for filter_name, filter_values in active_filters.items %}{% for value in filter_values %}&{{ filter_name }}={{ value }}{% endfor %}{% endfor %}{% for col in visible_columns %}&columns={{ col }}{% endfor %}&page={{ paginator.num_pages }}&per_page={{ per_page }}" 
+                                   class="btn btn-sm btn-outline">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M13 5l7 7-7 7M5 5l7 7-7 7">
+                                        </path>
+                                    </svg>
+                                </a>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline" disabled>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M13 5l7 7-7 7M5 5l7 7-7 7">
+                                        </path>
+                                    </svg>
+                                </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- Items Per Page Selector -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-base-content/70">Show:</span>
+                            <select onchange="changePerPage(this.value)" class="select select-sm select-bordered">
+                                <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                                <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                                <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                                <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+                            </select>
+                            <span class="text-sm text-base-content/70">per page</span>
+                        </div>
+                    </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <div class="text-base-content/50 text-lg mb-4">No users found</div>
+                    <a href="{% url 'accounts:create_sub_user' %}" class="btn btn-primary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                            </path>
+                        </svg>
+                        Create First User
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Filter dropdown functionality
+function toggleFilterDropdown() {
+    const filterCard = document.getElementById('filterCard');
+    filterCard.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('filterDropdown');
+    const filterCard = document.getElementById('filterCard');
+    
+    if (!dropdown.contains(event.target)) {
+        filterCard.classList.add('hidden');
+    }
+});
+
+// Search within filters
+function searchFilters(searchTerm) {
+    const filterGroups = document.querySelectorAll('.filter-group');
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    filterGroups.forEach(function(group) {
+        const groupTitle = group.querySelector('h4').textContent.toLowerCase();
+        const options = group.querySelectorAll('.filter-option');
+        let hasVisibleOptions = false;
+        
+        // Check if group title matches search
+        const groupMatches = groupTitle.includes(searchTermLower);
+        
+        options.forEach(function(option) {
+            const optionText = option.getAttribute('data-text').toLowerCase();
+            const optionLabel = option.querySelector('span').textContent.toLowerCase();
+            
+            // Show option if search term matches option text, label, or if group matches
+            if (searchTerm === '' || 
+                optionText.includes(searchTermLower) || 
+                optionLabel.includes(searchTermLower) || 
+                groupMatches) {
+                option.style.display = 'flex';
+                hasVisibleOptions = true;
+            } else {
+                option.style.display = 'none';
+            }
+        });
+        
+        // Hide group if no visible options
+        if (hasVisibleOptions || searchTerm === '') {
+            group.style.display = 'block';
+        } else {
+            group.style.display = 'none';
+        }
+    });
+}
+
+// Clear all filters
+function clearAllFilters() {
+    const checkboxes = document.querySelectorAll('#filterForm input[type="checkbox"]');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = false;
+    });
+    updateFilterBadge();
+}
+
+// Update filter badge count
+function updateFilterBadge() {
+    const checkedFilters = document.querySelectorAll('#filterForm input[type="checkbox"]:checked');
+    const badge = document.getElementById('filterBadge');
+    
+    if (checkedFilters.length > 0) {
+        badge.textContent = checkedFilters.length;
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+
+// Initialize filter badge on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateFilterBadge();
+    
+    // Add event listeners to checkboxes to update badge
+    const checkboxes = document.querySelectorAll('#filterForm input[type="checkbox"]');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', updateFilterBadge);
+    });
+});
+
+// Handle form submission
+document.getElementById('filterForm').addEventListener('submit', function() {
+    toggleFilterDropdown();
+});
+
+// Column visibility dropdown functionality
+function toggleColumnDropdown() {
+    const columnCard = document.getElementById('columnCard');
+    columnCard.classList.toggle('hidden');
+}
+
+// Close column dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const columnDropdown = document.getElementById('columnDropdown');
+    const columnCard = document.getElementById('columnCard');
+    
+    if (!columnDropdown.contains(event.target)) {
+        columnCard.classList.add('hidden');
+    }
+});
+
+// Search within columns
+function searchColumns(searchTerm) {
+    const columnOptions = document.querySelectorAll('.column-option');
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    columnOptions.forEach(function(option) {
+        const optionText = option.getAttribute('data-text').toLowerCase();
+        const optionLabel = option.querySelector('span').textContent.toLowerCase();
+        
+        // Show option if search term matches option text or label
+        if (searchTerm === '' || 
+            optionText.includes(searchTermLower) || 
+            optionLabel.includes(searchTermLower)) {
+            option.style.display = 'flex';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+}
+
+// Reset column visibility to default (all visible)
+function resetColumnVisibility() {
+    const checkboxes = document.querySelectorAll('#columnForm input[type="checkbox"]');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = true;
+    });
+    updateColumnBadge();
+}
+
+// Update column badge count
+function updateColumnBadge() {
+    const checkedColumns = document.querySelectorAll('#columnForm input[type="checkbox"]:checked');
+    const badge = document.getElementById('columnBadge');
+    
+    if (checkedColumns.length < 5) { // Show badge if not all columns are visible
+        badge.textContent = checkedColumns.length;
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+
+// Initialize column badge on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateColumnBadge();
+    
+    // Add event listeners to column checkboxes to update badge
+    const columnCheckboxes = document.querySelectorAll('#columnForm input[type="checkbox"]');
+    columnCheckboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', updateColumnBadge);
+    });
+});
+
+// Handle column form submission
+document.getElementById('columnForm').addEventListener('submit', function() {
+    toggleColumnDropdown();
+});
+
+// Change items per page
+function changePerPage(value) {
+    const url = new URL(window.location);
+    url.searchParams.set('per_page', value);
+    url.searchParams.set('page', '1'); // Reset to first page when changing per_page
+    window.location.href = url.toString();
+}
+</script>
+{% endblock %}

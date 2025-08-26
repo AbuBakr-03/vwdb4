@@ -1,0 +1,349 @@
+{% extends "tickets/base.html" %}
+
+{% block page_title %}Ticket #{{ ticket.get_short_id }}{% endblock %}
+
+{% block breadcrumb %}
+<li><a href="{% url 'tickets:ticket_list' %}" class="link link-hover">All Tickets</a></li>
+<li><span class="text-base-content/70">#{{ ticket.get_short_id }}</span></li>
+{% endblock %}
+
+{% block page_header %}Ticket #{{ ticket.get_short_id }}{% endblock %}
+
+{% block page_subtitle %}
+<p class="text-base-content/70">{{ ticket.title }}</p>
+{% endblock %}
+
+{% block page_actions %}
+<div class="flex gap-2">
+    {% if user.is_staff or ticket.submitter == user %}
+    <a href="{% url 'tickets:ticket_update' ticket.pk %}" class="btn btn-primary">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+        </svg>
+        Edit Ticket
+    </a>
+    {% endif %}
+    <a href="{% url 'tickets:ticket_list' %}" class="btn btn-outline">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Tickets
+    </a>
+</div>
+{% endblock %}
+
+{% block tickets_content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Content -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Ticket Details -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="card-title">Ticket Details</h3>
+                    <div class="flex gap-2">
+                        <span class="badge badge-{{ ticket.status }}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                        <span class="badge badge-{{ ticket.priority }}">
+                            {{ ticket.get_priority_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-lg">{{ ticket.title }}</h4>
+                        <p class="text-base-content/70 text-sm">
+                            Created by {{ ticket.submitter.username }} on {{ ticket.created_at|date:"M d, Y at H:i" }}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h5 class="font-semibold mb-2">Description</h5>
+                        <div class="bg-base-200 p-4 rounded-lg">
+                            {{ ticket.description|linebreaks }}
+                        </div>
+                    </div>
+                    
+                    {% if ticket.additional_notes %}
+                    <div>
+                        <h5 class="font-semibold mb-2">Additional Notes</h5>
+                        <div class="bg-base-200 p-4 rounded-lg">
+                            {{ ticket.additional_notes|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="font-semibold">Module:</span>
+                            <span class="badge badge-outline">{{ ticket.get_issue_location_display }}</span>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Company:</span>
+                            <span>{{ ticket.company.name|default:"Internal" }}</span>
+                        </div>
+                        {% if ticket.assigned_to %}
+                        <div>
+                            <span class="font-semibold">Assigned to:</span>
+                            <span>{{ ticket.assigned_to.username }}</span>
+                        </div>
+                        {% endif %}
+                        {% if ticket.resolved_at %}
+                        <div>
+                            <span class="font-semibold">Resolved:</span>
+                            <span>{{ ticket.resolved_at|date:"M d, Y at H:i" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comments -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h3 class="card-title">Comments</h3>
+                
+                <!-- Add Comment Form -->
+                <form method="post" action="{% url 'tickets:add_comment' ticket.pk %}" class="mb-6">
+                    {% csrf_token %}
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Add Comment</span>
+                        </label>
+                        {{ comment_form.content }}
+                        {% if comment_form.is_internal %}
+                        <div class="form-control mt-2">
+                            <label class="label cursor-pointer">
+                                <span class="label-text">Internal Comment</span>
+                                {{ comment_form.is_internal }}
+                            </label>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Add Comment</button>
+                </form>
+                
+                <!-- Comments List -->
+                {% if comments %}
+                <div class="space-y-4">
+                    {% for comment in comments %}
+                    <div class="chat {% if comment.author == user %}chat-end{% else %}chat-start{% endif %}">
+                        <div class="chat-image avatar">
+                            <div class="w-10 rounded-full bg-primary text-primary-content">
+                                <span class="text-sm">{{ comment.author.username|first|upper }}</span>
+                            </div>
+                        </div>
+                        <div class="chat-bubble {% if comment.is_internal %}chat-bubble-warning{% endif %}">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-semibold">{{ comment.author.username }}</span>
+                                <span class="text-xs opacity-70">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                            </div>
+                            {% if comment.is_internal %}
+                            <div class="badge badge-warning badge-sm mb-2">Internal</div>
+                            {% endif %}
+                            <div>{{ comment.content|linebreaks }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-8 text-base-content/70">
+                    <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <p>No comments yet. Be the first to add one!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="space-y-6">
+        <!-- Quick Actions -->
+        {% if user.is_staff %}
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h3 class="card-title">Quick Actions</h3>
+                
+                <!-- Status Update -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Update Status</span>
+                    </label>
+                    <select id="status-select" class="select select-bordered w-full">
+                        {% for value, label in ticket.STATUS_CHOICES %}
+                        <option value="{{ value }}" {% if ticket.status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Assignment -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Assign To</span>
+                    </label>
+                    <select id="assign-select" class="select select-bordered w-full">
+                        <option value="">Unassigned</option>
+                        {% for user in qa_users %}
+                        <option value="{{ user.id }}" {% if ticket.assigned_to == user %}selected{% endif %}>
+                            {{ user.username }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Attachments -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h3 class="card-title">Attachments</h3>
+                
+                <!-- Add Attachment Form -->
+                <form method="post" action="{% url 'tickets:add_attachment' ticket.pk %}" enctype="multipart/form-data" class="mb-4">
+                    {% csrf_token %}
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Upload File</span>
+                        </label>
+                        {{ attachment_form.file }}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm mt-2">Upload</button>
+                </form>
+                
+                <!-- Attachments List -->
+                {% if ticket.attachments.exists %}
+                <div class="space-y-2">
+                    {% for attachment in ticket.attachments.all %}
+                    <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                            </svg>
+                            <div>
+                                <div class="font-medium text-sm">{{ attachment.filename }}</div>
+                                <div class="text-xs text-base-content/70">
+                                    {{ attachment.get_file_size_display }} • {{ attachment.uploaded_at|date:"M d, Y" }}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-xs btn-outline">View</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-base-content/70">
+                    <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                    </svg>
+                    <p class="text-sm">No attachments</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Ticket Info -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h3 class="card-title">Ticket Info</h3>
+                
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Ticket ID:</span>
+                        <span class="font-mono">{{ ticket.get_short_id }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Created:</span>
+                        <span>{{ ticket.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Updated:</span>
+                        <span>{{ ticket.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                    {% if ticket.resolved_at %}
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Resolved:</span>
+                        <span>{{ ticket.resolved_at|date:"M d, Y" }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Comments:</span>
+                        <span>{{ comments.count }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Attachments:</span>
+                        <span>{{ ticket.attachments.count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status update functionality
+    const statusSelect = document.getElementById('status-select');
+    if (statusSelect) {
+        statusSelect.addEventListener('change', function() {
+            const newStatus = this.value;
+            fetch('{% url "tickets:update_ticket_status" ticket.pk %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: 'status=' + encodeURIComponent(newStatus)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the status badge
+                    const statusBadge = document.querySelector('.badge-' + '{{ ticket.status }}');
+                    if (statusBadge) {
+                        statusBadge.textContent = data.status_display;
+                        statusBadge.className = 'badge badge-' + newStatus;
+                    }
+                }
+            });
+        });
+    }
+    
+    // Assignment functionality
+    const assignSelect = document.getElementById('assign-select');
+    if (assignSelect) {
+        assignSelect.addEventListener('change', function() {
+            const userId = this.value;
+            fetch('{% url "tickets:assign_ticket" ticket.pk %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: 'user_id=' + encodeURIComponent(userId)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload page to show updated assignment
+                    location.reload();
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
+
+
+
+

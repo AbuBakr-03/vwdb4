@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load data_table_tags %}
+
+{% block title %}Company Users - Watchtower{% endblock title %}
+
+{% block content %}
+{% include "components/data_table.html" with title="Company Users" subtitle="Manage users in your company" table_data=table_data columns=columns page_obj=page_obj paginator=paginator current_sort=current_sort current_order=current_order active_filters=active_filters visible_columns=visible_columns search_query=search_query per_page=per_page create_url=create_url create_text="Create New User" empty_message="No users found" empty_action_url=create_url empty_action_text="Create First User" filters=filters %}
+{% endblock content %}

@@ -112,22 +112,27 @@ class TenantFlagsMiddleware(MiddlewareMixin):
     
     def process_request(self, request):
         """Process the request and verify tenant token"""
-        # Skip token verification for certain paths
+        # Check if this path should skip token verification
+        skip_token_verification = False
         skip_paths = getattr(settings, 'TENANT_SKIP_PATHS', [])
         for skip_path in skip_paths:
             if request.path.startswith(skip_path):
-                return None
+                skip_token_verification = True
+                break
         
         # For web-based authentication, allow requests without JWT tokens
         # but still require tenant context for protected views
         auth_header = request.META.get("HTTP_AUTHORIZATION", "")
         
-        # If no JWT token is provided, create a default tenant context for web users
-        if not auth_header.startswith("Bearer "):
-            # For web requests, create a default tenant context
+        # If no JWT token is provided or token verification is skipped, create a company-specific tenant context for web users
+        if not auth_header.startswith("Bearer ") or skip_token_verification:
+            # Get company-specific tenant ID from settings
+            company_tenant_id = getattr(settings, 'TENANT_ID', 'default_company')
+            
+            # For web requests, create a company-specific tenant context
             # This allows the views to handle authentication themselves
             request.tenant_flags = {
-                "tenant_id": "zain_bh",
+                "tenant_id": company_tenant_id,
                 "system_enabled": True,
                 "features": ["campaigns", "dashboard"],  # Default features for web users
                 "limits": {},

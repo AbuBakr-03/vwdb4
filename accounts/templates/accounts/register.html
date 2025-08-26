@@ -1,71 +1,259 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account - Watchtower</title>
 
-{% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Create your account
-            </h2>
+  <!-- DaisyUI CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom CSS -->
+  <style>
+    .form-input {
+      @apply input input-bordered w-full bg-base-100 border-base-content/20 text-base-content;
+      padding: 0.875rem 1rem;
+      min-height: 3rem;
+    }
+    .form-input:focus {
+      @apply border-primary ring-2 ring-primary/20;
+    }
+    .form-label {
+      @apply label-text text-base-content/90 font-medium;
+      margin-bottom: 0.5rem;
+    }
+    .form-error {
+      @apply text-error text-sm mt-1;
+    }
+    .form-help {
+      @apply text-base-content/60 text-sm mt-1;
+    }
+    .form-control {
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body class="h-full bg-base-300">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md md:max-w-lg lg:max-w-xl">
+      <!-- Logo and Brand -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary text-primary-content rounded-full mb-4 shadow-lg">
+          <span class="text-2xl font-bold">W</span>
         </div>
-        
-        {% if messages %}
+        <h1 class="text-3xl font-bold text-base-content mb-2">Watchtower</h1>
+        <p class="text-base-content/70">AI Agent Platform</p>
+      </div>
+
+      <!-- Register Card -->
+      <div class="card bg-base-100 shadow-xl border border-base-content/10">
+        <div class="card-body p-8">
+          <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold text-base-content mb-2">Create your account</h2>
+            <p class="text-base-content/70">Join us and start your journey with AI agents.</p>
+          </div>
+
+          {% if messages %}
             {% for message in messages %}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    {{ message }}
-                </div>
+              <div class="alert alert-error mb-6">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>{{ message }}</span>
+              </div>
             {% endfor %}
-        {% endif %}
-        
-        <form class="mt-8 space-y-6" method="POST">
-            {% csrf_token %}
-            <div class="rounded-md shadow-sm -space-y-px">
-                <div>
-                    <label for="username" class="sr-only">Username</label>
-                    <input id="username" name="username" type="text" required 
-                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                           placeholder="Username">
-                </div>
-                <div>
-                    <label for="password1" class="sr-only">Password</label>
-                    <input id="password1" name="password1" type="password" required 
-                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                           placeholder="Password">
-                </div>
-                <div>
-                    <label for="password2" class="sr-only">Confirm Password</label>
-                    <input id="password2" name="password2" type="password" required 
-                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                           placeholder="Confirm Password">
-                </div>
-            </div>
+          {% endif %}
 
-            {% if form.errors %}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    {% for field, errors in form.errors.items %}
-                        {% for error in errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    {% endfor %}
-                </div>
+      <form method="POST" class="space-y-6">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Username Field -->
+          <div class="form-control">
+            <label for="{{ form.username.id_for_label }}" class="label">
+              <span class="form-label">{{ form.username.label }}</span>
+            </label>
+            <input 
+              type="text" 
+              name="{{ form.username.name }}" 
+              id="{{ form.username.id_for_label }}"
+              value="{{ form.username.value|default:'' }}"
+              class="form-input"
+              placeholder="Enter your username"
+              required
+            />
+            {% if form.username.errors %}
+              <label class="label">
+                <span class="form-error">
+                  {% for error in form.username.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </span>
+              </label>
             {% endif %}
+          </div>
 
-            <div>
-                <button type="submit" 
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Create Account
-                </button>
+          <!-- Email Field -->
+          <div class="form-control">
+            <label for="{{ form.email.id_for_label }}" class="label">
+              <span class="form-label">{{ form.email.label }}</span>
+            </label>
+            <input 
+              type="email" 
+              name="{{ form.email.name }}" 
+              id="{{ form.email.id_for_label }}"
+              value="{{ form.email.value|default:'' }}"
+              class="form-input"
+              placeholder="Enter your email address"
+              required
+            />
+            {% if form.email.errors %}
+              <label class="label">
+                <span class="form-error">
+                  {% for error in form.email.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </span>
+              </label>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Tenant ID Field -->
+        <div class="form-control">
+          <label for="{{ form.tenant_id.id_for_label }}" class="label">
+            <span class="form-label">{{ form.tenant_id.label }}</span>
+          </label>
+          <input 
+            type="text" 
+            name="{{ form.tenant_id.name }}" 
+            id="{{ form.tenant_id.id_for_label }}"
+            value="{{ form.tenant_id.value|default:'' }}"
+            class="form-input"
+            placeholder="Enter your tenant ID"
+            required
+          />
+          {% if form.tenant_id.errors %}
+            <label class="label">
+              <span class="form-error">
+                {% for error in form.tenant_id.errors %}
+                  {{ error }}
+                {% endfor %}
+              </span>
+            </label>
+          {% endif %}
+          {% if form.tenant_id.help_text %}
+            <label class="label">
+              <span class="form-help">{{ form.tenant_id.help_text }}</span>
+            </label>
+          {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Password1 Field -->
+          <div class="form-control">
+            <label for="{{ form.password1.id_for_label }}" class="label">
+              <span class="form-label">{{ form.password1.label }}</span>
+            </label>
+            <input 
+              type="password" 
+              name="{{ form.password1.name }}" 
+              id="{{ form.password1.id_for_label }}"
+              class="form-input"
+              placeholder="Enter your password"
+              required
+            />
+            {% if form.password1.errors %}
+              <label class="label">
+                <span class="form-error">
+                  {% for error in form.password1.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </span>
+              </label>
+            {% endif %}
+          </div>
+
+          <!-- Password2 Field -->
+          <div class="form-control">
+            <label for="{{ form.password2.id_for_label }}" class="label">
+              <span class="form-label">{{ form.password2.label }}</span>
+            </label>
+            <input 
+              type="password" 
+              name="{{ form.password2.name }}" 
+              id="{{ form.password2.id_for_label }}"
+              class="form-input"
+              placeholder="Confirm your password"
+              required
+            />
+            {% if form.password2.errors %}
+              <label class="label">
+                <span class="form-error">
+                  {% for error in form.password2.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </span>
+              </label>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Password Help Text -->
+        {% if form.password1.help_text %}
+          <div class="bg-base-200/50 rounded-lg p-4">
+            <h4 class="text-sm font-medium text-base-content mb-2">Password Requirements:</h4>
+            <div class="text-sm text-base-content/70 space-y-1">
+              {{ form.password1.help_text|safe }}
             </div>
-            
-            <div class="text-center">
-                <p class="text-sm text-gray-600">
-                    Already have an account? 
-                    <a href="{% url 'accounts:login' %}" class="font-medium text-indigo-600 hover:text-indigo-500">
-                        Sign in here
-                    </a>
-                </p>
-            </div>
-        </form>
+          </div>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+          <div class="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg backdrop-blur-sm">
+            {% for error in form.non_field_errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <button
+          type="submit"
+          class="w-full bg-white text-gray-900 py-3 px-4 rounded-lg font-semibold hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all transform hover:scale-105"
+        >
+          Create Account
+        </button>
+      </form>
+
+      <div class="text-center mt-6">
+        <p class="text-white/70">
+          Already have an account?
+          <a href="{% url 'accounts:login' %}" class="text-white font-semibold hover:text-white/80 transition-colors">
+            Sign in here
+          </a>
+        </p>
+      </div>
     </div>
-</div>
-{% endblock %}
+
+    <!-- Footer -->
+    <div class="text-center mt-8">
+      <p class="text-white/50 text-sm">© 2024 Watchtower. All rights reserved.</p>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Theme switching for standalone pages
+    document.addEventListener("DOMContentLoaded", function () {
+      const savedTheme = localStorage.getItem("theme") || "night";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    });
+  </script>
+</body>
+</html>

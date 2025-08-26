@@ -1,0 +1,26 @@
+<div class="flex items-center space-x-3">
+    <div class="avatar placeholder">
+        <div class="bg-primary text-primary-content rounded-full w-8">
+            <span class="text-sm">
+                {% if item.user.username %}
+                    {{ item.user.username|first|upper }}
+                {% elif item.username %}
+                    {{ item.username|first|upper }}
+                {% else %}
+                    ?
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    <div>
+        <div class="font-bold">
+            {% if item.user.username %}
+                {{ item.user.username }}
+            {% elif item.username %}
+                {{ item.username }}
+            {% else %}
+                Unknown User
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+# Ignore Django HTML templates
+**/templates/**/*.html
+**/accounts/templates/**/*.html
+**/tickets/templates/**/*.html
+**/tenants/templates/**/*.html
+**/authorization/templates/**/*.html
+**/campaigns/templates/**/*.html
+**/analytics/templates/**/*.html
+**/dashboard/templates/**/*.html
+**/notifications/templates/**/*.html
+
+# Ignore all HTML files in Django apps
+*.html
+
+
+

@@ -1,55 +1,154 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In - Watchtower</title>
 
-{% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Sign in to your account
-            </h2>
+    <!-- DaisyUI CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS -->
+    <style>
+      .form-input {
+        @apply input input-bordered w-full bg-base-100 border-base-content/20 text-base-content;
+        padding: 0.875rem 1rem;
+        min-height: 3rem;
+      }
+      .form-input:focus {
+        @apply border-primary ring-2 ring-primary/20;
+      }
+      .form-label {
+        @apply label-text text-base-content/90 font-medium;
+        margin-bottom: 0.5rem;
+      }
+      .form-error {
+        @apply text-error text-sm mt-1;
+      }
+      .form-control {
+        margin-bottom: 1.5rem;
+      }
+    </style>
+  </head>
+  <body class="h-full bg-base-300">
+    <div class="min-h-screen flex items-center justify-center p-4">
+      <div class="w-full max-w-md md:max-w-lg lg:max-w-xl">
+        <!-- Logo and Brand -->
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-primary text-primary-content rounded-full mb-4 shadow-lg">
+            <span class="text-2xl font-bold">W</span>
+          </div>
+          <h1 class="text-3xl font-bold text-base-content mb-2">Watchtower</h1>
+          <p class="text-base-content/70">AI Agent Platform</p>
         </div>
-        
-        {% if messages %}
-            {% for message in messages %}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        
-        <form class="mt-8 space-y-6" method="POST">
-            {% csrf_token %}
-            <div class="rounded-md shadow-sm -space-y-px">
-                <div>
-                    <label for="username" class="sr-only">Username</label>
-                    <input id="username" name="username" type="text" required 
-                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                           placeholder="Username">
-                </div>
-                <div>
-                    <label for="password" class="sr-only">Password</label>
-                    <input id="password" name="password" type="password" required 
-                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                           placeholder="Password">
-                </div>
-            </div>
 
-            <div>
-                <button type="submit" 
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Sign in
-                </button>
+        <!-- Login Card -->
+        <div class="card bg-base-100 shadow-xl border border-base-content/10">
+          <div class="card-body p-8">
+            <div class="text-center mb-8">
+              <h2 class="text-2xl font-bold text-base-content mb-2">
+                Sign in to your account
+              </h2>
+              <p class="text-base-content/70">
+                Welcome back! Please enter your credentials.
+              </p>
             </div>
             
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-error mb-6">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span>{{ message }}</span>
+                </div>
+              {% endfor %}
+            {% endif %}
+            
+            <form method="POST" class="space-y-6">
+              {% csrf_token %}
+
+              <!-- Username Field -->
+              <div class="form-control">
+                <label for="username" class="label">
+                  <span class="form-label">Username</span>
+                </label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  class="form-input"
+                  placeholder="Enter your username"
+                />
+              </div>
+
+              <!-- Password Field -->
+              <div class="form-control">
+                <label for="password" class="label">
+                  <span class="form-label">Password</span>
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  class="form-input"
+                  placeholder="Enter your password"
+                />
+              </div>
+
+              <div class="pt-4">
+                <button
+                  type="submit"
+                  class="btn btn-primary w-full"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                  </svg>
+                  Sign in
+                </button>
+              </div>
+            </form>
+
+            <div class="divider">OR</div>
+
             <div class="text-center">
-                <p class="text-sm text-gray-600">
-                    Don't have an account? 
-                    <a href="{% url 'accounts:register' %}" class="font-medium text-indigo-600 hover:text-indigo-500">
-                        Register here
-                    </a>
-                </p>
+              <p class="text-base-content/70">
+                Don't have an account? 
+                <a
+                  href="{% url 'accounts:register' %}"
+                  class="link link-primary font-semibold"
+                >
+                  Register here
+                </a>
+              </p>
             </div>
-        </form>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8">
+          <p class="text-base-content/50 text-sm">
+            © 2024 Watchtower. All rights reserved.
+          </p>
+        </div>
+      </div>
     </div>
-</div>
-{% endblock %}
+
+    <!-- JavaScript -->
+    <script>
+      // Theme switching for standalone pages
+      document.addEventListener("DOMContentLoaded", function () {
+        const savedTheme = localStorage.getItem("theme") || "night";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      });
+    </script>
+  </body>
+</html>

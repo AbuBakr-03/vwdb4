@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-g!#v2!sn=466ez=&&bz!_%vce81dkzfcavf(7l3@f0nji&mu5&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 
 
 # Application definition
@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'authorization',
     'tenants',
     'accounts',
+    'tickets',
+    'utils',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +70,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "accounts.context_processors.user_permissions",
             ],
         },
     },
@@ -123,6 +126,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Media files (Uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -155,6 +162,9 @@ TENANT_CACHE_SECONDS = 30
 # Client credentials for token fetching
 TENANT_CLIENT_ID = "zain_bh"
 TENANT_CLIENT_SECRET = "ge19[U{Z~FeN:y':\\V#oo*6VCOt"
+
+# Company-specific tenant identifier for on-premise deployments
+TENANT_ID = "zain_bh"  # This should be unique per company deployment
 
 # Whether to validate client credentials (default: False)
 TENANT_VALIDATE_CLIENT_CREDENTIALS = False
