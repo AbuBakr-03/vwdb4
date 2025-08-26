@@ -1,6 +1,13 @@
 from django.shortcuts import render
+from authorization.utils import get_tenant_info
 
 
-# Create your views here.
 def home(request):
-    return render(request, "index.html")
+    """Dashboard home view with tenant information."""
+    context = {}
+    
+    # Add tenant info if available
+    if hasattr(request, 'tenant_flags'):
+        context['tenant_info'] = get_tenant_info(request)
+    
+    return render(request, "dashboard/index.html", context)

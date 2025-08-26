@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Watchtower Dashboard{% endblock %}</title>
+    
+    <!-- DaisyUI CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        .sidebar-nav {
+            @apply space-y-1;
+        }
+        .sidebar-link {
+            @apply flex items-center space-x-3 p-3 rounded-lg hover:bg-base-300 transition-colors text-base-content;
+        }
+        .sidebar-link.active {
+            @apply bg-primary/10 text-primary border border-primary/20;
+        }
+        .sidebar-icon {
+            @apply w-5 h-5;
+        }
+        .workspace-dropdown {
+            @apply bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 hover:from-primary/20 hover:to-secondary/20;
+        }
+        .user-info-card {
+            @apply bg-base-100 rounded-lg border border-base-content/10;
+        }
+        /* Override DaisyUI collapse styles to match our sidebar */
+        .collapse-title {
+            @apply p-0 !important;
+        }
+        .collapse-content {
+            @apply p-0 !important;
+        }
+        .collapse-content ul {
+            @apply p-0 m-0 !important;
+        }
+        .collapse-content li {
+            @apply p-0 m-0 !important;
+        }
+        /* Ensure submenu items align properly */
+        .collapse-content .sidebar-link {
+            @apply pl-6 !important;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="h-full bg-base-300">
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        
+        <!-- Page content -->
+        <div class="drawer-content flex flex-col">
+            <!-- Top navbar -->
+            <div class="navbar bg-base-200 border-b border-base-content/10 lg:hidden">
+                <div class="flex-none">
+                    <label for="main-drawer" class="btn btn-square btn-ghost">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </label>
+                </div>
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold">Watchtower</h1>
+                </div>
+                <div class="flex-none">
+                    <!-- Theme toggle -->
+                    <label class="swap swap-rotate">
+                        <input type="checkbox" class="theme-controller" value="light" />
+                        <svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,0,0,6.5,12a5.5,5.5,0,0,0,5.5,5.5A5.5,5.5,0,0,0,17.5,12,5.5,5.5,0,0,0,12,6.5Zm0,9A3.5,3.5,0,0,1,8.5,12A3.5,3.5,0,0,1,12,8.5a3.5,3.5,0,0,1,3.5,3.5A3.5,3.5,0,0,1,12,15.5Z"/></svg>
+                        <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Main content area -->
+            <main class="flex-1 p-6 bg-base-300">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="drawer-side">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <aside class="min-h-full w-80 bg-base-200 border-r border-base-content/10">
+                <div class="p-4">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="bg-primary text-primary-content rounded-full w-10 h-10 flex items-center justify-center">
+                            <span class="text-xl font-bold">W</span>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-base-content">Watchtower</h2>
+                            <p class="text-sm text-base-content/70">AI Agent Platform</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tenant/Workspace Dropdown -->
+                    <div class="mb-6">
+                        <div class="dropdown dropdown-bottom w-full">
+                            <div tabindex="0" role="button" class="btn btn-outline btn-primary w-full justify-between workspace-dropdown">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 7V9a2 2 0 002 2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    <span class="font-medium">zain_bh</span>
+                                </div>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box w-full border border-base-content/10">
+                                <li>
+                                    <a href="#" class="flex items-center justify-between hover:bg-base-200 rounded-lg p-2 bg-primary/10 text-primary">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-2 h-2 bg-primary rounded-full"></div>
+                                            <span class="text-sm font-medium">zain_bh</span>
+                                        </div>
+                                        <span class="text-xs text-base-content/50">Active</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Menu -->
+                    <ul class="menu menu-lg sidebar-nav">
+                        <li>
+                            <a href="{% url 'dashboard:index' %}" class="sidebar-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+                                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
+                                </svg>
+                                Dashboard
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <div class="collapse collapse-arrow">
+                                <input type="checkbox" class="sidebar-toggle" /> 
+                                <div class="collapse-title sidebar-link">
+                                    Prompt Management
+                                </div>
+                                <div class="collapse-content">
+                                    <ul class="space-y-1">
+                                        <li><a href="#" class="sidebar-link">Prompts</a></li>
+                                        <li><a href="#" class="sidebar-link">Agent Playground</a></li>
+                                        <li><a href="#" class="sidebar-link">Voices</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="collapse collapse-arrow">
+                                <input type="checkbox" class="sidebar-toggle" /> 
+                                <div class="collapse-title sidebar-link">
+                                    Campaigns
+                                </div>
+                                <div class="collapse-content">
+                                    <ul class="space-y-1">
+                                        <li><a href="{% url 'campaigns:campaign_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'campaign_list' %}active{% endif %}">All Campaigns</a></li>
+                                        <li><a href="{% url 'campaigns:campaign_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'campaign_create' %}active{% endif %}">Create Campaign</a></li>
+                                        <li><a href="{% url 'campaigns:queue_tracker' %}" class="sidebar-link {% if request.resolver_match.url_name == 'queue_tracker' %}active{% endif %}">Queue Tracker</a></li>
+                                        <li><a href="{% url 'campaigns:sessions' %}" class="sidebar-link {% if request.resolver_match.url_name == 'sessions' %}active{% endif %}">Sessions</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a href="#" class="sidebar-link">
+                                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                Reports
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <div class="collapse collapse-arrow">
+                                <input type="checkbox" class="sidebar-toggle" /> 
+                                <div class="collapse-title sidebar-link">
+                                    People
+                                </div>
+                                <div class="collapse-content">
+                                    <ul class="space-y-1">
+                                        <li><a href="#" class="sidebar-link">Users</a></li>
+                                        <li><a href="#" class="sidebar-link">Teams</a></li>
+                                        <li><a href="#" class="sidebar-link">Permissions</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <!-- User Info Card -->
+                    <div class="mt-8 user-info-card p-4">
+                        {% if user.is_authenticated %}
+                        <div class="flex items-center space-x-3">
+                            <div class="avatar placeholder">
+                                <div class="bg-primary text-primary-content rounded-full w-12">
+                                    <span class="text-lg">{{ user.username|first|upper }}</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-base-content truncate">{{ user.username }}</div>
+                                <div class="text-sm text-base-content/70 truncate">{{ user.email|default:"No email" }}</div>
+                            </div>
+                            <div class="dropdown dropdown-top dropdown-end">
+                                <label tabindex="0" class="btn btn-ghost btn-xs">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </label>
+                                <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48">
+                                    <li><a href="{% url 'accounts:logout' %}" class="text-sm">Logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center">
+                            <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm w-full">Login</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Theme switching
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeController = document.querySelector('.theme-controller');
+            const html = document.documentElement;
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme') || 'night';
+            html.setAttribute('data-theme', savedTheme);
+            themeController.value = savedTheme;
+            
+            // Theme change handler
+            themeController.addEventListener('change', function() {
+                const newTheme = this.value;
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

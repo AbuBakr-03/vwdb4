@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block title %}Campaigns - Watchtower{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold">Campaigns</h1>
+            <p class="text-base-content/70">Manage your AI agent campaigns</p>
+        </div>
+        <a href="{% url 'campaigns:campaign_create' %}" class="btn btn-primary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            New Campaign
+        </a>
+    </div>
+
+    <!-- Statistics cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="stat bg-base-200 rounded-lg">
+            <div class="stat-title">Total Campaigns</div>
+            <div class="stat-value text-primary">{{ stats.total }}</div>
+        </div>
+        <div class="stat bg-base-200 rounded-lg">
+            <div class="stat-title">Active</div>
+            <div class="stat-value text-success">{{ stats.active }}</div>
+        </div>
+        <div class="stat bg-base-200 rounded-lg">
+            <div class="stat-title">Draft</div>
+            <div class="stat-value text-warning">{{ stats.draft }}</div>
+        </div>
+        <div class="stat bg-base-200 rounded-lg">
+            <div class="stat-title">Completed</div>
+            <div class="stat-value text-info">{{ stats.completed }}</div>
+        </div>
+    </div>
+
+    <!-- Search and filters -->
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+            <form method="get" class="flex flex-wrap gap-4 items-end">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Search</span>
+                    </label>
+                    <input type="text" name="search" value="{{ search_query }}" 
+                           placeholder="Search campaigns..." 
+                           class="input input-bordered w-full md:w-64" />
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Status</span>
+                    </label>
+                    <select name="status" class="select select-bordered">
+                        <option value="">All Statuses</option>
+                        <option value="draft" {% if status_filter == 'draft' %}selected{% endif %}>Draft</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                        <option value="paused" {% if status_filter == 'paused' %}selected{% endif %}>Paused</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                
+                <div class="form-control">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+                
+                {% if search_query or status_filter %}
+                <div class="form-control">
+                    <a href="{% url 'campaigns:campaign_list' %}" class="btn btn-ghost">Clear</a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Campaigns list -->
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+            {% if campaigns %}
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Calls</th>
+                            <th>Success Rate</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for campaign in campaigns %}
+                        <tr>
+                            <td>
+                                <div>
+                                    <div class="font-bold">{{ campaign.name }}</div>
+                                    <div class="text-sm opacity-70">{{ campaign.description|truncatechars:50 }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if campaign.status == 'active' %}
+                                    <span class="badge badge-success">Active</span>
+                                {% elif campaign.status == 'draft' %}
+                                    <span class="badge badge-warning">Draft</span>
+                                {% elif campaign.status == 'paused' %}
+                                    <span class="badge badge-info">Paused</span>
+                                {% elif campaign.status == 'completed' %}
+                                    <span class="badge badge-neutral">Completed</span>
+                                {% else %}
+                                    <span class="badge badge-error">{{ campaign.status|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if campaign.priority == 'urgent' %}
+                                    <span class="badge badge-error">Urgent</span>
+                                {% elif campaign.priority == 'high' %}
+                                    <span class="badge badge-warning">High</span>
+                                {% elif campaign.priority == 'normal' %}
+                                    <span class="badge badge-info">Normal</span>
+                                {% else %}
+                                    <span class="badge badge-neutral">Low</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="text-sm">
+                                    <div>{{ campaign.total_calls }}/{{ campaign.max_calls }}</div>
+                                    <div class="text-xs opacity-70">{{ campaign.successful_calls }} successful</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-2">
+                                    <div class="radial-progress text-sm" 
+                                         style="--value:{{ campaign.success_rate|floatformat:0 }}; --size:2rem;">
+                                        {{ campaign.success_rate|floatformat:0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-sm">
+                                    <div>{{ campaign.created_at|date:"M d, Y" }}</div>
+                                    <div class="text-xs opacity-70">{{ campaign.created_at|time:"H:i" }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex gap-2">
+                                    <a href="{% url 'campaigns:campaign_detail' campaign.id %}" 
+                                       class="btn btn-sm btn-ghost">View</a>
+                                    <a href="{% url 'campaigns:campaign_edit' campaign.id %}" 
+                                       class="btn btn-sm btn-outline">Edit</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if campaigns.has_other_pages %}
+            <div class="flex justify-center mt-6">
+                <div class="join">
+                    {% if campaigns.has_previous %}
+                        <a href="?page={{ campaigns.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                           class="join-item btn">«</a>
+                    {% endif %}
+                    
+                    {% for num in campaigns.paginator.page_range %}
+                        {% if campaigns.number == num %}
+                            <span class="join-item btn btn-active">{{ num }}</span>
+                        {% elif num > campaigns.number|add:'-3' and num < campaigns.number|add:'3' %}
+                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                               class="join-item btn">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if campaigns.has_next %}
+                        <a href="?page={{ campaigns.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+                           class="join-item btn">»</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-12">
+                <svg class="w-16 h-16 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <h3 class="text-lg font-semibold mb-2">No campaigns found</h3>
+                <p class="text-base-content/70 mb-4">
+                    {% if search_query or status_filter %}
+                        Try adjusting your search criteria or filters.
+                    {% else %}
+                        Get started by creating your first campaign.
+                    {% endif %}
+                </p>
+                {% if not search_query and not status_filter %}
+                <a href="{% url 'campaigns:campaign_create' %}" class="btn btn-primary">
+                    Create Campaign
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-refresh statistics every 30 seconds
+    setInterval(function() {
+        fetch('{% url "campaigns:campaign_stats_api" %}')
+            .then(response => response.json())
+            .then(data => {
+                // Update stats display
+                document.querySelector('[data-stat="total"]').textContent = data.total_campaigns;
+                document.querySelector('[data-stat="active"]').textContent = data.active_campaigns;
+                // Add more stat updates as needed
+            })
+            .catch(error => console.error('Error updating stats:', error));
+    }, 30000);
+</script>
+{% endblock %}

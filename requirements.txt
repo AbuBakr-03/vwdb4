@@ -1,0 +1,17 @@
+# Django and core dependencies
+Django>=5.2.0
+
+# Authorization module dependencies
+PyJWT>=2.8.0
+cryptography>=41.0.0
+requests>=2.31.0
+
+# Optional: Redis for production caching
+# redis>=5.0.0
+
+# Optional: For advanced JWT handling
+# python-jose[cryptography]>=3.3.0
+
+# Optional: For production deployment
+# gunicorn>=21.0.0
+# whitenoise>=6.6.0

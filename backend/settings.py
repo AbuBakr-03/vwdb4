@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'dashboard',
     'analytics',
     'campaigns',
+    'authorization',
+    'tenants',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'authorization.consumer_middleware.TenantFlagsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -57,7 +61,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "backend" / "templates"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -107,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bahrain'
 
 USE_I18N = True
 
@@ -123,3 +127,50 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Authentication settings
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/campaigns/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# Tenant Management Configuration
+# =============================
+
+# URL to your tenant management system's JWKS endpoint
+TENANT_MGMT_JWKS_URL = (
+    "https://web-production-72006.up.railway.app/.well-known/jwks.json"
+)
+
+# URL to your tenant management system's token endpoint
+TENANT_MGMT_TOKEN_URL = (
+    "https://web-production-72006.up.railway.app/v1/token"
+)
+
+# Audience value that your app expects in tokens
+TENANT_AUDIENCE = "watchtower"
+
+# Cache TTL for tenant flags (default: 30 seconds)
+TENANT_CACHE_SECONDS = 30
+
+# Client credentials for token fetching
+TENANT_CLIENT_ID = "zain_bh"
+TENANT_CLIENT_SECRET = "ge19[U{Z~FeN:y':\\V#oo*6VCOt"
+
+# Whether to validate client credentials (default: False)
+TENANT_VALIDATE_CLIENT_CREDENTIALS = False
+
+# Paths to skip token verification
+TENANT_SKIP_PATHS = [
+    '/admin/',
+    '/static/',
+    '/health/',
+    '/authorization/health/',
+    '/authorization/get-token/',
+    '/authorization/refresh-token/',
+    '/authorization/token-status/',
+    '/dashboard/',
+    '/accounts/',
+]
+
+# Optional: Redis configuration for production caching
+# REDIS_URL = "redis://localhost:6379/1"
