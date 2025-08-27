@@ -124,7 +124,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Media files (Uploaded files)
 MEDIA_URL = '/media/'
@@ -157,7 +161,7 @@ TENANT_MGMT_TOKEN_URL = (
 TENANT_AUDIENCE = "watchtower"
 
 # Cache TTL for tenant flags (default: 30 seconds)
-TENANT_CACHE_SECONDS = 30
+TENANT_CACHE_SECONDS = 3000
 
 # Client credentials for token fetching
 TENANT_CLIENT_ID = "zain_bh"
@@ -180,6 +184,12 @@ TENANT_SKIP_PATHS = [
     '/authorization/token-status/',
     '/dashboard/',
     '/accounts/',
+    '/campaigns/',
+    '/campaigns/create/',
+    '/campaigns/list/',
+    '/campaigns/edit/',
+    '/campaigns/delete/',
+    '/campaigns/queue/',
 ]
 
 # Optional: Redis configuration for production caching

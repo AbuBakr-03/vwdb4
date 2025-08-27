@@ -162,13 +162,31 @@ class CampaignCreateView(CampaignBaseView):
             campaign = Campaign.objects.create(
                 name=request.POST.get('name'),
                 description=request.POST.get('description', ''),
-                prompt_template=request.POST.get('prompt_template'),
+                prompt_template=request.POST.get('script_template'),  # Map script_template to prompt_template
                 voice_id=request.POST.get('voice_id', ''),
                 tenant_id=tenant_id,
                 created_by=request.user,
                 max_calls=int(request.POST.get('max_calls', 1000)),
                 max_concurrent=int(request.POST.get('max_concurrent', 10))
             )
+            
+            # Store additional campaign data in agent_config
+            campaign.agent_config = {
+                'use_case': request.POST.get('use_case', ''),
+                'channel': request.POST.get('channel', 'voice'),
+                'language': request.POST.get('language', 'en'),
+                'priority': request.POST.get('priority', 'normal'),
+                'campaign_variables': request.POST.get('campaign_variables', ''),
+                'start_date': request.POST.get('start_date', ''),
+                'end_date': request.POST.get('end_date', ''),
+                'start_local_time': request.POST.get('start_local_time', ''),
+                'end_local_time': request.POST.get('end_local_time', ''),
+                'days_of_week': request.POST.getlist('days_of_week'),
+                'max_attempts': int(request.POST.get('max_attempts', 3)),
+                'retry_on': request.POST.getlist('retry_on'),
+                'backoff_seconds': request.POST.get('backoff_seconds', '60, 180, 600')
+            }
+            campaign.save()
             
             # Increment usage
             increment_tenant_usage(request, 'campaigns_per_month', 1)
@@ -209,10 +227,27 @@ class CampaignEditView(CampaignBaseView):
             # Update campaign
             campaign.name = request.POST.get('name')
             campaign.description = request.POST.get('description', '')
-            campaign.prompt_template = request.POST.get('prompt_template')
+            campaign.prompt_template = request.POST.get('script_template', '')  # Map script_template to prompt_template
             campaign.voice_id = request.POST.get('voice_id', '')
             campaign.max_calls = int(request.POST.get('max_calls', 1000))
             campaign.max_concurrent = int(request.POST.get('max_concurrent', 10))
+            
+            # Update additional campaign data in agent_config
+            campaign.agent_config.update({
+                'use_case': request.POST.get('use_case', ''),
+                'channel': request.POST.get('channel', 'voice'),
+                'language': request.POST.get('language', 'en'),
+                'priority': request.POST.get('priority', 'normal'),
+                'campaign_variables': request.POST.get('campaign_variables', ''),
+                'start_date': request.POST.get('start_date', ''),
+                'end_date': request.POST.get('end_date', ''),
+                'start_local_time': request.POST.get('start_local_time', ''),
+                'end_local_time': request.POST.get('end_local_time', ''),
+                'days_of_week': request.POST.getlist('days_of_week'),
+                'max_attempts': int(request.POST.get('max_attempts', 3)),
+                'retry_on': request.POST.getlist('retry_on'),
+                'backoff_seconds': request.POST.get('backoff_seconds', '60, 180, 600')
+            })
             campaign.save()
             
             # Log the update
