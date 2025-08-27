@@ -4,6 +4,9 @@ from . import views
 app_name = 'people'
 
 urlpatterns = [
+    # Address Book - main page with tabs
+    path('', views.address_book, name='address_book'),
+    
     # Contact management
     path('contacts/', views.contact_list, name='contact_list'),
     path('contacts/create/', views.contact_create, name='contact_create'),
