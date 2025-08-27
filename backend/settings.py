@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'authorization',
     'tenants',
     'accounts',
-    'tickets',
     'utils',
     'people'
 ]

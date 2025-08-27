@@ -25,7 +25,6 @@ urlpatterns = [
     path("authorization/", include("authorization.urls")),
     path("campaigns/", include("campaigns.urls")),
     path("accounts/", include("accounts.urls")),
-    path("tickets/", include("tickets.urls")),
     path("people/", include("people.urls")),
 ]
 
