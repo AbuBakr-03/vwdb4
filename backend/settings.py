@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'accounts',
     'tickets',
     'utils',
+    'people'
 ]
 
 MIDDLEWARE = [

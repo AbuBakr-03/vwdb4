@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Segment - Address Book{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-base-content mb-2">Create New Segment</h1>
+        <p class="text-base-content/70">Add a new segment to categorize your contacts</p>
+    </div>
+
+    <!-- Segment Creation Form -->
+    <div class="card bg-base-100 shadow max-w-2xl mx-auto">
+        <div class="card-body">
+            <h3 class="card-title">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                Segment Information
+            </h3>
+            
+            <form id="segment-form" class="space-y-6">
+                <!-- Segment Name -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium">Segment Name *</span>
+                    </label>
+                    <input type="text" name="name" placeholder="Enter segment name" 
+                           class="input input-bordered w-full" required />
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/70">A unique name for this segment</span>
+                    </label>
+                </div>
+                
+                <!-- Description -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium">Description</span>
+                    </label>
+                    <textarea name="description" rows="3" 
+                              placeholder="Describe what this segment represents" 
+                              class="textarea textarea-bordered w-full"></textarea>
+                </div>
+                
+                <!-- Color -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium">Badge Color *</span>
+                    </label>
+                    <select name="color" class="select select-bordered w-full" required>
+                        <option value="">Select a color</option>
+                        <option value="badge-primary">Primary (Blue)</option>
+                        <option value="badge-secondary">Secondary (Gray)</option>
+                        <option value="badge-accent">Accent (Purple)</option>
+                        <option value="badge-neutral">Neutral (Gray)</option>
+                        <option value="badge-info">Info (Light Blue)</option>
+                        <option value="badge-success">Success (Green)</option>
+                        <option value="badge-warning">Warning (Yellow/Orange)</option>
+                        <option value="badge-error">Error (Red)</option>
+                        <option value="badge-outline">Outline (Bordered)</option>
+                    </select>
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/70">Color for the segment badge display</span>
+                    </label>
+                </div>
+                
+                <!-- Tenant ID -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium">Tenant ID</span>
+                    </label>
+                    <input type="text" name="tenant_id" value="default" 
+                           class="input input-bordered w-full" />
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/70">Organization identifier</span>
+                    </label>
+                </div>
+                
+                <!-- Submit Buttons -->
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Create Segment
+                    </button>
+                    
+                    <a href="{% url 'people:contact_list' %}" class="btn btn-outline">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+<div id="message-container" class="fixed top-4 right-4 z-50"></div>
+
+<script src="{% static 'people/js/segment_create.js' %}"></script>
+{% endblock %}

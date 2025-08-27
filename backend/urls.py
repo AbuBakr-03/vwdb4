@@ -26,6 +26,7 @@ urlpatterns = [
     path("campaigns/", include("campaigns.urls")),
     path("accounts/", include("accounts.urls")),
     path("tickets/", include("tickets.urls")),
+    path("people/", include("people.urls")),
 ]
 
 # Serve static and media files during development

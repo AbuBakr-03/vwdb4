@@ -1,211 +1,306 @@
-{% extends 'base.html' %} {% block title %}Dashboard - Watchtower{% endblock %}
+{% extends 'base.html' %} 
+{% block title %}Dashboard - Watchtower{% endblock %}
+
 {% block content %}
-<div class="space-y-6">
-  <!-- Page header -->
+<div class="space-y-8">
+  <!-- Page Header -->
   <div class="text-center">
-    <h1 class="text-4xl font-bold mb-4">Welcome to Watchtower</h1>
+    <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+      Welcome to Watchtower
+    </h1>
     <p class="text-xl text-base-content/70">AI Agent Platform Dashboard</p>
   </div>
 
-  <!-- Quick stats -->
+  <!-- KPI Section (Top) -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="stat bg-base-200 rounded-lg">
-      <div class="stat-title">Active Campaigns</div>
+    <div class="stat bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-lg shadow-lg hover:shadow-primary/20 transition-all duration-300">
+      <div class="stat-title text-primary">Active Campaigns</div>
       <div class="stat-value text-primary">0</div>
-      <div class="stat-desc">Currently running</div>
+      <div class="stat-desc text-primary/70">Currently running</div>
     </div>
 
-    <div class="stat bg-base-200 rounded-lg">
-      <div class="stat-title">Total Calls</div>
+    <div class="stat bg-gradient-to-br from-success/10 to-success/5 border border-success/20 rounded-lg shadow-lg hover:shadow-success/20 transition-all duration-300">
+      <div class="stat-title text-success">Total Calls</div>
       <div class="stat-value text-success">0</div>
-      <div class="stat-desc">This month</div>
+      <div class="stat-desc text-success/70">This month</div>
     </div>
 
-    <div class="stat bg-base-200 rounded-lg">
-      <div class="stat-title">Success Rate</div>
+    <div class="stat bg-gradient-to-br from-info/10 to-info/5 border border-info/20 rounded-lg shadow-lg hover:shadow-info/20 transition-all duration-300">
+      <div class="stat-title text-info">Success Rate</div>
       <div class="stat-value text-info">0%</div>
-      <div class="stat-desc">Overall performance</div>
+      <div class="stat-desc text-info/70">Overall performance</div>
     </div>
   </div>
 
-  <!-- Quick actions -->
-  <div class="card bg-base-100 shadow-sm">
-    <div class="card-body">
-      <h2 class="card-title">Quick Actions</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <a
-          href="{% url 'campaigns:campaign_create' %}"
-          class="btn btn-primary btn-outline"
-        >
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            ></path>
-          </svg>
-          New Campaign
-        </a>
+  <!-- Two Column Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <!-- Left Column: Quick Actions -->
+    <div class="space-y-6">
+      <div class="card bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl mb-6">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            Quick Actions
+          </h2>
+          
+          <!-- 2x2 Button Grid -->
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <!-- New Campaign Button -->
+            <a href="{% url 'campaigns:campaign_create' %}" 
+               class="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-purple-500/20 to-purple-700/20 border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 flex flex-col items-center text-center">
+              <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <svg class="w-8 h-8 text-purple-400 mb-3 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span class="font-semibold text-purple-300 group-hover:text-purple-200 transition-colors duration-300">New Campaign</span>
+            </a>
 
-        <a
-          href="{% url 'campaigns:campaign_list' %}"
-          class="btn btn-secondary btn-outline"
-        >
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            ></path>
-          </svg>
-          View Campaigns
-        </a>
+            <!-- View Campaigns Button -->
+            <a href="{% url 'campaigns:campaign_list' %}" 
+               class="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-pink-500/20 to-pink-700/20 border border-pink-500/30 hover:border-pink-400/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-pink-500/25 flex flex-col items-center text-center">
+              <div class="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <svg class="w-8 h-8 text-pink-400 mb-3 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              <span class="font-semibold text-pink-300 group-hover:text-pink-200 transition-colors duration-300">View Campaigns</span>
+            </a>
 
-        <a
-          href="{% url 'campaigns:queue_tracker' %}"
-          class="btn btn-accent btn-outline"
-        >
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            ></path>
-          </svg>
-          Queue Tracker
-        </a>
+            <!-- Queue Tracker Button -->
+            <a href="{% url 'campaigns:queue_tracker' %}" 
+               class="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-cyan-500/20 to-cyan-700/20 border border-cyan-500/30 hover:border-cyan-400/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25 flex flex-col items-center text-center">
+              <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <svg class="w-8 h-8 text-cyan-400 mb-3 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              <span class="font-semibold text-cyan-300 group-hover:text-cyan-200 transition-colors duration-300">Queue Tracker</span>
+            </a>
 
-        <a
-          href="{% url 'campaigns:sessions' %}"
-          class="btn btn-info btn-outline"
-        >
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            ></path>
-          </svg>
-          View Sessions
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- User Management Section (Root Users Only) -->
-  {% if can_manage_users %}
-  <div class="card bg-base-100 shadow-sm">
-    <div class="card-body">
-      <h2 class="card-title">
-        <svg
-          class="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-          ></path>
-        </svg>
-        User Management {% if is_root_user %}
-        <div class="badge badge-primary">Root User</div>
-        {% endif %}
-      </h2>
-      <p class="text-base-content/70 mb-4">Manage users in your company</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a href="{% url 'accounts:company_users' %}" class="btn btn-primary">
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-            ></path>
-          </svg>
-          View Company Users
-        </a>
-
-        <a
-          href="{% url 'accounts:create_sub_user' %}"
-          class="btn btn-secondary"
-        >
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-            ></path>
-          </svg>
-          Create New User
-        </a>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- Tenant info -->
-  {% if tenant_info %}
-  <div class="card bg-base-100 shadow-sm">
-    <div class="card-body">
-      <h2 class="card-title">Tenant Information</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <p><strong>Tenant ID:</strong> {{ tenant_info.tenant_id }}</p>
-          <p><strong>Plan:</strong> {{ tenant_info.plan }}</p>
-          <p>
-            <strong>Status:</strong>
-            {% if tenant_info.system_enabled %}
-            <span class="badge badge-success">Active</span>
-            {% else %}
-            <span class="badge badge-error">Disabled</span>
-            {% endif %}
-          </p>
-        </div>
-        <div>
-          <p><strong>Features:</strong></p>
-          <div class="flex flex-wrap gap-2">
-            {% for feature in tenant_info.features %}
-            <span class="badge badge-info">{{ feature }}</span>
-            {% endfor %}
+            <!-- View Sessions Button -->
+            <a href="{% url 'campaigns:sessions' %}" 
+               class="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-blue-500/20 to-blue-700/20 border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 flex flex-col items-center text-center">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <svg class="w-8 h-8 text-blue-400 mb-3 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+              <span class="font-semibold text-blue-300 group-hover:text-blue-200 transition-colors duration-300">View Sessions</span>
+            </a>
           </div>
+
+          <!-- AI Assistant Helper Box -->
+          <div class="bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 rounded-lg p-4 backdrop-blur-sm">
+            <div class="flex items-start space-x-3">
+              <div class="text-2xl">💡</div>
+              <div class="flex-1">
+                <p class="text-sm text-accent font-medium">AI Assistant Available</p>
+                <p class="text-xs text-accent/70 mt-1">Use <strong>ReMo LLM</strong> to get campaign setup instructions and optimization tips.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: User Management -->
+    <div class="space-y-6">
+      {% if can_manage_users %}
+      <div class="space-y-4">
+        <!-- Root User Badge -->
+        {% if is_root_user %}
+        <div class="flex justify-center">
+          <div class="badge badge-primary badge-lg px-4 py-2 text-xs font-semibold">
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+            </svg>
+            Root User
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- User Management Cards -->
+        <div class="space-y-4">
+          <!-- View Company Users Card -->
+          <a href="{% url 'accounts:company_users' %}" 
+             class="group block p-6 bg-gradient-to-br from-blue-500/20 to-blue-700/20 border border-blue-500/30 rounded-xl hover:border-blue-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/25">
+            <div class="flex items-center space-x-4">
+              <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center group-hover:bg-blue-500/30 transition-colors duration-300">
+                  <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-bold text-blue-300 group-hover:text-blue-200 transition-colors duration-300">View Company Users</h3>
+                <p class="text-sm text-blue-400/70 group-hover:text-blue-300/70 transition-colors duration-300">Manage and view all users in your organization</p>
+              </div>
+              <div class="flex-shrink-0">
+                <svg class="w-5 h-5 text-blue-400 group-hover:text-blue-300 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+          </a>
+
+          <!-- Create New User Card -->
+          <a href="{% url 'accounts:create_sub_user' %}" 
+             class="group block p-6 bg-gradient-to-br from-pink-500/20 to-pink-700/20 border border-pink-500/30 rounded-xl hover:border-pink-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-pink-500/25">
+            <div class="flex items-center space-x-4">
+              <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center group-hover:bg-pink-500/30 transition-colors duration-300">
+                  <svg class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-bold text-pink-300 group-hover:text-pink-200 transition-colors duration-300">Create New User</h3>
+                <p class="text-sm text-pink-400/70 group-hover:text-pink-300/70 transition-colors duration-300">Add new team members to your organization</p>
+              </div>
+              <div class="flex-shrink-0">
+                <svg class="w-5 h-5 text-pink-400 group-hover:text-pink-300 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Tenant Information (Full Width) -->
+  {% if tenant_info %}
+  <div class="card bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title text-2xl mb-6">
+        <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h-2m18 0v-7M3 14v7m14-7v7M8 14v7"></path>
+        </svg>
+        Tenant Information
+      </h2>
+      
+      <!-- Tenant Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="space-y-3">
+          <div class="flex items-center space-x-3">
+            <span class="text-base-content/70 min-w-24">Tenant ID:</span>
+            <span class="font-mono text-primary">{{ tenant_info.tenant_id }}</span>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-base-content/70 min-w-24">Plan:</span>
+            <span class="font-semibold text-secondary">{{ tenant_info.plan }}</span>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-base-content/70 min-w-24">Status:</span>
+            {% if tenant_info.system_enabled %}
+            <span class="badge badge-success gap-2">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Active
+            </span>
+            {% else %}
+            <span class="badge badge-error gap-2">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              Disabled
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-base-content">Available Features</h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Active Features -->
+          <div class="group p-4 bg-gradient-to-br from-success/20 to-success/5 border border-success/30 rounded-lg hover:border-success/50 transition-all duration-300 hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-success">Campaigns</p>
+                <p class="text-xs text-success/70">Active</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="group p-4 bg-gradient-to-br from-success/20 to-success/5 border border-success/30 rounded-lg hover:border-success/50 transition-all duration-300 hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-success">Dashboard</p>
+                <p class="text-xs text-success/70">Active</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="group p-4 bg-gradient-to-br from-success/20 to-success/5 border border-success/30 rounded-lg hover:border-success/50 transition-all duration-300 hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-success">Analytics</p>
+                <p class="text-xs text-success/70">Active</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Locked Feature -->
+          <div class="group p-4 bg-gradient-to-br from-neutral/20 to-neutral/5 border border-neutral/30 rounded-lg hover:border-warning/50 transition-all duration-300 relative overflow-hidden">
+            <div class="flex items-center space-x-3 opacity-50">
+              <div class="w-8 h-8 bg-neutral/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-neutral">Voysera Butler</p>
+                <p class="text-xs text-neutral/70">Locked</p>
+              </div>
+            </div>
+            <div class="absolute top-2 right-2">
+              <span class="text-lg">🔒</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upgrade Section -->
+        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-warning/10 to-amber-500/10 border border-warning/30 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-r from-warning to-amber-500 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-warning">Unlock Premium Features</p>
+              <p class="text-sm text-warning/70">Get access to Voysera Butler and advanced analytics</p>
+            </div>
+          </div>
+          <button class="btn bg-gradient-to-r from-warning to-amber-500 text-black border-none hover:shadow-lg hover:shadow-warning/50 transition-all duration-300 hover:scale-105">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+            </svg>
+            Upgrade Plan
+          </button>
         </div>
       </div>
     </div>

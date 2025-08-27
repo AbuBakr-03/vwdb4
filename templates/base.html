@@ -309,7 +309,7 @@
               <li>
                 <div class="collapse collapse-arrow">
                   <input type="checkbox" class="sidebar-toggle" />
-                  <div class="collapse-title sidebar-link">People</div>
+                  <div class="collapse-title sidebar-link">Company Users</div>
                   <div class="collapse-content">
                     <ul class="space-y-1">
                       <li>
@@ -328,6 +328,39 @@
                       </li>
                       <li><a href="#" class="sidebar-link">Teams</a></li>
                       <li><a href="#" class="sidebar-link">Permissions</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+              
+              <li>
+                <div class="collapse collapse-arrow">
+                  <input type="checkbox" class="sidebar-toggle" />
+                  <div class="collapse-title sidebar-link">People</div>
+                  <div class="collapse-content">
+                    <ul class="space-y-1">
+                      <li>
+                        <a
+                          href="{% url 'people:contact_list' %}"
+                          class="sidebar-link {% if request.resolver_match.url_name == 'contact_list' %}active{% endif %}"
+                          >Contacts</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="{% url 'people:contact_create' %}"
+                          class="sidebar-link {% if request.resolver_match.url_name == 'contact_create' %}active{% endif %}"
+                          >Add Contact</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="{% url 'people:segment_create' %}"
+                          class="sidebar-link {% if request.resolver_match.url_name == 'segment_create' %}active{% endif %}"
+                          >Manage Segments</a
+                        >
+                      </li>
+                      <li><a href="#" class="sidebar-link">New User Page</a></li>
                     </ul>
                   </div>
                 </div>
