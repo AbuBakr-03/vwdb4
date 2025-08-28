@@ -8,17 +8,17 @@ class ContactAdmin(admin.ModelAdmin):
     """Admin interface for Contact model."""
     
     list_display = [
-        'display_name', 'party_type', 'email', 'primary_phone_display', 
-        'company_display', 'segments_display', 'tenant_id', 'created_at'
+        'display_name', 'email', 'primary_phone_display', 
+        'company', 'segments_display', 'tenant_id', 'created_at'
     ]
     
     list_filter = [
-        'party_type', 'tenant_id', 'created_at', 'segments'
+        'tenant_id', 'created_at', 'segments'
     ]
     
     search_fields = [
-        'first_name', 'last_name', 'name', 'email', 'external_id', 
-        'company', 'contact_person', 'tenant_id'
+        'first_name', 'last_name', 'email', 'external_id', 
+        'company', 'tenant_id'
     ]
     
     readonly_fields = [
@@ -27,15 +27,10 @@ class ContactAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('party_type', 'external_id', 'email', 'timezone')
+            'fields': ('external_id', 'email', 'timezone')
         }),
-        ('Person Details', {
-            'fields': ('first_name', 'last_name', 'company'),
-            'classes': ('collapse',)
-        }),
-        ('Company Details', {
-            'fields': ('name', 'contact_person'),
-            'classes': ('collapse',)
+        ('Contact Details', {
+            'fields': ('first_name', 'last_name', 'company')
         }),
         ('Contact Information', {
             'fields': ('phones', 'segments')
@@ -62,14 +57,7 @@ class ContactAdmin(admin.ModelAdmin):
         return '-'
     primary_phone_display.short_description = 'Primary Phone'
     
-    def company_display(self, obj):
-        """Display company information."""
-        if obj.party_type == 'person' and obj.company:
-            return obj.company
-        elif obj.party_type == 'company' and obj.contact_person:
-            return f"Contact: {obj.contact_person}"
-        return '-'
-    company_display.short_description = 'Company/Contact'
+
     
     def segments_display(self, obj):
         """Display segments as colored badges."""
@@ -103,15 +91,15 @@ class SegmentAdmin(admin.ModelAdmin):
     """Admin interface for Segment model."""
     
     list_display = [
-        'name', 'color_display', 'tenant_id', 'created_by', 'created_at'
+        'name', 'color_display', 'created_by', 'created_at'
     ]
     
     list_filter = [
-        'tenant_id', 'created_at'
+        'created_at'
     ]
     
     search_fields = [
-        'name', 'description', 'tenant_id'
+        'name', 'description'
     ]
     
     readonly_fields = [
@@ -123,7 +111,7 @@ class SegmentAdmin(admin.ModelAdmin):
             'fields': ('name', 'description', 'color')
         }),
         ('Metadata', {
-            'fields': ('tenant_id', 'created_by')
+            'fields': ('created_by',)
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

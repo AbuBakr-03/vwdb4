@@ -9,7 +9,48 @@ from django.db.models import Q
 import json
 import csv
 import io
-from .models import Contact, Segment, PartyType
+from .models import Contact, Segment
+
+
+@login_required
+def address_book(request):
+    """Main address book page with tabs for contacts and segments."""
+    # Get search parameters
+    search_query = request.GET.get('search', '')
+    segment_id = request.GET.get('segment', '')
+    
+    # Base queryset for contacts (filter by tenant in production)
+    contacts = Contact.objects.all()
+    
+    # Apply filters
+    if search_query:
+        contacts = contacts.filter(
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(company__icontains=search_query) |
+            Q(external_id__icontains=search_query)
+        )
+    
+    if segment_id:
+        contacts = contacts.filter(segments__contains=[int(segment_id)])
+    
+    # Pagination for contacts
+    paginator = Paginator(contacts, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Get all segments
+    segments = Segment.objects.all()
+    
+    context = {
+        'contacts': page_obj,
+        'segments': segments,
+        'search_query': search_query,
+        'selected_segment': segment_id,
+    }
+    
+    return render(request, 'people/address_book.html', context)
 
 
 @login_required
@@ -17,7 +58,6 @@ def contact_list(request):
     """Display list of contacts with search and filtering."""
     # Get search parameters
     search_query = request.GET.get('search', '')
-    party_type = request.GET.get('party_type', '')
     segment_id = request.GET.get('segment', '')
     
     # Base queryset (filter by tenant in production)
@@ -28,15 +68,10 @@ def contact_list(request):
         contacts = contacts.filter(
             Q(first_name__icontains=search_query) |
             Q(last_name__icontains=search_query) |
-            Q(name__icontains=search_query) |
             Q(email__icontains=search_query) |
             Q(company__icontains=search_query) |
-            Q(contact_person__icontains=search_query) |
             Q(external_id__icontains=search_query)
         )
-    
-    if party_type:
-        contacts = contacts.filter(party_type=party_type)
     
     if segment_id:
         contacts = contacts.filter(segments__contains=[int(segment_id)])
@@ -52,9 +87,7 @@ def contact_list(request):
     context = {
         'contacts': page_obj,
         'segments': segments,
-        'party_types': PartyType.choices,
         'search_query': search_query,
-        'selected_party_type': party_type,
         'selected_segment': segment_id,
     }
     
@@ -68,19 +101,38 @@ def contact_create(request):
         try:
             data = json.loads(request.body)
             
+            # Handle segment creation/selection
+            segment_ids = data.get('segments', [])
+            new_segment_names = data.get('new_segment_names', [])
+            
+            # Create new segments if they don't exist
+            if new_segment_names:
+                for segment_name in new_segment_names:
+                    segment_name = segment_name.strip()
+                    if segment_name:
+                        # Check if segment already exists
+                        segment, created = Segment.objects.get_or_create(
+                            name=segment_name,
+                            defaults={
+                                'description': f'Auto-created segment: {segment_name}',
+                                'color': 'badge-primary',  # Default color
+                                'created_by': request.user
+                            }
+                        )
+                        # Add the segment ID to the segments list if not already present
+                        if segment.id not in segment_ids:
+                            segment_ids.append(segment.id)
+            
             # Create contact
             contact = Contact.objects.create(
-                party_type=data.get('party_type', PartyType.PERSON),
                 external_id=data.get('external_id', ''),
                 first_name=data.get('first_name', ''),
                 last_name=data.get('last_name', ''),
-                name=data.get('name', ''),
                 email=data.get('email', ''),
                 phones=data.get('phones', []),
                 timezone=data.get('timezone', ''),
                 company=data.get('company', ''),
-                contact_person=data.get('contact_person', ''),
-                segments=data.get('segments', []),
+                segments=segment_ids,
                 tenant_id=data.get('tenant_id', 'default'),  # In production, get from request
                 created_by=request.user
             )
@@ -102,7 +154,6 @@ def contact_create(request):
     
     context = {
         'segments': segments,
-        'party_types': PartyType.choices,
     }
     
     return render(request, 'people/contact_create.html', context)
@@ -117,18 +168,37 @@ def contact_edit(request, contact_id):
         try:
             data = json.loads(request.body)
             
+            # Handle segment creation/selection
+            segment_ids = data.get('segments', contact.segments)
+            new_segment_names = data.get('new_segment_names', [])
+            
+            # Create new segments if they don't exist
+            if new_segment_names:
+                for segment_name in new_segment_names:
+                    segment_name = segment_name.strip()
+                    if segment_name:
+                        # Check if segment already exists
+                        segment, created = Segment.objects.get_or_create(
+                            name=segment_name,
+                            defaults={
+                                'description': f'Auto-created segment: {segment_name}',
+                                'color': 'badge-primary',  # Default color
+                                'created_by': request.user
+                            }
+                        )
+                        # Add the segment ID to the segments list if not already present
+                        if segment.id not in segment_ids:
+                            segment_ids.append(segment.id)
+            
             # Update contact fields
-            contact.party_type = data.get('party_type', contact.party_type)
             contact.external_id = data.get('external_id', contact.external_id)
             contact.first_name = data.get('first_name', contact.first_name)
             contact.last_name = data.get('last_name', contact.last_name)
-            contact.name = data.get('name', contact.name)
             contact.email = data.get('email', contact.email)
             contact.phones = data.get('phones', contact.phones)
             contact.timezone = data.get('timezone', contact.timezone)
             contact.company = data.get('company', contact.company)
-            contact.contact_person = data.get('contact_person', contact.contact_person)
-            contact.segments = data.get('segments', contact.segments)
+            contact.segments = segment_ids
             
             contact.save()
             
@@ -149,7 +219,6 @@ def contact_edit(request, contact_id):
     context = {
         'contact': contact,
         'segments': segments,
-        'party_types': PartyType.choices,
     }
     
     return render(request, 'people/contact_edit.html', context)
@@ -200,16 +269,8 @@ def contact_import_csv(request):
             for row_num, row in enumerate(csv_reader, start=2):
                 try:
                     # Validate required fields
-                    if not row.get('party_type'):
-                        errors.append(f"Row {row_num}: Missing party_type")
-                        continue
-                    
-                    if row['party_type'] == 'person' and not (row.get('first_name') or row.get('last_name')):
-                        errors.append(f"Row {row_num}: Person must have first_name or last_name")
-                        continue
-                    
-                    if row['party_type'] == 'company' and not row.get('name'):
-                        errors.append(f"Row {row_num}: Company must have name")
+                    if not (row.get('first_name') or row.get('last_name')):
+                        errors.append(f"Row {row_num}: Contact must have first_name or last_name")
                         continue
                     
                     # Parse phones (comma-separated)
@@ -224,10 +285,9 @@ def contact_import_csv(request):
                         for segment_name in segment_names:
                             segment, created = Segment.objects.get_or_create(
                                 name=segment_name,
-                                tenant_id=row.get('tenant_id', 'default'),
                                 defaults={
                                     'description': f'Auto-created segment: {segment_name}',
-                                    'color': 'badge-outline',
+                                    'color': 'badge-primary',
                                     'created_by': request.user
                                 }
                             )
@@ -235,16 +295,13 @@ def contact_import_csv(request):
                     
                     # Create contact
                     Contact.objects.create(
-                        party_type=row['party_type'],
                         external_id=row.get('external_id', ''),
                         first_name=row.get('first_name', ''),
                         last_name=row.get('last_name', ''),
-                        name=row.get('name', ''),
                         email=row.get('email', ''),
                         phones=phones,
                         timezone=row.get('timezone', ''),
                         company=row.get('company', ''),
-                        contact_person=row.get('contact_person', ''),
                         segments=segments,
                         tenant_id=row.get('tenant_id', 'default'),
                         created_by=request.user
@@ -294,7 +351,6 @@ def segment_create(request):
                 name=data.get('name'),
                 description=data.get('description', ''),
                 color=data.get('color', 'badge-primary'),
-                tenant_id=data.get('tenant_id', 'default'),
                 created_by=request.user
             )
             
