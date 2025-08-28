@@ -1,0 +1,80 @@
+{% comment %}
+Reusable top tabs component for section-based navigation.
+
+Usage:
+{% include "components/top_tabs.html" with tabs=section_tabs %}
+
+Expected context:
+- tabs: List of tab dictionaries with 'label', 'href', and 'active' keys
+{% endcomment %}
+
+{% if tabs %}
+<div class="sticky top-0 z-40 bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm">
+  <div class="container mx-auto px-4 sm:px-6">
+    <nav class="flex items-center min-h-[3.5rem] overflow-x-auto no-scrollbar" role="tablist">
+      {% for tab in tabs %}
+        <a 
+          href="{{ tab.href }}" 
+          class="flex-shrink-0 px-4 py-3 mx-1 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap{% if tab.active %} bg-primary text-primary-content shadow-sm{% else %} text-base-content/70 hover:text-base-content hover:bg-base-200{% endif %}"
+          {% if tab.active %}aria-current="page"{% endif %}
+          role="tab"
+        >
+          {{ tab.label }}
+        </a>
+      {% endfor %}
+    </nav>
+  </div>
+</div>
+{% endif %}
+
+<style>
+/* Custom scrollbar hiding for mobile tab navigation */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Enhanced tab styling and mobile responsiveness */
+@media (max-width: 768px) {
+  .sticky nav {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .sticky nav a[role="tab"] {
+    min-width: 100px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+  }
+}
+
+/* Smooth scrolling for horizontal tab navigation */
+.sticky nav {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+.sticky nav a[role="tab"]:focus {
+  outline: 2px solid hsl(var(--p));
+  outline-offset: 2px;
+}
+
+/* Active tab enhanced styling */
+.sticky nav a[role="tab"][aria-current="page"] {
+  font-weight: 600;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Ensure proper spacing on large screens */
+@media (min-width: 1024px) {
+  .sticky .container {
+    max-width: 1200px;
+  }
+}
+</style>

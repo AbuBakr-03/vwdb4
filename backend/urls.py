@@ -18,13 +18,21 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
+
+def dashboard_redirect(request):
+    """Redirect old dashboard URLs to root."""
+    return redirect('/', permanent=True)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("dashboard/", include("dashboard.urls")),
+    path("", include("dashboard.urls")),  # Dashboard at root
+    path("dashboard/", dashboard_redirect, name="dashboard_redirect"),  # Redirect old URLs
     path("authorization/", include("authorization.urls")),
+    path("prompt/", include("prompt.urls")),
     path("campaigns/", include("campaigns.urls")),
     path("accounts/", include("accounts.urls")),
+    path("reports/", include("reports.urls")),
     path("tickets/", include("tickets.urls")),
     path("people/", include("people.urls")),
 ]

@@ -311,3 +311,14 @@ def segment_create(request):
             }, status=400)
     
     return render(request, 'people/segment_create.html')
+
+
+@login_required
+def placeholder_view(request):
+    """Placeholder view for new navigation sections."""
+    section_name = request.resolver_match.url_name.replace('_', ' ').title()
+    context = {
+        'section_name': section_name,
+        'message': f'Welcome to the {section_name} section. This feature is coming soon!',
+    }
+    return render(request, 'people/placeholder.html', context)

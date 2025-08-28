@@ -12,23 +12,256 @@
   </div>
 
   <!-- KPI Section (Top) -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="stat bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-lg shadow-lg hover:shadow-primary/20 transition-all duration-300">
-      <div class="stat-title text-primary">Active Campaigns</div>
-      <div class="stat-value text-primary">0</div>
-      <div class="stat-desc text-primary/70">Currently running</div>
+  <div class="space-y-8">
+    <!-- Primary KPIs Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+            <!-- Monthly Subscription Cost -->
+      <div class="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-lg shadow-lg hover:shadow-primary/20 transition-all duration-300 p-4">
+        <div class="flex items-center justify-between h-full">
+          <!-- Content Column (75%) -->
+          <div class="flex-1 min-w-0 pr-3">
+            <div class="text-primary text-sm font-medium mb-1">Monthly Subscription Cost</div>
+            <div class="text-primary font-bold text-lg sm:text-xl lg:text-2xl mb-2">${{ kpis.monthly_subscription_cost.value|floatformat:2 }}</div>
+            <div class="flex items-center gap-2 text-sm">
+              {% if kpis.monthly_subscription_cost.change > 0 %}
+                <span class="text-success flex items-center">
+                  <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"></path>
+                  </svg>
+                  +{{ kpis.monthly_subscription_cost.change }}%
+                </span>
+              {% elif kpis.monthly_subscription_cost.change < 0 %}
+                <span class="text-error flex items-center">
+                  <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 7l-9.2 9.2M7 7v10h10"></path>
+                  </svg>
+                  {{ kpis.monthly_subscription_cost.change }}%
+                </span>
+              {% endif %}
+            </div>
+          </div>
+          <!-- Icon Column (25%) -->
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Users -->
+      <div class="bg-gradient-to-br from-success/10 to-success/5 border border-success/20 rounded-lg shadow-lg hover:shadow-success/20 transition-all duration-300 p-4">
+        <div class="flex items-center justify-between h-full">
+          <!-- Content Column (75%) -->
+          <div class="flex-1 min-w-0 pr-3">
+            <div class="text-success text-sm font-medium mb-1">Active Users</div>
+            <div class="text-success font-bold text-lg sm:text-xl lg:text-2xl mb-2">{{ kpis.active_users.value|floatformat:0 }}</div>
+            <div class="flex items-center gap-2 text-sm">
+              {% if kpis.active_users.change > 0 %}
+                <span class="text-success flex items-center">
+                  <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"></path>
+                  </svg>
+                  +{{ kpis.active_users.change }}%
+                </span>
+              {% endif %}
+              <span class="text-success/70">unique users</span>
+            </div>
+          </div>
+          <!-- Icon Column (25%) -->
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <svg class="w-8 h-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Score -->
+      <div class="bg-gradient-to-br from-info/10 to-info/5 border border-info/20 rounded-lg shadow-lg hover:shadow-info/20 transition-all duration-300 p-4">
+        <div class="flex items-center justify-between h-full">
+          <!-- Content Column (75%) -->
+          <div class="flex-1 min-w-0 pr-3">
+            <div class="text-info text-sm font-medium mb-1">Performance Score</div>
+            <div class="text-info font-bold text-lg sm:text-xl lg:text-2xl mb-2">{{ kpis.performance_score.value }}/100</div>
+            <div class="flex items-center gap-2 text-sm">
+              {% if kpis.performance_score.change < 0 %}
+                <span class="text-error flex items-center">
+                  <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 7l-9.2 9.2M7 7v10h10"></path>
+                  </svg>
+                  {{ kpis.performance_score.change }}%
+                </span>
+              {% endif %}
+              <span class="text-info/70">avg session duration</span>
+            </div>
+          </div>
+          <!-- Icon Column (25%) -->
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <div class="radial-progress text-info" style="--value:{{ kpis.performance_score.value }}; --size:2.5rem;">
+              <span class="text-xs font-medium">{{ kpis.performance_score.value|floatformat:0 }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Average Duration -->
+      <div class="bg-gradient-to-br from-warning/10 to-warning/5 border border-warning/20 rounded-lg shadow-lg hover:shadow-warning/20 transition-all duration-300 p-4">
+        <div class="flex items-center justify-between h-full">
+          <!-- Content Column (75%) -->
+          <div class="flex-1 min-w-0 pr-3">
+            <div class="text-warning text-sm font-medium mb-1">Average Duration</div>
+            <div class="text-warning font-bold text-lg sm:text-xl lg:text-2xl mb-2">{{ kpis.average_duration.value }}m</div>
+            <div class="flex items-center gap-2 text-sm">
+              {% if kpis.average_duration.change > 0 %}
+                <span class="text-success flex items-center">
+                  <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"></path>
+                  </svg>
+                  +{{ kpis.average_duration.change }}%
+                </span>
+              {% endif %}
+              <span class="text-warning/70">per session</span>
+            </div>
+          </div>
+          <!-- Icon Column (25%) -->
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <svg class="w-8 h-8 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="stat bg-gradient-to-br from-success/10 to-success/5 border border-success/20 rounded-lg shadow-lg hover:shadow-success/20 transition-all duration-300">
-      <div class="stat-title text-success">Total Calls</div>
-      <div class="stat-value text-success">0</div>
-      <div class="stat-desc text-success/70">This month</div>
+    <!-- Secondary KPIs Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+      <!-- Upsell Ratio -->
+      <div class="bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/20 rounded-lg shadow-lg hover:shadow-secondary/20 transition-all duration-300 p-4">
+        <div class="flex items-center justify-between h-full">
+          <!-- Content Column (75%) -->
+          <div class="flex-1 min-w-0 pr-3">
+            <div class="text-secondary text-sm font-medium mb-1">Upsell Ratio</div>
+            <div class="text-secondary font-bold text-lg sm:text-xl lg:text-2xl mb-2">{{ kpis.upsell_ratio.value }}%</div>
+            <div class="flex items-center gap-2 text-sm">
+              {% if kpis.upsell_ratio.change > 0 %}
+                <span class="text-success flex items-center">
+                  <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"></path>
+                  </svg>
+                  +{{ kpis.upsell_ratio.change }}%
+                </span>
+              {% endif %}
+              <span class="text-secondary/70">conversion rate</span>
+            </div>
+          </div>
+          <!-- Icon Column (25%) -->
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Peak Hour -->
+      <div class="bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 rounded-lg shadow-lg hover:shadow-accent/20 transition-all duration-300 p-4">
+        <div class="flex items-center justify-between h-full">
+          <!-- Content Column (75%) -->
+          <div class="flex-1 min-w-0 pr-3">
+            <div class="text-accent text-sm font-medium mb-1">Peak Hour</div>
+            <div class="text-accent font-bold text-lg sm:text-xl lg:text-2xl mb-2">{{ kpis.peak_hour.value }}</div>
+            <div class="text-accent/70 text-sm">busiest hour today</div>
+          </div>
+          <!-- Icon Column (25%) -->
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Busiest Day -->
+      <div class="bg-gradient-to-br from-neutral/10 to-neutral/5 border border-neutral/20 rounded-lg shadow-lg hover:shadow-neutral/20 transition-all duration-300 p-4">
+        <div class="flex items-center justify-between h-full">
+          <!-- Content Column (75%) -->
+          <div class="flex-1 min-w-0 pr-3">
+            <div class="text-neutral text-sm font-medium mb-1">Busiest Day</div>
+            <div class="text-neutral font-bold text-sm sm:text-base lg:text-lg mb-2">{{ kpis.busiest_day.value }}</div>
+            <div class="text-neutral/70 text-sm">highest activity</div>
+          </div>
+          <!-- Icon Column (25%) -->
+          <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <svg class="w-8 h-8 text-neutral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="stat bg-gradient-to-br from-info/10 to-info/5 border border-info/20 rounded-lg shadow-lg hover:shadow-info/20 transition-all duration-300">
-      <div class="stat-title text-info">Success Rate</div>
-      <div class="stat-value text-info">0%</div>
-      <div class="stat-desc text-info/70">Overall performance</div>
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+      <!-- Active Users Chart -->
+      <div class="card bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4 flex items-center">
+            <svg class="w-5 h-5 text-success mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            Active Users Trend
+          </h3>
+          <div class="h-64">
+            <canvas id="activeUsersChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Score Chart -->
+      <div class="card bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4 flex items-center">
+            <svg class="w-5 h-5 text-info mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Performance Score Trend
+          </h3>
+          <div class="h-64">
+            <canvas id="performanceChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Average Duration Chart -->
+      <div class="card bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4 flex items-center">
+            <svg class="w-5 h-5 text-warning mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Session Duration Trend
+          </h3>
+          <div class="h-64">
+            <canvas id="durationChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Cost Chart -->
+      <div class="card bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4 flex items-center">
+            <svg class="w-5 h-5 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+            Monthly Cost Trend
+          </h3>
+          <div class="h-64">
+            <canvas id="costChart"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -307,4 +540,141 @@
   </div>
   {% endif %}
 </div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Chart configuration
+  const chartConfig = {
+    type: 'line',
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          display: true,
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          },
+          ticks: {
+            color: 'rgba(255, 255, 255, 0.7)',
+            maxTicksLimit: 7
+          }
+        },
+        y: {
+          display: true,
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          },
+          ticks: {
+            color: 'rgba(255, 255, 255, 0.7)'
+          }
+        }
+      },
+      elements: {
+        point: {
+          radius: 4,
+          hoverRadius: 6
+        },
+        line: {
+          tension: 0.3
+        }
+      }
+    }
+  };
+
+  // Active Users Chart
+  const activeUsersData = {{ chart_data.active_users|safe }};
+  const activeUsersChart = new Chart(document.getElementById('activeUsersChart'), {
+    ...chartConfig,
+    data: {
+      labels: activeUsersData.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }),
+      datasets: [{
+        label: 'Active Users',
+        data: activeUsersData.map(item => item.value),
+        borderColor: 'rgb(34, 197, 94)',
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        fill: true
+      }]
+    }
+  });
+
+  // Performance Score Chart
+  const performanceData = {{ chart_data.performance_score|safe }};
+  const performanceChart = new Chart(document.getElementById('performanceChart'), {
+    ...chartConfig,
+    data: {
+      labels: performanceData.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }),
+      datasets: [{
+        label: 'Performance Score',
+        data: performanceData.map(item => item.value),
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        fill: true
+      }]
+    },
+    options: {
+      ...chartConfig.options,
+      scales: {
+        ...chartConfig.options.scales,
+        y: {
+          ...chartConfig.options.scales.y,
+          min: 70,
+          max: 100
+        }
+      }
+    }
+  });
+
+  // Average Duration Chart
+  const durationData = {{ chart_data.average_duration|safe }};
+  const durationChart = new Chart(document.getElementById('durationChart'), {
+    ...chartConfig,
+    data: {
+      labels: durationData.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }),
+      datasets: [{
+        label: 'Average Duration (minutes)',
+        data: durationData.map(item => item.value),
+        borderColor: 'rgb(245, 158, 11)',
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        fill: true
+      }]
+    }
+  });
+
+  // Monthly Cost Chart
+  const costData = {{ chart_data.monthly_cost|safe }};
+  const costChart = new Chart(document.getElementById('costChart'), {
+    ...chartConfig,
+    data: {
+      labels: costData.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }),
+      datasets: [{
+        label: 'Monthly Cost ($)',
+        data: costData.map(item => item.value),
+        borderColor: 'rgb(168, 85, 247)',
+        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+        fill: true
+      }]
+    }
+  });
+});
+</script>
 {% endblock %}

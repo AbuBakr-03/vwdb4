@@ -1,3 +1,4 @@
+{% load navigation_tags %}
 <!DOCTYPE html>
 <html lang="en" data-theme="night">
   <head>
@@ -17,43 +18,330 @@
     <!-- Custom CSS -->
     <style>
       .sidebar-nav {
-        @apply space-y-1;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .sidebar-nav > * + * {
+        margin-top: 0.5rem;
       }
       .sidebar-link {
-        @apply flex items-center space-x-3 p-3 rounded-lg hover:bg-base-300 transition-colors text-base-content;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        transition: all 200ms;
+        color: var(--bc);
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      .sidebar-link > * + * {
+        margin-left: 0.5rem;
+      }
+      
+      /* Sidebar icon styles */
+      .sidebar-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex-shrink: 0;
+        stroke-width: 2;
+      }
+      
+      /* Remove spacing when collapsed to center icons perfectly */
+      .sidebar-collapsed .sidebar-link > * + * {
+        margin-left: 0;
+      }
+      .sidebar-link:hover {
+        background-color: var(--b3);
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        transform: scale(1.02);
       }
       .sidebar-link.active {
-        @apply bg-primary/10 text-primary border border-primary/20;
+        background: linear-gradient(to right, rgb(168 85 247 / 0.2), rgb(168 85 247 / 0.1));
+        color: var(--p);
+        border: 1px solid rgb(168 85 247 / 0.3);
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       }
       .sidebar-icon {
-        @apply w-5 h-5;
+        width: 1.25rem;
+        height: 1.25rem;
       }
       .workspace-dropdown {
-        @apply bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 hover:from-primary/20 hover:to-secondary/20;
+        background: linear-gradient(to right, rgb(168 85 247 / 0.1), rgb(236 72 153 / 0.1));
+        border-color: rgb(168 85 247 / 0.2);
+      }
+      .workspace-dropdown:hover {
+        background: linear-gradient(to right, rgb(168 85 247 / 0.2), rgb(236 72 153 / 0.2));
       }
       .user-info-card {
-        @apply bg-base-100 rounded-lg border border-base-content/10;
+        background-color: var(--b1);
+        border-radius: 0.5rem;
+        border: 1px solid rgb(var(--bc) / 0.1);
       }
       /* Override DaisyUI collapse styles to match our sidebar */
       .collapse-title {
-        @apply p-0 !important;
+        padding: 0 !important;
       }
       .collapse-content {
-        @apply p-0 !important;
+        padding: 0 !important;
       }
       .collapse-content ul {
-        @apply p-0 m-0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       .collapse-content li {
-        @apply p-0 m-0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       /* Ensure submenu items align properly */
       .collapse-content .sidebar-link {
-        @apply pl-6 !important;
+        padding-left: 1.5rem !important;
+      }
+      
+      /* Enhanced collapsible sidebar styles */
+      .sidebar-collapsed {
+        width: 4rem !important;
+      }
+      .sidebar-collapsed .sidebar-text {
+        display: none;
+      }
+      .sidebar-collapsed .logo-text {
+        display: none;
+      }
+      .sidebar-collapsed .workspace-dropdown {
+        display: none;
+      }
+      .sidebar-collapsed .user-info-card {
+        display: none;
+      }
+
+      /* Collapsed: make the content area flush so centering is true to the sidebar edges */
+      #sidebar.sidebar-collapsed #sidebarContent { 
+        padding-left: 0 !important; 
+        padding-right: 0 !important; 
+      }
+
+      /* Kill DaisyUI menu left padding/indent while collapsed */
+      #sidebar.sidebar-collapsed .menu { 
+        padding-left: 0 !important; 
+        padding-right: 0 !important; 
+      }
+      #sidebar.sidebar-collapsed .menu :where(li > a, li > button, li > span) {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: 100%;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Never reveal the inline label when collapsed */
+      #sidebar.sidebar-collapsed .sidebar-text,
+      #sidebar.sidebar-collapsed .sidebar-link:hover .sidebar-text,
+      #sidebar.sidebar-collapsed .sidebar-link:focus .sidebar-text,
+      .__sidebar-init-collapsed #sidebar .sidebar-text {
+        display: none !important;
+      }
+
+      /* In collapsed mode, anchors are centered squares (icons only) */
+      #sidebar.sidebar-collapsed .sidebar-link {
+        --item-size: 2.75rem;       /* visual size of icon hit area */
+        width: var(--item-size) !important;
+        height: var(--item-size) !important;
+        margin: 0 auto;              /* center inside the column */
+        border-radius: 9999px !important; /* circle instead of pill */
+        justify-content: center !important;
+        align-items: center !important;
+        display: flex !important;
+        padding: 0 !important;
+        transform: none !important;  /* avoid scale shift on hover */
+      }
+
+      /* Keep list rows neutral; we center via the link itself */
+      #sidebar.sidebar-collapsed .menu :where(li > a, li > button, li > span) {
+        padding: 0 !important;
+        justify-content: center !important;
+      }
+
+      /* Ensure the SVG is truly centered even if DaisyUI applies inline styles */
+      #sidebar.sidebar-collapsed .sidebar-link .sidebar-icon {
+        display: block !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+
+      /* Optional: center the header logo when collapsed */
+      #sidebar.sidebar-collapsed #sidebarHeader { 
+        justify-content: center !important;
+        padding: 0.5rem !important;
+      }
+
+      /* Default hover (collapsed): soft circular glow */
+      #sidebar.sidebar-collapsed .sidebar-link:hover {
+        background: radial-gradient(closest-side, hsl(var(--p) / .12), transparent 72%);
+        box-shadow:
+          inset 0 0 0 1px hsl(var(--bc) / .06),
+          0 1px 2px 0 rgb(0 0 0 / .15);
+      }
+
+      /* Active state (collapsed): stronger circular ring + subtle inner */
+      #sidebar.sidebar-collapsed .sidebar-link.active {
+        background: radial-gradient(closest-side, hsl(var(--p) / .18), transparent 70%);
+        box-shadow:
+          inset 0 0 0 2px hsl(var(--p) / .35),
+          0 1px 3px 0 rgb(0 0 0 / .25);
+        color: hsl(var(--p));
+        border: 0 !important; /* remove pill border look */
+      }
+      /* Tooltip: label appears to the right, never inline */
+      #sidebar.sidebar-collapsed .sidebar-link:hover::after {
+        content: attr(title);
+        position: absolute;
+        left: calc(100% + 0.5rem);
+        top: 50%;
+        transform: translateY(-50%);
+        background: hsl(var(--b1));
+        color: hsl(var(--bc));
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        border: 1px solid hsl(var(--bc) / .08);
+        white-space: nowrap;
+        font-size: 0.8125rem;
+        line-height: 1rem;
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / .25), 0 4px 6px -4px rgb(0 0 0 / .2);
+        z-index: 50;
+        pointer-events: none;
+      }
+
+      /* Tooltip arrow */
+      #sidebar.sidebar-collapsed .sidebar-link:hover::before {
+        content: "";
+        position: absolute;
+        left: calc(100% + 0.5rem - 6px);
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background: hsl(var(--b1));
+        border-left: 1px solid hsl(var(--bc) / .08);
+        border-top: 1px solid hsl(var(--bc) / .08);
+        box-shadow: -1px -1px 0 rgb(0 0 0 / .02);
+        z-index: 49;
+        pointer-events: none;
+      }
+      .sidebar-expand-btn {
+        position: absolute;
+        right: -0.75rem;
+        top: 1rem;
+        z-index: 10;
+        background-color: var(--b2);
+        border: 1px solid var(--b3);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 200ms;
+      }
+      .sidebar-expand-btn:hover {
+        background-color: var(--p);
+        color: var(--pc);
+      }
+      .sidebar-header-collapsed {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      /* Center all content in collapsed sidebar - overridden by more specific rules below */
+      
+      .sidebar-collapsed .sidebar-nav {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      /* Pre-paint initialization classes */
+      .__sidebar-init-collapsed #sidebar { 
+        width: 4rem !important;
+      }
+      .__sidebar-init-collapsed #sidebar .sidebar-text {
+        display: none;
+      }
+      .__sidebar-init-collapsed #sidebar .logo-text {
+        display: none;
+      }
+      .__sidebar-init-collapsed #sidebar .workspace-dropdown {
+        display: none;
+      }
+      .__sidebar-init-collapsed #sidebar .user-info-card {
+        display: none;
+      }
+      .__sidebar-init-collapsed #sidebar .sidebar-link {
+        --item-size: 2.75rem;       /* visual size of icon hit area */
+        width: var(--item-size) !important;
+        height: var(--item-size) !important;
+        margin: 0 auto;              /* center inside the column */
+        border-radius: 9999px !important; /* circle instead of pill */
+        justify-content: center !important;
+        align-items: center !important;
+        display: flex !important;
+        padding: 0 !important;
+        transform: none !important;  /* avoid scale shift on hover */
+      }
+      .__sidebar-init-collapsed .sidebar-link > * + * {
+        margin-left: 0;
+      }
+      .__sidebar-init-collapsed #sidebarContent {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+      .__sidebar-init-collapsed .sidebar-nav {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .__sidebar-init-collapsed .menu { 
+        padding-left: 0 !important; 
+        padding-right: 0 !important; 
+      }
+      .__sidebar-init-collapsed .menu :where(li > a, li > button, li > span) {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: 100%;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .__sidebar-init-collapsed #expandBtn { 
+        display: inline-flex;
       }
     </style>
 
     {% block extra_css %}{% endblock %}
+    
+    <script>
+      // Apply collapsed state ASAP to avoid FOUC
+      (function () {
+        try {
+          var collapsed = localStorage.getItem('sidebarCollapsed');
+          if (collapsed !== 'false') {
+            document.documentElement.classList.add('__sidebar-init-collapsed');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body class="h-full bg-base-300">
     <div class="drawer lg:drawer-open">
@@ -111,6 +399,10 @@
           </div>
         </div>
 
+        <!-- Top Tabs Navigation -->
+        {% get_tabs_for_section request as section_tabs %}
+        {% include "components/top_tabs.html" with tabs=section_tabs %}
+
         <!-- Main content area -->
         <main class="flex-1 p-6 bg-base-300">
           {% block content %}{% endblock %}
@@ -125,33 +417,47 @@
           class="drawer-overlay"
         ></label>
         <aside
-          class="min-h-full w-80 bg-base-200 border-r border-base-content/10"
+          id="sidebar"
+          class="min-h-full w-64 bg-base-200 border-r border-base-content/10 transition-all duration-300 relative"
         >
-          <div class="p-4">
+          <!-- Expand Button (visible when collapsed) -->
+          <button id="expandBtn" onclick="toggleSidebar()" class="sidebar-expand-btn hidden">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+
+          <div id="sidebarContent" class="p-3">
             <!-- Logo and Brand -->
-            <div class="flex items-center space-x-3 mb-6">
+            <div id="sidebarHeader" class="sidebar-header-collapsed mb-4">
               <div
-                class="bg-primary text-primary-content rounded-full w-10 h-10 flex items-center justify-center"
+                class="bg-gradient-to-br from-primary to-primary-focus text-primary-content rounded-lg w-8 h-8 flex items-center justify-center flex-shrink-0 shadow-sm"
               >
-                <span class="text-xl font-bold">W</span>
+                <span class="text-sm font-bold">W</span>
               </div>
-              <div>
-                <h2 class="text-xl font-bold text-base-content">Watchtower</h2>
-                <p class="text-sm text-base-content/70">AI Agent Platform</p>
+              <div class="logo-text ml-2">
+                <h2 class="text-sm font-semibold text-base-content">Watchtower</h2>
+                <p class="text-xs text-base-content/60">AI Platform</p>
               </div>
+              <!-- Collapse Button (visible when expanded) -->
+              <button id="collapseBtn" onclick="toggleSidebar()" class="btn btn-ghost btn-circle btn-sm ml-auto hidden">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
             </div>
 
             <!-- Tenant/Workspace Dropdown -->
-            <div class="mb-6">
+            <div class="mb-4 workspace-dropdown">
               <div class="dropdown dropdown-bottom w-full">
                 <div
                   tabindex="0"
                   role="button"
-                  class="btn btn-outline btn-primary w-full justify-between workspace-dropdown"
+                  class="btn btn-outline btn-primary btn-sm w-full justify-between text-xs shadow-sm hover:shadow-md transition-all duration-200"
                 >
-                  <div class="flex items-center space-x-2">
+                  <div class="flex items-center space-x-1">
                     <svg
-                      class="w-5 h-5"
+                      class="w-3 h-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -163,10 +469,10 @@
                         d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 7V9a2 2 0 002 2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                       ></path>
                     </svg>
-                    <span class="font-medium">zain_bh</span>
+                    <span class="font-medium text-xs">zain_bh</span>
                   </div>
                   <svg
-                    class="w-4 h-4"
+                    class="w-3 h-3"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -200,190 +506,38 @@
             </div>
 
             <!-- Navigation Menu -->
-            <ul class="menu menu-lg sidebar-nav">
+            {% get_sidebar_navigation request as sidebar_items %}
+            <ul class="menu menu-sm sidebar-nav space-y-1">
+              {% for item in sidebar_items %}
               <li>
                 <a
-                  href="{% url 'dashboard:index' %}"
-                  class="sidebar-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"
+                  href="{{ item.href }}"
+                  class="sidebar-link{% if item.active %} active{% endif %}"
+                  title="{{ item.label }}"
                 >
-                  <svg
-                    class="sidebar-icon"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-                    ></path>
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"
-                    ></path>
-                  </svg>
-                  Dashboard
+                  {{ item.icon|safe }}
+                  <span class="sidebar-text">{{ item.label }}</span>
                 </a>
               </li>
-
-              <li>
-                <div class="collapse collapse-arrow">
-                  <input type="checkbox" class="sidebar-toggle" />
-                  <div class="collapse-title sidebar-link">
-                    Prompt Management
-                  </div>
-                  <div class="collapse-content">
-                    <ul class="space-y-1">
-                      <li><a href="#" class="sidebar-link">Prompts</a></li>
-                      <li>
-                        <a href="#" class="sidebar-link">Agent Playground</a>
-                      </li>
-                      <li><a href="#" class="sidebar-link">Voices</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </li>
-
-              <li>
-                <div class="collapse collapse-arrow">
-                  <input type="checkbox" class="sidebar-toggle" />
-                  <div class="collapse-title sidebar-link">Campaigns</div>
-                  <div class="collapse-content">
-                    <ul class="space-y-1">
-                      <li>
-                        <a
-                          href="{% url 'campaigns:campaign_list' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'campaign_list' %}active{% endif %}"
-                          >All Campaigns</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="{% url 'campaigns:campaign_create' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'campaign_create' %}active{% endif %}"
-                          >Create Campaign</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="{% url 'campaigns:queue_tracker' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'queue_tracker' %}active{% endif %}"
-                          >Queue Tracker</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="{% url 'campaigns:sessions' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'sessions' %}active{% endif %}"
-                          >Sessions</a
-                        >
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </li>
-
-              <li>
-                <a href="#" class="sidebar-link">
-                  <svg
-                    class="sidebar-icon"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    ></path>
-                  </svg>
-                  Reports
-                </a>
-              </li>
-
-              {% if can_manage_users %}
-              <li>
-                <div class="collapse collapse-arrow">
-                  <input type="checkbox" class="sidebar-toggle" />
-                  <div class="collapse-title sidebar-link">Company Users</div>
-                  <div class="collapse-content">
-                    <ul class="space-y-1">
-                      <li>
-                        <a
-                          href="{% url 'accounts:company_users' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'company_users' %}active{% endif %}"
-                          >Company Users</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="{% url 'accounts:create_sub_user' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'create_sub_user' %}active{% endif %}"
-                          >Create User</a
-                        >
-                      </li>
-                      <li><a href="#" class="sidebar-link">Teams</a></li>
-                      <li><a href="#" class="sidebar-link">Permissions</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </li>
-              
-              <li>
-                <div class="collapse collapse-arrow">
-                  <input type="checkbox" class="sidebar-toggle" />
-                  <div class="collapse-title sidebar-link">People</div>
-                  <div class="collapse-content">
-                    <ul class="space-y-1">
-                      <li>
-                        <a
-                          href="{% url 'people:contact_list' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'contact_list' %}active{% endif %}"
-                          >Contacts</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="{% url 'people:contact_create' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'contact_create' %}active{% endif %}"
-                          >Add Contact</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="{% url 'people:segment_create' %}"
-                          class="sidebar-link {% if request.resolver_match.url_name == 'segment_create' %}active{% endif %}"
-                          >Manage Segments</a
-                        >
-                      </li>
-                      <li><a href="#" class="sidebar-link">New User Page</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </li>
-              {% endif %}
+              {% endfor %}
             </ul>
 
             <!-- User Info Card -->
-            <div class="mt-8 user-info-card p-4">
+            <div class="mt-6 user-info-card p-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
               {% if user.is_authenticated %}
-              <div class="flex items-center space-x-3">
+              <div class="flex items-center space-x-2">
                 <div class="avatar placeholder">
                   <div
-                    class="bg-primary text-primary-content rounded-full w-12"
+                    class="bg-primary text-primary-content rounded-full w-8"
                   >
-                    <span class="text-lg">{{ user.username|first|upper }}</span>
+                    <span class="text-xs">{{ user.username|first|upper }}</span>
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="font-semibold text-base-content truncate">
+                  <div class="text-xs font-medium text-base-content truncate">
                     {{ user.username }}
                   </div>
-                  <div class="text-sm text-base-content/70 truncate">
+                  <div class="text-xs text-base-content/60 truncate">
                     {{ user.email|default:"No email" }}
                   </div>
                 </div>
@@ -448,7 +602,60 @@
           html.setAttribute("data-theme", newTheme);
           localStorage.setItem("theme", newTheme);
         });
+
+        // Initialize sidebar state - default to collapsed
+        const savedSidebarState = localStorage.getItem("sidebarCollapsed");
+        const shouldBeCollapsed = savedSidebarState !== "false"; // Default to collapsed unless explicitly set to false
+        
+        const sidebar = document.getElementById("sidebar");
+        const expandBtn = document.getElementById("expandBtn");
+        const collapseBtn = document.getElementById("collapseBtn");
+        const sidebarHeader = document.getElementById("sidebarHeader");
+        
+        // Remove pre-paint class
+        document.documentElement.classList.remove('__sidebar-init-collapsed');
+        
+        if (shouldBeCollapsed) {
+          sidebar.classList.add("sidebar-collapsed");
+          expandBtn.classList.remove("hidden");
+          collapseBtn.classList.add("hidden");
+          sidebarHeader.classList.add("sidebar-header-collapsed");
+          sidebarHeader.classList.remove("flex", "items-center", "space-x-3");
+        } else {
+          sidebar.classList.remove("sidebar-collapsed");
+          expandBtn.classList.add("hidden");
+          collapseBtn.classList.remove("hidden");
+          sidebarHeader.classList.remove("sidebar-header-collapsed");
+          sidebarHeader.classList.add("flex", "items-center", "space-x-3");
+        }
       });
+
+      // Enhanced sidebar toggle function
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const expandBtn = document.getElementById("expandBtn");
+        const collapseBtn = document.getElementById("collapseBtn");
+        const sidebarHeader = document.getElementById("sidebarHeader");
+        const isCollapsed = sidebar.classList.contains("sidebar-collapsed");
+        
+        if (isCollapsed) {
+          // Expand sidebar
+          sidebar.classList.remove("sidebar-collapsed");
+          expandBtn.classList.add("hidden");
+          collapseBtn.classList.remove("hidden");
+          sidebarHeader.classList.remove("sidebar-header-collapsed");
+          sidebarHeader.classList.add("flex", "items-center", "space-x-3");
+          localStorage.setItem("sidebarCollapsed", "false");
+        } else {
+          // Collapse sidebar
+          sidebar.classList.add("sidebar-collapsed");
+          expandBtn.classList.remove("hidden");
+          collapseBtn.classList.add("hidden");
+          sidebarHeader.classList.add("sidebar-header-collapsed");
+          sidebarHeader.classList.remove("flex", "items-center", "space-x-3");
+          localStorage.setItem("sidebarCollapsed", "true");
+        }
+      }
     </script>
 
     {% block extra_js %}{% endblock %}

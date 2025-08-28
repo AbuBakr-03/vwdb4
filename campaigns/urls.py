@@ -10,7 +10,7 @@ app_name = 'campaigns'
 urlpatterns = [
     # Campaign management
     path('', views.CampaignListView.as_view(), name='campaign_list'),
-    path('create/', views.CampaignCreateView.as_view(), name='campaign_create'),
+    path('new/', views.CampaignCreateView.as_view(), name='campaign_create'),  # Changed from 'create/'
     path('<int:campaign_id>/', views.CampaignDetailView.as_view(), name='campaign_detail'),
     path('<int:campaign_id>/edit/', views.CampaignEditView.as_view(), name='campaign_edit'),
     path('<int:campaign_id>/launch/', views.CampaignLaunchView.as_view(), name='campaign_launch'),
