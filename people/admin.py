@@ -30,7 +30,7 @@ class ContactAdmin(admin.ModelAdmin):
             'fields': ('external_id', 'email', 'timezone')
         }),
         ('Contact Details', {
-            'fields': ('first_name', 'last_name', 'company', 'segment_id')
+            'fields': ('first_name', 'last_name', 'company')
         }),
         ('Contact Information', {
             'fields': ('phones', 'segments')

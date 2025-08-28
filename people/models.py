@@ -17,7 +17,6 @@ class Contact(models.Model):
     phones = models.JSONField(default=list, blank=True, help_text="Array of phone numbers in E.164 format")
     timezone = models.CharField(max_length=64, blank=True)
     company = models.CharField(max_length=200, blank=True, help_text="Company name")
-    segment_id = models.CharField(max_length=100, blank=True, help_text="Optional segment identifier for auto-creation")
     segments = models.JSONField(default=list, blank=True, help_text="Array of segment IDs")
     tenant_id = models.CharField(max_length=100, db_index=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_contacts')

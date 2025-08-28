@@ -101,23 +101,27 @@ def contact_create(request):
         try:
             data = json.loads(request.body)
             
-            # Handle segment auto-creation if segment_id is provided
-            segments = data.get('segments', [])
-            segment_id = data.get('segment_id', '')
+            # Handle segment creation/selection
+            segment_ids = data.get('segments', [])
+            new_segment_names = data.get('new_segment_names', [])
             
-            if segment_id:
-                # Try to get existing segment or create new one
-                segment, created = Segment.objects.get_or_create(
-                    name=segment_id,
-                    defaults={
-                        'description': f'Auto-created segment: {segment_id}',
-                        'color': 'badge-primary',  # Default color
-                        'created_by': request.user
-                    }
-                )
-                # Add the segment ID to the segments list if not already present
-                if segment.id not in segments:
-                    segments.append(segment.id)
+            # Create new segments if they don't exist
+            if new_segment_names:
+                for segment_name in new_segment_names:
+                    segment_name = segment_name.strip()
+                    if segment_name:
+                        # Check if segment already exists
+                        segment, created = Segment.objects.get_or_create(
+                            name=segment_name,
+                            defaults={
+                                'description': f'Auto-created segment: {segment_name}',
+                                'color': 'badge-primary',  # Default color
+                                'created_by': request.user
+                            }
+                        )
+                        # Add the segment ID to the segments list if not already present
+                        if segment.id not in segment_ids:
+                            segment_ids.append(segment.id)
             
             # Create contact
             contact = Contact.objects.create(
@@ -128,8 +132,7 @@ def contact_create(request):
                 phones=data.get('phones', []),
                 timezone=data.get('timezone', ''),
                 company=data.get('company', ''),
-                segment_id=segment_id,
-                segments=segments,
+                segments=segment_ids,
                 tenant_id=data.get('tenant_id', 'default'),  # In production, get from request
                 created_by=request.user
             )
@@ -165,23 +168,27 @@ def contact_edit(request, contact_id):
         try:
             data = json.loads(request.body)
             
-            # Handle segment auto-creation if segment_id is provided
-            segments = data.get('segments', contact.segments)
-            segment_id = data.get('segment_id', '')
+            # Handle segment creation/selection
+            segment_ids = data.get('segments', contact.segments)
+            new_segment_names = data.get('new_segment_names', [])
             
-            if segment_id:
-                # Try to get existing segment or create new one
-                segment, created = Segment.objects.get_or_create(
-                    name=segment_id,
-                    defaults={
-                        'description': f'Auto-created segment: {segment_id}',
-                        'color': 'badge-primary',  # Default color
-                        'created_by': request.user
-                    }
-                )
-                # Add the segment ID to the segments list if not already present
-                if segment.id not in segments:
-                    segments.append(segment.id)
+            # Create new segments if they don't exist
+            if new_segment_names:
+                for segment_name in new_segment_names:
+                    segment_name = segment_name.strip()
+                    if segment_name:
+                        # Check if segment already exists
+                        segment, created = Segment.objects.get_or_create(
+                            name=segment_name,
+                            defaults={
+                                'description': f'Auto-created segment: {segment_name}',
+                                'color': 'badge-primary',  # Default color
+                                'created_by': request.user
+                            }
+                        )
+                        # Add the segment ID to the segments list if not already present
+                        if segment.id not in segment_ids:
+                            segment_ids.append(segment.id)
             
             # Update contact fields
             contact.external_id = data.get('external_id', contact.external_id)
@@ -191,8 +198,7 @@ def contact_edit(request, contact_id):
             contact.phones = data.get('phones', contact.phones)
             contact.timezone = data.get('timezone', contact.timezone)
             contact.company = data.get('company', contact.company)
-            contact.segment_id = segment_id
-            contact.segments = segments
+            contact.segments = segment_ids
             
             contact.save()
             
@@ -281,25 +287,10 @@ def contact_import_csv(request):
                                 name=segment_name,
                                 defaults={
                                     'description': f'Auto-created segment: {segment_name}',
-                                    'color': 'badge-outline',
+                                    'color': 'badge-primary',
                                     'created_by': request.user
                                 }
                             )
-                            segments.append(segment.id)
-                    
-                    # Handle segment_id auto-creation
-                    segment_id = row.get('segment_id', '')
-                    if segment_id:
-                        segment, created = Segment.objects.get_or_create(
-                            name=segment_id,
-                            defaults={
-                                'description': f'Auto-created segment: {segment_id}',
-                                'color': 'badge-primary',
-                                'created_by': request.user
-                            }
-                        )
-                        # Add the segment ID to the segments list if not already present
-                        if segment.id not in segments:
                             segments.append(segment.id)
                     
                     # Create contact
@@ -311,7 +302,6 @@ def contact_import_csv(request):
                         phones=phones,
                         timezone=row.get('timezone', ''),
                         company=row.get('company', ''),
-                        segment_id=segment_id,
                         segments=segments,
                         tenant_id=row.get('tenant_id', 'default'),
                         created_by=request.user

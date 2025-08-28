@@ -47,23 +47,12 @@
                                    class="input input-bordered w-full" />
                         </div>
                         
-                        <div class="form-control">
+                        <div class="form-control md:col-span-2">
                             <label class="label">
                                 <span class="label-text font-medium">Company</span>
                             </label>
                             <input type="text" name="company" placeholder="Enter company name" 
                                    class="input input-bordered w-full" />
-                        </div>
-                        
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Segment ID</span>
-                            </label>
-                            <input type="text" name="segment_id" placeholder="Enter segment identifier" 
-                                   class="input input-bordered w-full" />
-                            <label class="label">
-                                <span class="label-text-alt text-base-content/70">Optional: Auto-creates segment if doesn't exist</span>
-                            </label>
                         </div>
                     </div>
 
@@ -118,16 +107,32 @@
                         <label class="label">
                             <span class="label-text font-medium">Segments</span>
                         </label>
-                        <div class="flex flex-wrap gap-2" id="segments-container">
-                            {% for segment in segments %}
-                            <label class="label cursor-pointer">
-                                <input type="checkbox" name="segments" value="{{ segment.id }}" 
-                                       class="checkbox checkbox-primary" />
-                                <span class="label-text ml-2">{{ segment.name }}</span>
+                        
+                        <!-- Existing Segments -->
+                        <div class="mb-4">
+                            <div class="flex flex-wrap gap-2" id="segments-container">
+                                {% for segment in segments %}
+                                <label class="label cursor-pointer">
+                                    <input type="checkbox" name="segments" value="{{ segment.id }}" 
+                                           class="checkbox checkbox-primary" />
+                                    <span class="label-text ml-2">{{ segment.name }}</span>
+                                </label>
+                                {% empty %}
+                                <p class="text-base-content/50">No segments available. <a href="{% url 'people:segment_create' %}" class="link link-primary">Create one</a></p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- New Segments -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Add New Segments</span>
                             </label>
-                            {% empty %}
-                            <p class="text-base-content/50">No segments available. <a href="{% url 'people:segment_create' %}" class="link link-primary">Create one</a></p>
-                            {% endfor %}
+                            <input type="text" name="new_segments" placeholder="Enter segment names separated by commas (e.g., VIP, High Value, Premium)" 
+                                   class="input input-bordered w-full" />
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/70">Segments will be auto-created if they don't exist</span>
+                            </label>
                         </div>
                     </div>
 
@@ -238,9 +243,16 @@
                             <span class="label-text font-medium">Sample CSV Format</span>
                         </label>
                         <div class="mockup-code">
-                            <pre data-prefix=""><code>first_name,last_name,email,phones,company,segment_id,segments
-John,Doe,john@example.com,+1234567890,Acme Corp,VIP,"High Value,Premium"
-Jane,Smith,jane@example.com,+1987654321,Tech Solutions,Sales,"Active,Qualified"</code></pre>
+                            <pre data-prefix=""><code>first_name,last_name,email,phones,company,segments
+John,Doe,john@example.com,+1234567890,Acme Corp,"VIP,High Value"
+Jane,Smith,jane@example.com,+1987654321,Tech Solutions,"Sales,Active"</code></pre>
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span><strong>Note:</strong> Segments in the CSV will be automatically created if they don't exist yet.</span>
                         </div>
                     </div>
                     

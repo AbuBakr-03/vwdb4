@@ -69,18 +69,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(contactForm);
         const data = {};
         
-        // Handle regular fields
-        for (let [key, value] of formData.entries()) {
-            if (key === 'phones[]') {
-                if (!data.phones) data.phones = [];
-                if (value.trim()) data.phones.push(value.trim());
-            } else if (key === 'segments') {
-                if (!data.segments) data.segments = [];
-                if (value) data.segments.push(parseInt(value));
-            } else {
-                data[key] = value;
-            }
-        }
+                 // Handle regular fields
+         for (let [key, value] of formData.entries()) {
+             if (key === 'phones[]') {
+                 if (!data.phones) data.phones = [];
+                 if (value.trim()) data.phones.push(value.trim());
+             } else if (key === 'segments') {
+                 if (!data.segments) data.segments = [];
+                 if (value) data.segments.push(parseInt(value));
+             } else {
+                 data[key] = value;
+             }
+         }
+         
+         // Handle new segments field
+         if (data.new_segments && data.new_segments.trim()) {
+             const newSegmentNames = data.new_segments.split(',').map(s => s.trim()).filter(s => s);
+             if (!data.new_segment_names) data.new_segment_names = [];
+             data.new_segment_names = newSegmentNames;
+         }
         
         // Validate required fields
         const errors = validateForm(data);
@@ -188,10 +195,10 @@ document.addEventListener('DOMContentLoaded', function() {
     csvFileInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            if (!file.name.toLowerCase().endsWith('.csv')) {
-                showMessage('Please select a valid CSV file', 'error');
-                return;
-            }
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            showMessage('Please select a valid CSV file', 'error');
+            return;
+        }
             parseCSVFile(file);
         }
     });
@@ -219,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (lines.length < 2) {
                 showMessage('CSV file must contain headers and at least one data row', 'error');
-            return;
+                return;
             }
             
             // Parse CSV
@@ -465,19 +472,19 @@ document.addEventListener('DOMContentLoaded', function() {
         importCsvBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Importing...';
         importCsvBtn.disabled = true;
         
-        // Convert to format expected by the backend
-        const contactsData = validContacts.map(contact => ({
-            first_name: contact.first_name || '',
-            last_name: contact.last_name || '',
-            email: contact.email || '',
-            phones: contact.phones ? contact.phones.split(',').map(p => cleanPhoneNumber(p.trim())).filter(p => p) : [],
-            company: contact.company || '',
-            segment_id: contact.segment_id || '',
-            segments: contact.segments ? contact.segments.split(',').map(s => s.trim()).filter(s => s) : [],
-            timezone: contact.timezone || '',
-            external_id: contact.external_id || '',
-            tenant_id: contact.tenant_id || 'default'
-        }));
+                 // Convert to format expected by the backend
+         const contactsData = validContacts.map(contact => ({
+             first_name: contact.first_name || '',
+             last_name: contact.last_name || '',
+             email: contact.email || '',
+             phones: contact.phones ? contact.phones.split(',').map(p => cleanPhoneNumber(p.trim())).filter(p => p) : [],
+             company: contact.company || '',
+             segments: contact.segments ? contact.segments.split(',').map(s => s.trim()).filter(s => s) : [],
+             new_segment_names: contact.segments ? contact.segments.split(',').map(s => s.trim()).filter(s => s) : [],
+             timezone: contact.timezone || '',
+             external_id: contact.external_id || '',
+             tenant_id: contact.tenant_id || 'default'
+         }));
         
         // Submit to backend (you may need to update the backend to handle batch import)
         Promise.all(contactsData.map(contactData => 
@@ -586,11 +593,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // SAMPLE CSV DOWNLOAD
     // ============================================================================
     
-    window.downloadSampleCSV = function() {
-        const csvContent = `first_name,last_name,email,phones,company,segment_id,segments,timezone,tenant_id
-John,Doe,john@example.com,"+1234567890,+1987654321",Acme Corp,VIP,"High Value,Premium",UTC,default
-Jane,Smith,jane@example.com,+1234567890,Tech Solutions,Sales,"Qualified,Active",UTC,default
-Michael,Johnson,michael@tech.com,+1987654321,Tech Solutions,Enterprise,"VIP,Premium",UTC,default`;
+         window.downloadSampleCSV = function() {
+         const csvContent = `first_name,last_name,email,phones,company,segments,timezone,tenant_id
+John,Doe,john@example.com,"+1234567890,+1987654321",Acme Corp,"VIP,High Value",UTC,default
+Jane,Smith,jane@example.com,+1234567890,Tech Solutions,"Sales Qualified,Active",UTC,default
+Michael,Johnson,michael@tech.com,+1987654321,Tech Solutions,"Enterprise,VIP",UTC,default`;
         
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
