@@ -184,3 +184,33 @@ def assistants(request):
     ]
     
     return render(request, "dashboard/Assistants.html", context)
+
+
+def phone_numbers(request):
+    """Phone Numbers page for managing phone numbers."""
+    context = {}
+    
+    # Add tenant info if available
+    if hasattr(request, 'tenant_flags'):
+        context['tenant_info'] = get_tenant_info(request)
+    
+    # Organization data for breadcrumbs and components
+    context['organization'] = {
+        'name': 'Zain Telecom',
+        'slug': 'zain_bh',
+        'plan': 'Enterprise',
+        'credits': 25.50
+    }
+    
+    # Dynamic breadcrumb data
+    context['breadcrumb_items'] = [
+        {'text': 'Organization', 'href': '/dashboard/'},
+        {'text': context['organization']['name'], 'href': '/dashboard/overview/'},
+        {'text': 'Phone Numbers', 'active': True}
+    ]
+    
+    # Mock phone numbers data - empty state initially
+    context['phone_numbers'] = []
+    context['has_phone_numbers'] = len(context['phone_numbers']) > 0
+    
+    return render(request, "dashboard/PhoneNumbers.html", context)
