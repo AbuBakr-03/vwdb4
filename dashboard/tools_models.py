@@ -195,3 +195,98 @@ class CustomFunction(TenantScopedModel):
         return f"{self.assistant.name} - {self.name}"
 
 
+# ============================================================================
+# WEBSITE SCRAPING
+# ============================================================================
+
+class WebsiteScraping(TenantScopedModel):
+    """Website URLs to scrape for knowledge base enhancement."""
+    assistant = models.ForeignKey(
+        Assistant,
+        on_delete=models.CASCADE,
+        related_name='scraped_websites'
+    )
+    url = models.URLField(help_text="Website URL to scrape")
+    name = models.CharField(
+        max_length=128,
+        help_text="Display name for the website"
+    )
+    description = models.TextField(
+        blank=True,
+        help_text="Optional description of the website content"
+    )
+    
+    # Scraping configuration
+    is_active = models.BooleanField(default=True)
+    last_scraped = models.DateTimeField(null=True, blank=True)
+    scraping_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('scraping', 'Scraping'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+        ],
+        default='pending'
+    )
+    
+    # Content storage
+    scraped_content = models.TextField(
+        blank=True,
+        help_text="Scraped content from the website"
+    )
+    content_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text="Hash of the scraped content for change detection"
+    )
+    
+    # Error handling
+    error_message = models.TextField(
+        blank=True,
+        help_text="Error message if scraping failed"
+    )
+    retry_count = models.PositiveIntegerField(default=0)
+    
+    # Metadata
+    metadata = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Additional metadata about the website"
+    )
+
+    class Meta:
+        unique_together = [('assistant', 'url')]
+        indexes = [
+            models.Index(fields=['client_id', 'assistant', 'is_active']),
+            models.Index(fields=['client_id', 'scraping_status']),
+            models.Index(fields=['last_scraped']),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.assistant.name} - {self.name} ({self.url})"
+
+    def get_domain(self):
+        """Extract domain from URL for display purposes."""
+        from urllib.parse import urlparse
+        parsed = urlparse(self.url)
+        return parsed.netloc
+
+    def mark_scraped(self, content, content_hash):
+        """Mark website as successfully scraped."""
+        from django.utils import timezone
+        self.scraped_content = content
+        self.content_hash = content_hash
+        self.scraping_status = 'completed'
+        self.last_scraped = timezone.now()
+        self.error_message = ''
+        self.retry_count = 0
+        self.save()
+
+    def mark_failed(self, error_message):
+        """Mark website scraping as failed."""
+        from django.utils import timezone
+        self.scraping_status = 'failed'
+        self.error_message = error_message
+        self.retry_count += 1
+        self.save()

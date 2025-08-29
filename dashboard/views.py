@@ -19,6 +19,9 @@ from .models import (
     PredefinedFunctions, AssistantKPI, seed_example_assistant,
     ModelProvider, VoiceProvider, TranscriberProvider
 )
+from .tools_models import (
+    FileAsset, AssistantFile, WebsiteScraping
+)
 from .config_models import Voice
 
 
@@ -225,8 +228,6 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
                     'first_message_mode': assistant.model_config.first_message_mode,
                     'first_message': assistant.model_config.first_message,
                     'system_prompt': assistant.model_config.system_prompt,
-                    'max_tokens': assistant.model_config.max_tokens,
-                    'temperature': float(assistant.model_config.temperature),
                 },
                 'voice': {
                     'provider': assistant.voice_config.voice.provider if assistant.voice_config.voice else None,
@@ -234,8 +235,7 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
                     'voice_id': assistant.voice_config.voice.voice_id if assistant.voice_config.voice else None,
                     'background_sound': assistant.voice_config.background_sound,
                     'background_sound_url': assistant.voice_config.background_sound_url,
-                    'input_min_characters': assistant.voice_config.input_min_characters,
-                    'punctuation_boundaries': assistant.voice_config.punctuation_boundaries,
+                    
                     # Ambient sound configuration
                     'ambient_sound_enabled': assistant.voice_config.ambient_sound_enabled,
                     'ambient_sound_type': assistant.voice_config.ambient_sound_type,
@@ -458,8 +458,6 @@ class AssistantDetailView(LoginRequiredMixin, View):
                     'model_name': assistant.model_config.model_name,
                     'first_message': assistant.model_config.first_message,
                     'system_prompt': assistant.model_config.system_prompt,
-                    'max_tokens': assistant.model_config.max_tokens,
-                    'temperature': float(assistant.model_config.temperature),
                 },
                 'voice': {
                     'provider': assistant.voice_config.voice.provider if assistant.voice_config.voice else None,
@@ -522,10 +520,7 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                     mc.first_message = model_data['first_message']
                 if 'system_prompt' in model_data:
                     mc.system_prompt = model_data['system_prompt']
-                if 'max_tokens' in model_data:
-                    mc.max_tokens = int(model_data['max_tokens'])
-                if 'temperature' in model_data:
-                    mc.temperature = float(model_data['temperature'])
+
                 
                 mc.save()
             
@@ -949,3 +944,230 @@ def save_api_keys(request):
             return redirect('dashboard:api_keys')
     
     return redirect('dashboard:api_keys')
+
+# ============================================================================
+# KNOWLEDGE BASE VIEWS
+# ============================================================================
+
+@login_required
+def upload_file(request, assistant_id):
+    """Handle file uploads for RAG."""
+    if request.method == 'POST':
+        try:
+            # Validate UUID format
+            try:
+                uuid.UUID(str(assistant_id))
+            except ValueError:
+                return JsonResponse({'error': 'Invalid assistant ID format'}, status=400)
+                
+            assistant = get_object_or_404(Assistant, id=assistant_id)
+            
+            # Check if user has permission to modify this assistant
+            if not request.user.is_superuser and assistant.owner != request.user:
+                return JsonResponse({'error': 'Permission denied'}, status=403)
+            
+            uploaded_file = request.FILES.get('file')
+            if not uploaded_file:
+                return JsonResponse({'error': 'No file provided'}, status=400)
+            
+            # Create FileAsset
+            file_asset = FileAsset.objects.create(
+                client_id=assistant.client_id,
+                name=uploaded_file.name,
+                file=uploaded_file,
+                file_type=uploaded_file.name.split('.')[-1].lower(),
+                size_bytes=uploaded_file.size,
+                processing_status='pending'
+            )
+            
+            # Create AssistantFile relationship
+            assistant_file = AssistantFile.objects.create(
+                client_id=assistant.client_id,
+                assistant=assistant,
+                file_asset=file_asset,
+                use_for_rag=True
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'file_id': str(file_asset.id),
+                'name': file_asset.name,
+                'size': file_asset.size_bytes,
+                'status': file_asset.processing_status
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+def delete_file(request, assistant_id, file_id):
+    """Delete a file from the assistant's knowledge base."""
+    if request.method == 'POST':
+        try:
+            # Validate UUID formats
+            try:
+                uuid.UUID(str(assistant_id))
+                uuid.UUID(str(file_id))
+            except ValueError:
+                return JsonResponse({'error': 'Invalid ID format'}, status=400)
+                
+            assistant = get_object_or_404(Assistant, id=assistant_id)
+            
+            # Check if user has permission to modify this assistant
+            if not request.user.is_superuser and assistant.owner != request.user:
+                return JsonResponse({'error': 'Permission denied'}, status=403)
+            
+            # Find and delete the file
+            assistant_file = get_object_or_404(AssistantFile, 
+                                             assistant=assistant, 
+                                             file_asset_id=file_id)
+            file_asset = assistant_file.file_asset
+            
+            # Delete the file relationship first
+            assistant_file.delete()
+            
+            # Delete the actual file asset
+            file_asset.delete()
+            
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+def add_website(request, assistant_id):
+    """Add a website for scraping."""
+    if request.method == 'POST':
+        try:
+            # Validate UUID format
+            try:
+                uuid.UUID(str(assistant_id))
+            except ValueError:
+                return JsonResponse({'error': 'Invalid assistant ID format'}, status=400)
+                
+            assistant = get_object_or_404(Assistant, id=assistant_id)
+            
+            # Check if user has permission to modify this assistant
+            if not request.user.is_superuser and assistant.owner != request.user:
+                return JsonResponse({'error': 'Permission denied'}, status=403)
+            
+            url = request.POST.get('url')
+            name = request.POST.get('name', '')
+            description = request.POST.get('description', '')
+            
+            if not url:
+                return JsonResponse({'error': 'URL is required'}, status=400)
+            
+            # Extract name from URL if not provided
+            if not name:
+                from urllib.parse import urlparse
+                parsed = urlparse(url)
+                name = parsed.netloc
+            
+            # Create website scraping entry
+            website = WebsiteScraping.objects.create(
+                client_id=assistant.client_id,
+                assistant=assistant,
+                url=url,
+                name=name,
+                description=description,
+                scraping_status='pending'
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'website_id': website.id,
+                'name': website.name,
+                'url': website.url,
+                'status': website.scraping_status
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+def delete_website(request, assistant_id, website_id):
+    """Delete a website from the assistant's knowledge base."""
+    if request.method == 'POST':
+        try:
+            # Validate UUID format for assistant_id
+            try:
+                uuid.UUID(str(assistant_id))
+            except ValueError:
+                return JsonResponse({'error': 'Invalid assistant ID format'}, status=400)
+                
+            assistant = get_object_or_404(Assistant, id=assistant_id)
+            
+            # Check if user has permission to modify this assistant
+            if not request.user.is_superuser and assistant.owner != request.user:
+                return JsonResponse({'error': 'Permission denied'}, status=403)
+            
+            website = get_object_or_404(WebsiteScraping, 
+                                      id=website_id, 
+                                      assistant=assistant)
+            website.delete()
+            
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+def get_knowledge_base(request, assistant_id):
+    """Get the current knowledge base status for an assistant."""
+    try:
+        # Validate UUID format
+        try:
+            uuid.UUID(str(assistant_id))
+        except ValueError:
+            return JsonResponse({'error': 'Invalid assistant ID format'}, status=400)
+            
+        assistant = get_object_or_404(Assistant, id=assistant_id)
+        
+        # Check if user has permission to view this assistant
+        if not request.user.is_superuser and assistant.owner != request.user:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+        # Get files
+        files = []
+        for assistant_file in assistant.files.all():
+            files.append({
+                'id': str(assistant_file.file_asset.id),
+                'name': assistant_file.file_asset.name,
+                'size': assistant_file.file_asset.size_bytes,
+                'status': assistant_file.file_asset.processing_status,
+                'uploaded_at': assistant_file.file_asset.created_at.isoformat()
+            })
+        
+        # Get websites
+        websites = []
+        for website in assistant.scraped_websites.all():
+            websites.append({
+                'id': website.id,
+                'name': website.name,
+                'url': website.url,
+                'status': website.scraping_status,
+                'last_scraped': website.last_scraped.isoformat() if website.last_scraped else None
+            })
+        
+        return JsonResponse({
+            'files': files,
+            'websites': websites,
+            'file_count': len(files),
+            'website_count': len(websites)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

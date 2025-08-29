@@ -54,17 +54,7 @@ class ModelConfig(TenantScopedModel):
         help_text="System instructions for the AI"
     )
     
-    # Model parameters
-    max_tokens = models.PositiveIntegerField(
-        default=250,
-        validators=[MinValueValidator(1), MaxValueValidator(4096)]
-    )
-    temperature = models.DecimalField(
-        max_digits=3,
-        decimal_places=2,
-        default=Decimal('0.50'),
-        validators=[MinValueValidator(0), MaxValueValidator(1)]
-    )
+
     
     # Provider-specific settings (JSON for flexibility)
     provider_settings = models.JSONField(
@@ -142,16 +132,7 @@ class VoiceConfig(TenantScopedModel):
         help_text="Custom background sound URL"
     )
     
-    # Voice processing settings
-    input_min_characters = models.PositiveIntegerField(
-        default=30,
-        validators=[MinValueValidator(1), MaxValueValidator(1000)]
-    )
-    punctuation_boundaries = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="Punctuation marks for speech chunking"
-    )
+
     
     # Ambient sound configuration
     ambient_sound_enabled = models.BooleanField(

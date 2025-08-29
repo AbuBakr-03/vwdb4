@@ -302,7 +302,7 @@ The Assistants page provides a comprehensive interface for managing AI assistant
 
 1. **MODEL** 🧠
    - **Model**: Model selection and parameters
-   - Contains: Provider dropdowns, temperature slider, max tokens, etc.
+   - Contains: Provider dropdowns, model selection, etc.
 
 2. **VOICE** 🎙️
    - **Voice & Persona**: Voice configuration

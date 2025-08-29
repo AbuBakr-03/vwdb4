@@ -469,78 +469,132 @@
         <textarea id="system-prompt" class="textarea textarea-bordered w-full bg-base-200/50 h-32 resize-none" placeholder="Add your prompt here...">{% if assistant_config.model.system_prompt %}{{ assistant_config.model.system_prompt }}{% endif %}</textarea>
       </div>
 
-      <!-- Files -->
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-base-content">Files</label>
-        <select class="select select-bordered w-full bg-base-200/50">
-          <option selected>Select Files</option>
-          <option>Upload new file</option>
-          <option>From library</option>
-        </select>
-      </div>
 
-      <!-- Max Tokens and Temperature Row -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Max Tokens -->
-        <div class="space-y-2">
-          <label class="flex items-center space-x-2 text-sm font-medium text-base-content">
-            <span>Max Tokens</span>
-            <div class="relative group">
-              <svg class="w-4 h-4 text-base-content/50 cursor-help hover:text-warning transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <!-- Custom Tooltip -->
-              <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 bg-gradient-to-tr from-warning to-orange-400 text-warning-content text-xs rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-out group-hover:scale-105 z-50 w-72">
-                <div class="relative">
-                  <div class="flex items-center mb-1">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="font-semibold">Max Tokens</span>
-                  </div>
-                  Maximum number of tokens (words/parts of words) the AI can use in each response. Higher values allow longer responses but increase cost. <strong>250 tokens ≈ 180-200 words.</strong>
-                  <!-- Arrow -->
-                  <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-warning"></div>
-                </div>
-              </div>
-            </div>
-          </label>
-          <input id="max-tokens" type="number" class="input input-bordered w-full bg-base-200/50" value="{% if assistant_config.model.max_tokens %}{{ assistant_config.model.max_tokens }}{% else %}250{% endif %}" />
-        </div>
-
-        <!-- Temperature -->
-        <div class="space-y-2">
-          <label class="flex items-center justify-between text-sm font-medium text-base-content">
-            <div class="flex items-center space-x-2">
-              <span>Temperature</span>
-              <div class="relative group">
-                <svg class="w-4 h-4 text-base-content/50 cursor-help hover:text-error transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <!-- Custom Tooltip -->
-                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 bg-gradient-to-bl from-error via-red-500 to-rose-500 text-error-content text-xs rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-out group-hover:scale-105 z-50 w-72">
-                  <div class="relative">
-                    <div class="flex items-center mb-1">
-                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0v-.5C13 6.12 13.88 5.24 15.26 5.24c1.38 0 2.5 1.12 2.5 2.5v.5h.5a.5.5 0 01.5.5v3a.5.5 0 01-.5.5H18v.5a.5.5 0 01-.5.5h-15a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5h.5V8.5c0-.276.224-.5.5-.5h.332z" clip-rule="evenodd"></path>
-                      </svg>
-                      <span class="font-semibold">Temperature</span>
-                    </div>
-                    Controls how creative or predictable the AI's responses are. <strong>0 = very predictable</strong> and consistent, <strong>1 = very creative</strong> and varied. <em>0.5 is a good balance for most assistants.</em>
-                    <!-- Arrow -->
-                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-error"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <span id="temperature-value" class="text-sm text-base-content/70">{% if assistant_config.model.temperature %}{{ assistant_config.model.temperature }}{% else %}0.5{% endif %}</span>
-          </label>
-          <input id="temperature" type="range" min="0" max="1" step="0.1" value="{% if assistant_config.model.temperature %}{{ assistant_config.model.temperature }}{% else %}0.5{% endif %}" class="range range-primary" oninput="document.getElementById('temperature-value').textContent = this.value" />
-        </div>
-      </div>
       </div>
     </div>
   </section>
+
+              {% if selected_assistant %}
+            <!-- KNOWLEDGE BASE Section Divider -->
+            <div id="knowledge-base-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
+              <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+              </svg>
+              <span class="text-base-content/80">KNOWLEDGE BASE</span>
+            </div>
+
+  <!-- Knowledge Base Configuration subsection -->
+  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
+    <!-- Header button -->
+    <button
+      type="button"
+      aria-controls="collapsible-knowledge-base-tab-content"
+      aria-expanded="false"
+      data-state="closed"
+      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
+    >
+      <div class="flex flex-row items-start gap-3">
+        <!-- Section icon -->
+        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+        </svg>
+
+        <!-- Title + helper -->
+        <div class="flex flex-col items-start">
+          <div class="flex flex-row items-center">
+            <h2 class="text-lg font-medium text-base-content" data-testid="knowledge-base-header">Knowledge Base</h2>
+            <!-- Hover-only helper icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
+                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
+              <path fill="currentColor"
+                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
+            </svg>
+          </div>
+          <p class="text-xs text-base-content/60 text-left">Upload files and add websites to enhance your assistant's knowledge with RAG capabilities</p>
+        </div>
+      </div>
+
+      <!-- Right chevron: rotates when expanded -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
+           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
+        <path fill="currentColor"
+          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
+      </svg>
+    </button>
+
+    <!-- Collapsible content -->
+    <div id="collapsible-knowledge-base-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+      <div class="p-4 space-y-6">
+        
+        <!-- File Upload Section -->
+        <div class="space-y-4">
+          <h3 class="text-md font-medium text-base-content">File Uploads</h3>
+          <div class="border-2 border-dashed border-base-content/20 rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+            <svg class="w-12 h-12 text-base-content/30 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+            <div class="mb-4">
+              <label for="file-upload" class="btn btn-primary btn-sm cursor-pointer">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Choose Files
+              </label>
+              <input id="file-upload" type="file" multiple class="hidden" accept=".pdf,.docx,.txt,.md,.csv,.json">
+              <p class="text-sm text-base-content/60 mt-2">Upload PDFs, documents, or text files for RAG</p>
+            </div>
+          </div>
+          
+          <!-- File List -->
+          <div id="file-list" class="space-y-2">
+            <!-- Files will be populated here -->
+          </div>
+        </div>
+
+        <!-- Website Scraping Section -->
+        <div class="space-y-4">
+          <h3 class="text-md font-medium text-base-content">Website Scraping</h3>
+          <div class="space-y-3">
+            <div class="flex gap-2">
+              <input id="website-url" type="url" placeholder="Enter website URL" class="input input-bordered flex-1 bg-base-200/50">
+              <button id="add-website" class="btn btn-secondary btn-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add
+              </button>
+            </div>
+            <p class="text-xs text-base-content/60">Add websites to scrape and include in your assistant's knowledge base</p>
+          </div>
+          
+          <!-- Website List -->
+          <div id="website-list" class="space-y-2">
+            <!-- Websites will be populated here -->
+          </div>
+        </div>
+
+        <!-- Knowledge Base Status -->
+        <div class="bg-base-200/50 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-sm font-medium text-base-content">Knowledge Base Status</h4>
+            <span class="badge badge-success badge-sm">Active</span>
+          </div>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="text-base-content/60">Files:</span>
+              <span class="font-medium ml-2" id="file-count">0</span>
+            </div>
+            <div>
+              <span class="text-base-content/60">Websites:</span>
+              <span class="font-medium ml-2" id="website-count">0</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  {% endif %}
 
   <!-- VOICE Section Divider -->
   <div id="voice-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
@@ -799,56 +853,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 2: Input Min Characters (full width) -->
-        <div class="space-y-2">
-          <label for="input-min-characters" class="block text-sm font-medium text-base-content">
-            Input Min Characters
-            <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
-              Minimum number of characters required before processing input
-            </div>
-          </label>
-          <input 
-            type="number" 
-            id="input-min-characters" 
-            class="input input-bordered w-full lg:w-1/3 bg-base-100" 
-            placeholder="30"
-            value="30"
-            min="1"
-            max="1000"
-          />
-        </div>
-
-        <!-- Punctuation Boundaries Section -->
-        
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-base font-medium text-base-content">Punctuation Boundaries</h3>
-          </div>
-          <p class="text-sm text-base-content/60">
-            These are the punctuations that are considered valid boundaries or delimiters. This helps decides the chunks that are sent to the voice provider for the voice generation as the LLM tokens are streaming in.
-          </p>
-          
-          <!-- Punctuation Boundaries Input -->
-          <div class="space-y-2">
-            <div class="relative">
-              <select class="select select-bordered w-full bg-base-100 text-base-content/60">
-                <option selected>No Punctuation Boundaries Added</option>
-                <option value="period">Period (.)</option>
-                <option value="comma">Comma (,)</option>
-                <option value="semicolon">Semicolon (;)</option>
-                <option value="question">Question Mark (?)</option>
-                <option value="exclamation">Exclamation Mark (!)</option>
-                <option value="custom">Custom</option>
-              </select>
             </div>
           </div>
         </div>
@@ -2830,8 +2834,7 @@ async function saveAssistantConfig(btn) {
                 first_message_mode: document.getElementById('first-message-mode')?.value || '',
                 first_message: document.getElementById('first-message')?.value || '',
                 system_prompt: document.getElementById('system-prompt')?.value || '',
-                max_tokens: document.getElementById('max-tokens')?.value || '',
-                temperature: document.getElementById('temperature')?.value || ''
+
             },
             voice: {
                 voice_id: document.getElementById('voice-selection')?.value || '',
@@ -3119,6 +3122,411 @@ function copyToClipboard(text) {
     });
 }
 
+// ============================================================================
+// KNOWLEDGE BASE FUNCTIONALITY
+// ============================================================================
+
+function initializeKnowledgeBase() {
+    console.log('Initializing knowledge base functionality...');
+    
+    // File upload handling
+    const fileUpload = document.getElementById('file-upload');
+    if (fileUpload) {
+        fileUpload.addEventListener('change', handleFileUpload);
+    }
+    
+    // Add website button
+    const addWebsiteBtn = document.getElementById('add-website');
+    if (addWebsiteBtn) {
+        addWebsiteBtn.addEventListener('click', handleAddWebsite);
+    }
+    
+    // Load initial knowledge base data
+    const currentUrl = new URL(window.location);
+    let selectedAssistantId = currentUrl.searchParams.get('selected');
+    
+    // Fallback to template variable if no URL parameter
+    if (!selectedAssistantId) {
+        const templateAssistantId = '{{ selected_assistant.id|default:"" }}';
+        selectedAssistantId = templateAssistantId !== '' && templateAssistantId !== 'None' ? templateAssistantId : null;
+    }
+    
+    if (selectedAssistantId && selectedAssistantId !== 'None') {
+        loadKnowledgeBaseData(selectedAssistantId);
+    }
+}
+
+function handleFileUpload(event) {
+    const files = event.target.files;
+    if (!files.length) return;
+    
+    // Get the selected assistant ID from URL
+    const currentUrl = new URL(window.location);
+    let selectedAssistantId = currentUrl.searchParams.get('selected');
+    
+    // Fallback to template variable if no URL parameter
+    if (!selectedAssistantId) {
+        const templateAssistantId = '{{ selected_assistant.id|default:"" }}';
+        selectedAssistantId = templateAssistantId !== '' && templateAssistantId !== 'None' ? templateAssistantId : null;
+    }
+    
+    // Validate that we have a valid UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!selectedAssistantId || selectedAssistantId === 'None' || !uuidRegex.test(selectedAssistantId)) {
+        showAlert('Please select an assistant first', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', files[0]);
+    
+    // Show loading state
+    const fileList = document.getElementById('file-list');
+    const loadingItem = createFileItem({
+        id: 'loading',
+        name: files[0].name,
+        size: files[0].size,
+        status: 'uploading'
+    });
+    fileList.appendChild(loadingItem);
+    
+    // Upload file
+    fetch(`/assistants/${selectedAssistantId}/upload-file/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Replace loading item with actual file
+            loadingItem.remove();
+            const fileItem = createFileItem(data);
+            fileList.appendChild(fileItem);
+            updateFileCount(fileList.children.length);
+        } else {
+            loadingItem.remove();
+            updateKnowledgeBaseHeight();
+            showAlert('Error uploading file: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        loadingItem.remove();
+        updateKnowledgeBaseHeight();
+        showAlert('Error uploading file: ' + error.message, 'error');
+    });
+    
+    // Clear file input
+    event.target.value = '';
+}
+
+function handleAddWebsite() {
+    const urlInput = document.getElementById('website-url');
+    const url = urlInput.value.trim();
+    
+    if (!url) {
+        showAlert('Please enter a valid URL', 'error');
+        return;
+    }
+    
+    // Get the selected assistant ID from URL
+    const currentUrl = new URL(window.location);
+    let selectedAssistantId = currentUrl.searchParams.get('selected');
+    
+    // Fallback to template variable if no URL parameter
+    if (!selectedAssistantId) {
+        const templateAssistantId = '{{ selected_assistant.id|default:"" }}';
+        selectedAssistantId = templateAssistantId !== '' && templateAssistantId !== 'None' ? templateAssistantId : null;
+    }
+    
+    // Validate that we have a valid UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!selectedAssistantId || selectedAssistantId === 'None' || !uuidRegex.test(selectedAssistantId)) {
+        showAlert('Please select an assistant first', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('url', url);
+    
+    // Show loading state
+    const websiteList = document.getElementById('website-list');
+    const loadingItem = createWebsiteItem({
+        id: 'loading',
+        name: 'Loading...',
+        url: url,
+        status: 'adding'
+    });
+    websiteList.appendChild(loadingItem);
+    
+    // Add website
+    fetch(`/assistants/${selectedAssistantId}/add-website/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Replace loading item with actual website
+            loadingItem.remove();
+            const websiteItem = createWebsiteItem(data);
+            websiteList.appendChild(websiteItem);
+            updateWebsiteCount(websiteList.children.length);
+            urlInput.value = '';
+        } else {
+            loadingItem.remove();
+            updateKnowledgeBaseHeight();
+            showAlert('Error adding website: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        loadingItem.remove();
+        updateKnowledgeBaseHeight();
+        showAlert('Error adding website: ' + error.message, 'error');
+        urlInput.value = '';
+    });
+}
+
+function createFileItem(file) {
+    const item = document.createElement('div');
+    item.className = 'flex items-center justify-between p-3 bg-base-200/50 rounded-lg';
+    item.innerHTML = `
+        <div class="flex items-center space-x-3">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <div>
+                <div class="font-medium text-sm">${file.name}</div>
+                <div class="text-xs text-base-content/60">${formatFileSize(file.size)}</div>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="badge badge-sm ${getStatusBadgeClass(file.status)}">${file.status}</span>
+            <button onclick="deleteFile('${file.id}')" class="btn btn-ghost btn-xs text-error hover:bg-error/10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+            </button>
+        </div>
+    `;
+    return item;
+}
+
+function createWebsiteItem(website) {
+    const item = document.createElement('div');
+    item.className = 'flex items-center justify-between p-3 bg-base-200/50 rounded-lg';
+    item.innerHTML = `
+        <div class="flex items-center space-x-3">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+            </svg>
+            <div>
+                <div class="font-medium text-sm">${website.name}</div>
+                <div class="text-xs text-base-content/60">${website.url}</div>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="badge badge-sm ${getStatusBadgeClass(website.status)}">${website.status}</span>
+            <button onclick="deleteWebsite(${website.id})" class="btn btn-ghost btn-xs text-error hover:bg-error/10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+            </button>
+        </div>
+    `;
+    return item;
+}
+
+function deleteFile(fileId) {
+    if (!confirm('Are you sure you want to delete this file?')) return;
+    
+    // Get the selected assistant ID from URL
+    const currentUrl = new URL(window.location);
+    const selectedAssistantId = currentUrl.searchParams.get('selected') || '{{ selected_assistant.id }}';
+    
+    if (!selectedAssistantId || selectedAssistantId === 'None') {
+        showAlert('No assistant selected', 'error');
+        return;
+    }
+    
+    fetch(`/assistants/${selectedAssistantId}/delete-file/${fileId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove file item from DOM
+            const fileItem = document.querySelector(`[onclick="deleteFile('${fileId}')"]`).closest('.flex');
+            fileItem.remove();
+            const fileList = document.getElementById('file-list');
+            updateFileCount(fileList.children.length);
+        } else {
+            showAlert('Error deleting file: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        showAlert('Error deleting file: ' + error.message, 'error');
+    });
+}
+
+function deleteWebsite(websiteId) {
+    if (!confirm('Are you sure you want to delete this website?')) return;
+    
+    // Get the selected assistant ID from URL
+    const currentUrl = new URL(window.location);
+    const selectedAssistantId = currentUrl.searchParams.get('selected') || '{{ selected_assistant.id }}';
+    
+    if (!selectedAssistantId || selectedAssistantId === 'None') {
+        showAlert('No assistant selected', 'error');
+        return;
+    }
+    
+    fetch(`/assistants/${selectedAssistantId}/delete-website/${websiteId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove website item from DOM
+            const websiteItem = document.querySelector(`[onclick="deleteWebsite(${websiteId})"]`).closest('.flex');
+            websiteItem.remove();
+            const websiteList = document.getElementById('website-list');
+            updateWebsiteCount(websiteList.children.length);
+        } else {
+            showAlert('Error deleting website: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        showAlert('Error deleting website: ' + error.message, 'error');
+    });
+}
+
+function loadKnowledgeBaseData(assistantId) {
+    if (!assistantId || assistantId === 'None') return;
+    
+    // Validate UUID format before making request
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(assistantId)) {
+        console.warn('Invalid assistant ID format:', assistantId);
+        return;
+    }
+    
+    fetch(`/assistants/${assistantId}/knowledge-base/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success !== false) {
+            // Populate file list
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '';
+            data.files.forEach(file => {
+                const fileItem = createFileItem(file);
+                fileList.appendChild(fileItem);
+            });
+            
+            // Populate website list
+            const websiteList = document.getElementById('website-list');
+            websiteList.innerHTML = '';
+            data.websites.forEach(website => {
+                const websiteItem = createWebsiteItem(website);
+                websiteList.appendChild(websiteItem);
+            });
+            
+            // Update counts
+            updateFileCount(data.file_count);
+            updateWebsiteCount(data.website_count);
+            
+            // Update height after loading data
+            setTimeout(() => updateKnowledgeBaseHeight(), 100);
+        }
+    })
+    .catch(error => {
+        console.error('Error loading knowledge base data:', error);
+    });
+}
+
+function updateFileCount(count) {
+    const fileCountElement = document.getElementById('file-count');
+    if (fileCountElement) {
+        fileCountElement.textContent = count || 0;
+    }
+    // Recalculate knowledge base height after file count changes
+    updateKnowledgeBaseHeight();
+}
+
+function updateWebsiteCount(count) {
+    const websiteCountElement = document.getElementById('website-count');
+    if (websiteCountElement) {
+        websiteCountElement.textContent = count || 0;
+    }
+    // Recalculate knowledge base height after website count changes
+    updateKnowledgeBaseHeight();
+}
+
+function updateKnowledgeBaseHeight() {
+    // Update the height of the knowledge base section if it's expanded
+    const knowledgeBaseContent = document.getElementById('collapsible-knowledge-base-tab-content');
+    if (knowledgeBaseContent && knowledgeBaseContent.dataset.collapsed === 'false') {
+        // Force recalculation by temporarily removing maxHeight
+        knowledgeBaseContent.style.maxHeight = 'none';
+        // Get the new scroll height
+        const newHeight = knowledgeBaseContent.scrollHeight;
+        // Set the new max height with smooth transition
+        knowledgeBaseContent.style.maxHeight = newHeight + 'px';
+    }
+}
+
+function getStatusBadgeClass(status) {
+    switch (status) {
+        case 'completed':
+        case 'active':
+            return 'badge-success';
+        case 'pending':
+        case 'adding':
+            return 'badge-warning';
+        case 'failed':
+            return 'badge-error';
+        case 'uploading':
+            return 'badge-info';
+        default:
+            return 'badge-error';
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function showAlert(message, type = 'info') {
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} fixed top-4 right-4 z-50 max-w-sm`;
+    alert.innerHTML = `
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');
@@ -3195,6 +3603,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update voice selection to show only voices for current provider
         updateVoiceSelection(currentProvider, currentVoiceId);
+    }
+    
+    // Initialize knowledge base functionality
+    initializeKnowledgeBase();
+    
+    // Reload knowledge base data when assistant changes
+    const currentUrl = new URL(window.location);
+    let selectedAssistantId = currentUrl.searchParams.get('selected');
+    
+    // Fallback to template variable if no URL parameter
+    if (!selectedAssistantId) {
+        const templateAssistantId = '{{ selected_assistant.id|default:"" }}';
+        selectedAssistantId = templateAssistantId !== '' && templateAssistantId !== 'None' ? templateAssistantId : null;
+    }
+    
+    if (selectedAssistantId && selectedAssistantId !== 'None') {
+        loadKnowledgeBaseData(selectedAssistantId);
     }
 });
 </script>

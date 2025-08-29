@@ -8,10 +8,13 @@ from django.utils.html import format_html
 from .models import (
     Assistant, ModelConfig, VoiceConfig, TranscriberConfig,
     AnalyticsConfig, PrivacyConfig, AdvancedConfig, MessagingConfig,
-    FileAsset, AssistantFile, ToolLibrary, AssistantTool,
     PredefinedFunctions, CustomFunction, AssistantVersion, AssistantKPI
 )
 from .config_models import Voice
+from .tools_models import (
+    FileAsset, AssistantFile, ToolLibrary, AssistantTool,
+    WebsiteScraping
+)
 
 
 # ============================================================================
@@ -59,7 +62,7 @@ class AssistantAdmin(admin.ModelAdmin):
 
 @admin.register(ModelConfig)
 class ModelConfigAdmin(admin.ModelAdmin):
-    list_display = ('assistant', 'provider', 'model_name', 'temperature')
+    list_display = ('assistant', 'provider', 'model_name')
     list_filter = ('provider', 'first_message_mode')
 
 
@@ -148,6 +151,14 @@ class AssistantKPIAdmin(admin.ModelAdmin):
     list_display = ('assistant', 'date', 'total_calls', 'successful_calls')
     list_filter = ('date',)
     date_hierarchy = 'date'
+
+
+@admin.register(WebsiteScraping)
+class WebsiteScrapingAdmin(admin.ModelAdmin):
+    list_display = ('assistant', 'name', 'url', 'scraping_status', 'last_scraped')
+    list_filter = ('scraping_status', 'is_active')
+    search_fields = ('name', 'url', 'description')
+    readonly_fields = ('last_scraped', 'content_hash', 'retry_count')
 
 
 # Customize admin site

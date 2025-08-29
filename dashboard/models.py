@@ -347,8 +347,7 @@ def seed_example_assistant(client_id: str, owner: Optional[User] = None) -> Assi
         "Thank you for calling Wellness Partners. This is Riley, your scheduling assistant. How may I help you today?"
     )
     mc.system_prompt = """You are Riley, a friendly scheduling assistant. Keep answers concise and confirm details."""
-    mc.max_tokens = 250
-    mc.temperature = Decimal("0.50")
+
     mc.save()
 
     # Configure voice
@@ -372,8 +371,7 @@ def seed_example_assistant(client_id: str, owner: Optional[User] = None) -> Assi
     vc.voice = voice_instance
     vc.background_sound = BackgroundSound.DEFAULT
     vc.background_sound_url = "https://www.soundjay.com/ambient/sounds/people-in-lounge-1.mp3"
-    vc.input_min_characters = 30
-    vc.punctuation_boundaries = [".", ",", ";", "?", "!"]
+
     vc.save()
 
     # Configure STT
