@@ -279,11 +279,11 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
                     'audio_format': assistant.privacy.audio_format,
                 },
                 'advanced': {
-                    'start_speaking_wait_seconds': float(assistant.advanced_config.start_speaking_wait_seconds),
-                    'smart_endpointing': assistant.advanced_config.smart_endpointing,
-                    'on_punctuation_seconds': float(assistant.advanced_config.on_punctuation_seconds),
-                    'on_no_punctuation_seconds': float(assistant.advanced_config.on_no_punctuation_seconds),
-                    'on_number_seconds': float(assistant.advanced_config.on_number_seconds),
+                    'turn_detection_threshold': float(assistant.advanced_config.turn_detection_threshold),
+                    'turn_detection_silence_duration_ms': assistant.advanced_config.turn_detection_silence_duration_ms,
+                    'turn_detection_prefix_padding_ms': assistant.advanced_config.turn_detection_prefix_padding_ms,
+                    'turn_detection_create_response': assistant.advanced_config.turn_detection_create_response,
+                    'turn_detection_interrupt_response': assistant.advanced_config.turn_detection_interrupt_response,
                     'stop_speaking_words': assistant.advanced_config.stop_speaking_words,
                     'stop_speaking_voice_seconds': float(assistant.advanced_config.stop_speaking_voice_seconds),
                     'stop_speaking_backoff_seconds': assistant.advanced_config.stop_speaking_backoff_seconds,
@@ -587,6 +587,40 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                     stt.keyterms = stt_data['keyterms']
                 
                 stt.save()
+            
+            # Update advanced configuration
+            if 'advanced' in config_data:
+                advanced_data = config_data['advanced']
+                ac = assistant.advanced_config
+                
+                if 'turn_detection_threshold' in advanced_data:
+                    ac.turn_detection_threshold = float(advanced_data['turn_detection_threshold'])
+                if 'turn_detection_silence_duration_ms' in advanced_data:
+                    ac.turn_detection_silence_duration_ms = int(advanced_data['turn_detection_silence_duration_ms'])
+                if 'turn_detection_prefix_padding_ms' in advanced_data:
+                    ac.turn_detection_prefix_padding_ms = int(advanced_data['turn_detection_prefix_padding_ms'])
+                if 'turn_detection_create_response' in advanced_data:
+                    ac.turn_detection_create_response = bool(advanced_data['turn_detection_create_response'])
+                if 'turn_detection_interrupt_response' in advanced_data:
+                    ac.turn_detection_interrupt_response = bool(advanced_data['turn_detection_interrupt_response'])
+                if 'silence_timeout_seconds' in advanced_data:
+                    ac.silence_timeout_seconds = int(advanced_data['silence_timeout_seconds'])
+                if 'max_duration_seconds' in advanced_data:
+                    ac.max_duration_seconds = int(advanced_data['max_duration_seconds'])
+                if 'voicemail_detection_provider' in advanced_data:
+                    ac.voicemail_detection_provider = advanced_data['voicemail_detection_provider']
+                if 'keypad_input_enabled' in advanced_data:
+                    ac.keypad_input_enabled = bool(advanced_data['keypad_input_enabled'])
+                if 'keypad_timeout_seconds' in advanced_data:
+                    ac.keypad_timeout_seconds = int(advanced_data['keypad_timeout_seconds'])
+                if 'keypad_delimiter' in advanced_data:
+                    ac.keypad_delimiter = advanced_data['keypad_delimiter']
+                if 'max_idle_messages' in advanced_data:
+                    ac.max_idle_messages = int(advanced_data['max_idle_messages'])
+                if 'idle_timeout_seconds' in advanced_data:
+                    ac.idle_timeout_seconds = float(advanced_data['idle_timeout_seconds'])
+                
+                ac.save()
             
             return JsonResponse({
                 'success': True,

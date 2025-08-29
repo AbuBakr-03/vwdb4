@@ -368,32 +368,29 @@ class AdvancedConfig(TenantScopedModel):
         related_name='advanced_config'
     )
     
-    # Speech timing settings
-    start_speaking_wait_seconds = models.DecimalField(
+    # Turn Detection settings
+    turn_detection_threshold = models.DecimalField(
         max_digits=3,
-        decimal_places=1,
-        default=Decimal('0.4'),
-        help_text="Seconds to wait before assistant starts speaking"
+        decimal_places=2,
+        default=Decimal('0.89'),
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        help_text="Activation threshold for VAD (0.0 to 1.0). Higher threshold requires louder audio."
     )
-    smart_endpointing = models.CharField(
-        max_length=10,
-        choices=[('off', 'Off'), ('on', 'On'), ('auto', 'Auto')],
-        default='off'
+    turn_detection_silence_duration_ms = models.PositiveIntegerField(
+        default=1500,
+        help_text="Duration of silence to detect speech stop (in milliseconds)"
     )
-    on_punctuation_seconds = models.DecimalField(
-        max_digits=3,
-        decimal_places=1,
-        default=Decimal('0.1')
+    turn_detection_prefix_padding_ms = models.PositiveIntegerField(
+        default=250,
+        help_text="Amount of audio to include before VAD detected speech (in milliseconds)"
     )
-    on_no_punctuation_seconds = models.DecimalField(
-        max_digits=3,
-        decimal_places=1,
-        default=Decimal('1.5')
+    turn_detection_create_response = models.BooleanField(
+        default=True,
+        help_text="Whether to automatically generate response when VAD stop event occurs"
     )
-    on_number_seconds = models.DecimalField(
-        max_digits=3,
-        decimal_places=1,
-        default=Decimal('0.5')
+    turn_detection_interrupt_response = models.BooleanField(
+        default=True,
+        help_text="Whether to automatically interrupt ongoing response when VAD start event occurs"
     )
     
     # Interruption handling

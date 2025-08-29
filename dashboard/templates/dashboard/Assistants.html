@@ -1801,12 +1801,12 @@
     </div>
   </section>
 
-  <!-- Start Speaking Plan subsection -->
+  <!-- Turn Detection subsection -->
   <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
     <!-- Header button -->
     <button
       type="button"
-      aria-controls="collapsible-advanced-speaking-tab-content"
+      aria-controls="collapsible-advanced-turn-detection-tab-content"
       aria-expanded="false"
       data-state="closed"
       class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
@@ -1814,13 +1814,13 @@
       <div class="flex flex-row items-start gap-3">
         <!-- Section icon -->
         <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 12v1m9-6h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
         </svg>
 
         <!-- Title + helper -->
         <div class="flex flex-col items-start">
           <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-speaking-header">Start Speaking Plan</h2>
+            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-turn-detection-header">Turn Detection</h2>
             <!-- Hover-only helper icon (appears on hover like Vapi) -->
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
                  class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
@@ -1828,7 +1828,7 @@
                 d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
             </svg>
           </div>
-          <p class="text-xs text-base-content/60 text-left">This is the plan for when the assistant should start talking.</p>
+          <p class="text-xs text-base-content/60 text-left">Voice Activity Detection (VAD) configuration for turn-taking between user and assistant.</p>
         </div>
       </div>
 
@@ -1841,14 +1841,48 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-advanced-speaking-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+    <div id="collapsible-advanced-turn-detection-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
       <div class="p-4 space-y-3">
-        <!-- Start Speaking Plan Content -->
+        <!-- Turn Detection Content -->
         
         <!-- Description -->
-        <p class="text-sm text-base-content/70">This is the plan for when the assistant should start talking.</p>
+        <p class="text-sm text-base-content/70">Configure Voice Activity Detection (VAD) settings for turn-taking between user and assistant.</p>
 
-        <!-- Wait seconds -->
+        <!-- Threshold -->
+        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">Threshold</h3>
+                <p class="text-xs text-base-content/60 text-left">Activation threshold for VAD (0.0 to 1.0). Higher threshold requires louder audio and may perform better in noisy environments.</p>
+              </div>
+              <span id="turn-detection-threshold-value" class="text-sm font-medium text-base-content">{% if assistant_config.advanced.turn_detection_threshold %}{{ assistant_config.advanced.turn_detection_threshold }}{% else %}0.89{% endif %}</span>
+            </div>
+            <div class="relative">
+              <input 
+                id="turn-detection-threshold" 
+                type="range" 
+                min="0" 
+                max="1" 
+                step="0.01" 
+                value="{% if assistant_config.advanced.turn_detection_threshold %}{{ assistant_config.advanced.turn_detection_threshold }}{% else %}0.89{% endif %}" 
+                class="range range-primary w-full"
+                oninput="document.getElementById('turn-detection-threshold-value').textContent = this.value"
+              >
+              <div class="flex justify-between text-xs text-base-content/60 mt-1">
+                <span>0.0</span>
+                <span class="text-right">1.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Silence Duration -->
         <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
           <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
             <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1858,115 +1892,109 @@
           <div class="flex-1">
             <div class="flex items-center justify-between mb-2">
               <div>
-                <h3 class="text-sm font-medium text-base-content">Wait seconds</h3>
-                <p class="text-xs text-base-content/60 text-left">This is how long assistant waits before speaking.</p>
+                <h3 class="text-sm font-medium text-base-content">Silence Duration (ms)</h3>
+                <p class="text-xs text-base-content/60 text-left">Duration of silence to detect speech stop (in milliseconds). With shorter values the model will respond more quickly, but may jump in on short pauses.</p>
               </div>
-              <span class="text-sm font-medium text-base-content">0.4</span>
+              <span id="turn-detection-silence-duration-value" class="text-sm font-medium text-base-content">{% if assistant_config.advanced.turn_detection_silence_duration_ms %}{{ assistant_config.advanced.turn_detection_silence_duration_ms }}{% else %}1500{% endif %}</span>
             </div>
             <div class="relative">
-              <input type="range" min="0" max="5" step="0.1" value="0.4" class="range range-primary w-full">
+              <input 
+                id="turn-detection-silence-duration" 
+                type="range" 
+                min="200" 
+                max="3000" 
+                step="50" 
+                value="{% if assistant_config.advanced.turn_detection_silence_duration_ms %}{{ assistant_config.advanced.turn_detection_silence_duration_ms }}{% else %}1500{% endif %}" 
+                class="range range-primary w-full"
+                oninput="document.getElementById('turn-detection-silence-duration-value').textContent = this.value"
+              >
               <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0 (sec)</span>
-                <span class="text-right">5 (sec)</span>
+                <span>200ms</span>
+                <span class="text-right">3000ms</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Smart Endpointing -->
+        <!-- Prefix Padding -->
         <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
           <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
             <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">Prefix Padding (ms)</h3>
+                <p class="text-xs text-base-content/60 text-left">Amount of audio to include before VAD detected speech (in milliseconds). Defaults to 300ms.</p>
+              </div>
+              <span id="turn-detection-prefix-padding-value" class="text-sm font-medium text-base-content">{% if assistant_config.advanced.turn_detection_prefix_padding_ms %}{{ assistant_config.advanced.turn_detection_prefix_padding_ms }}{% else %}250{% endif %}</span>
+            </div>
+            <div class="relative">
+              <input 
+                id="turn-detection-prefix-padding" 
+                type="range" 
+                min="0" 
+                max="1000" 
+                step="50" 
+                value="{% if assistant_config.advanced.turn_detection_prefix_padding_ms %}{{ assistant_config.advanced.turn_detection_prefix_padding_ms }}{% else %}250{% endif %}" 
+                class="range range-primary w-full"
+                oninput="document.getElementById('turn-detection-prefix-padding-value').textContent = this.value"
+              >
+              <div class="flex justify-between text-xs text-base-content/60 mt-1">
+                <span>0ms</span>
+                <span class="text-right">1000ms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create Response -->
+        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
             </svg>
           </div>
           <div class="flex-1">
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="text-sm font-medium text-base-content">Smart Endpointing</h3>
-                <p class="text-xs text-base-content/60 text-left">Enable for more accurate speech endpoint detection. LiveKit is only available in English.</p>
+                <h3 class="text-sm font-medium text-base-content">Create Response</h3>
+                <p class="text-xs text-base-content/60 text-left">Whether to automatically generate a response when a VAD stop event occurs.</p>
               </div>
               <div class="relative">
-                <select class="select select-bordered select-sm bg-base-100 min-w-16">
-                  <option value="off" selected>Off</option>
-                  <option value="on">On</option>
-                  <option value="auto">Auto</option>
-                </select>
+                <input 
+                  id="turn-detection-create-response" 
+                  type="checkbox" 
+                  class="toggle toggle-primary" 
+                  {% if assistant_config.advanced.turn_detection_create_response %}checked{% endif %}
+                >
               </div>
             </div>
           </div>
         </div>
 
-        <!-- On Punctuation Seconds -->
+        <!-- Interrupt Response -->
         <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
           <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
             <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2M7 4h10M7 4l-2 16h14L17 4M9 9v6m6-6v6"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
             </svg>
           </div>
           <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center justify-between">
               <div>
-                <h3 class="text-sm font-medium text-base-content">On Punctuation Seconds</h3>
-                <p class="text-xs text-base-content/60 text-left">Minimum seconds to wait after transcription ending with punctuation.</p>
+                <h3 class="text-sm font-medium text-base-content">Interrupt Response</h3>
+                <p class="text-xs text-base-content/60 text-left">Whether to automatically interrupt any ongoing response when a VAD start event occurs.</p>
               </div>
-              <span class="text-sm font-medium text-base-content">0.1</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="0" max="3" step="0.1" value="0.1" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0 (sec)</span>
-                <span class="text-right">3 (sec)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- On No Punctuation Seconds -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">On No Punctuation Seconds</h3>
-                <p class="text-xs text-base-content/60 text-left">Minimum seconds to wait after transcription ending without punctuation.</p>
-              </div>
-              <span class="text-sm font-medium text-base-content">1.5</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="0" max="3" step="0.1" value="1.5" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0 (sec)</span>
-                <span class="text-right">3 (sec)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- On Number Seconds -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">On Number Seconds</h3>
-                <p class="text-xs text-base-content/60 text-left">Minimum seconds to wait after transcription ending with a number.</p>
-              </div>
-              <span class="text-sm font-medium text-base-content">0.5</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="0" max="3" step="0.1" value="0.5" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0 (sec)</span>
-                <span class="text-right">3 (sec)</span>
+              <div class="relative">
+                <input 
+                  id="turn-detection-interrupt-response" 
+                  type="checkbox" 
+                  class="toggle toggle-primary" 
+                  {% if assistant_config.advanced.turn_detection_interrupt_response %}checked{% endif %}
+                >
               </div>
             </div>
           </div>
@@ -2847,6 +2875,13 @@ async function saveAssistantConfig(btn) {
                 thinking_sound_primary_volume: document.getElementById('thinking-sound-primary-volume')?.value || '',
                 thinking_sound_secondary: document.getElementById('thinking-sound-secondary')?.value || '',
                 thinking_sound_secondary_volume: document.getElementById('thinking-sound-secondary-volume')?.value || ''
+            },
+            advanced: {
+                turn_detection_threshold: document.getElementById('turn-detection-threshold')?.value || '',
+                turn_detection_silence_duration_ms: document.getElementById('turn-detection-silence-duration')?.value || '',
+                turn_detection_prefix_padding_ms: document.getElementById('turn-detection-prefix-padding')?.value || '',
+                turn_detection_create_response: document.getElementById('turn-detection-create-response')?.checked || false,
+                turn_detection_interrupt_response: document.getElementById('turn-detection-interrupt-response')?.checked || false
             }
         };
         

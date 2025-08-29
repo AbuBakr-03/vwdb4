@@ -99,8 +99,8 @@ class PrivacyConfigAdmin(admin.ModelAdmin):
 
 @admin.register(AdvancedConfig)
 class AdvancedConfigAdmin(admin.ModelAdmin):
-    list_display = ('assistant', 'smart_endpointing', 'keypad_input_enabled')
-    list_filter = ('smart_endpointing', 'keypad_input_enabled')
+    list_display = ('assistant', 'turn_detection_threshold', 'keypad_input_enabled')
+    list_filter = ('turn_detection_create_response', 'turn_detection_interrupt_response', 'keypad_input_enabled')
 
 
 @admin.register(MessagingConfig)
