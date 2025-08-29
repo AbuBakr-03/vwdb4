@@ -823,6 +823,110 @@ duplicateVoice(); // Duplicate current voice
 
 ---
 
+## 🔐 API Keys Management System
+
+### **Comprehensive API Keys Configuration Page**
+
+A fully-featured API keys management page for securely storing and managing external service API credentials.
+
+#### **Features:**
+- **Secure form handling**: Password fields with show/hide toggles
+- **Organized sections**: Grouped by service provider (Azure OpenAI, ElevenLabs)
+- **Input validation**: URL validation and required field enforcement
+- **Visual feedback**: Connection status indicators with color coding
+- **Responsive design**: Mobile-optimized layout with proper spacing
+- **Security notice**: Clear warnings about API key security
+
+#### **Supported Services:**
+
+**Azure OpenAI Realtime Model:**
+- Endpoint URL configuration
+- API key management
+- Service-specific validation
+
+**Azure GPT5 Mini:**
+- Dedicated endpoint configuration
+- Separate API key handling
+- Model-specific settings
+
+**ElevenLabs:**
+- Voice synthesis API key
+- Service integration ready
+- Future expansion placeholder
+
+#### **Form Structure:**
+```html
+<!-- Service Section Layout -->
+<div class="space-y-6">
+  <div class="flex items-center gap-3 pb-3 border-b">
+    <div class="w-8 h-8 rounded-lg bg-[color]/10">
+      <svg class="w-4 h-4 text-[color]">[Service Icon]</svg>
+    </div>
+    <div>
+      <h3 class="text-lg font-semibold">Service Name</h3>
+      <p class="text-sm text-base-content/60">Service description</p>
+    </div>
+  </div>
+  
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Input fields with validation -->
+  </div>
+</div>
+```
+
+#### **Security Features:**
+- **Password field masking**: All API keys hidden by default
+- **Toggle visibility**: Show/hide buttons for verification
+- **Form validation**: Client-side and server-side validation
+- **CSRF protection**: Django CSRF tokens for security
+- **Encrypted storage**: Ready for encrypted database storage
+
+#### **JavaScript Functionality:**
+```javascript
+// Password visibility toggle
+togglePasswordVisibility(fieldId)
+
+// Form reset with original values
+resetForm()
+
+// Input validation (URL format checking)
+// Form submission with loading states
+// Auto-hide success messages
+```
+
+#### **Status Monitoring:**
+- **Connection cards**: Visual status indicators for each service
+- **Color-coded states**: Success (green), Warning (yellow), Error (red)
+- **Real-time feedback**: Status updates based on API connectivity
+
+#### **Layout Standards Applied:**
+- **Consistent spacing**: Follows established `space-y-*` patterns
+- **Responsive design**: Works on all screen sizes
+- **Typography hierarchy**: Clear headings and descriptions
+- **Button consistency**: Matches established button styles
+- **Form patterns**: Consistent with other dashboard forms
+
+#### **Files Created/Updated:**
+- **`dashboard/templates/dashboard/api_keys.html`**: Main template
+- **`dashboard/views.py`**: Added `api_keys` and `save_api_keys` views
+- **`dashboard/urls.py`**: Added API keys URL patterns
+- **`utils/navigation.py`**: Added API Keys to sidebar navigation
+- **Documentation**: Updated with comprehensive API keys section
+
+#### **URL Structure:**
+```
+/api-keys/          → View API keys page
+/api-keys/save/     → Save API keys (POST)
+```
+
+#### **Navigation Integration:**
+- **Sidebar placement**: Added as dedicated navigation item
+- **Active state detection**: Proper highlighting in navigation
+- **Icon design**: Key icon for clear visual identification
+- **Mobile responsive**: Works in collapsed sidebar mode
+
+---
+
 ## 📚 Additional Resources
 
 - **DaisyUI Documentation**: https://daisyui.com/

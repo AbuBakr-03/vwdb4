@@ -13,4 +13,6 @@ urlpatterns = [
     path("assistants/<uuid:assistant_id>/save/", views.SaveAssistantConfigView.as_view(), name="save_assistant_config"),
     path("phone-numbers/", views.phone_numbers, name="phone_numbers"),
     path("voice-library/", views.voice_library, name="voice_library"),
+    path("api-keys/", views.api_keys, name="api_keys"),
+    path("api-keys/save/", views.save_api_keys, name="save_api_keys"),
 ]

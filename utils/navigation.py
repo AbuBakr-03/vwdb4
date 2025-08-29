@@ -32,6 +32,8 @@ def get_active_section(request):
         return 'people'
     elif path.startswith('tools/'):
         return 'tools'
+    elif path == 'api-keys' or path.startswith('api-keys/'):
+        return 'api_keys'
     
     return None
 
@@ -188,6 +190,17 @@ def get_sidebar_items(request):
                       d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
             </svg>''',
             'active': active_section == 'voice_library'
+        },
+        {
+            'label': 'API Keys',
+            'href': '/api-keys/',
+            'icon': '''<svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v-2H7v-2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M18 10h.01"></path>
+            </svg>''',
+            'active': active_section == 'api_keys'
         },
 
     ]

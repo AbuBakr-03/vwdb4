@@ -600,9 +600,10 @@
                     </svg>
                     <span class="sidebar-text text-sm">Voice Library</span>
                   </a>
-                  <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-300 transition-colors">
+                  <a href="{% url 'dashboard:api_keys' %}" class="flex items-center space-x-3 px-3 py-2 rounded-lg {% if request.resolver_match.url_name == 'api_keys' %}bg-cyan-500/20 text-cyan-400{% else %}hover:bg-slate-800/50 text-slate-300{% endif %} transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 10h.01"></path>
                     </svg>
                     <span class="sidebar-text text-sm">API Keys</span>
                   </a>

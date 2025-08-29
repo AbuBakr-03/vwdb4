@@ -880,3 +880,72 @@ def voice_library(request):
     })
     
     return render(request, "dashboard/VoiceLibrary.html", context)
+
+
+@login_required
+def api_keys(request):
+    """API Keys management page."""
+    context = {}
+    
+    # Add tenant info if available
+    if hasattr(request, 'tenant_flags'):
+        context['tenant_info'] = get_tenant_info(request)
+    
+    # Organization data for breadcrumbs and components
+    context['organization'] = {
+        'name': 'Zain Telecom',
+        'slug': 'zain_bh',
+        'plan': 'Enterprise',
+        'credits': 25.50
+    }
+    
+    # Dynamic breadcrumb data
+    context['breadcrumb_items'] = [
+        {'text': 'Organization', 'href': '/dashboard/'},
+        {'text': context['organization']['name'], 'href': '/dashboard/overview/'},
+        {'text': 'API Keys', 'active': True}
+    ]
+    
+    # TODO: Replace with actual API key model retrieval
+    # For now, using mock data - replace with your actual model
+    context['api_keys'] = {
+        'azure_openai_realtime_endpoint': '',
+        'azure_openai_realtime_key': '',
+        'azure_gpt5_mini_endpoint': '',
+        'azure_gpt5_mini_key': '',
+        'elevenlabs_key': ''
+    }
+    
+    return render(request, "dashboard/api_keys.html", context)
+
+
+@login_required
+def save_api_keys(request):
+    """Save API keys configuration."""
+    if request.method == 'POST':
+        try:
+            # Extract form data
+            api_keys_data = {
+                'azure_openai_realtime_endpoint': request.POST.get('azure_openai_realtime_endpoint', ''),
+                'azure_openai_realtime_key': request.POST.get('azure_openai_realtime_key', ''),
+                'azure_gpt5_mini_endpoint': request.POST.get('azure_gpt5_mini_endpoint', ''),
+                'azure_gpt5_mini_key': request.POST.get('azure_gpt5_mini_key', ''),
+                'elevenlabs_key': request.POST.get('elevenlabs_key', '')
+            }
+            
+            # TODO: Save to your API keys model
+            # For now, just simulate successful save
+            # Example:
+            # api_keys_obj, created = APIKeys.objects.get_or_create(user=request.user)
+            # api_keys_obj.azure_openai_realtime_endpoint = api_keys_data['azure_openai_realtime_endpoint']
+            # ... set other fields ...
+            # api_keys_obj.save()
+            
+            messages.success(request, 'API keys saved successfully!')
+            return redirect('dashboard:api_keys')
+            
+        except Exception as e:
+            messages.error(request, f'Error saving API keys: {str(e)}')
+            return redirect('dashboard:api_keys')
+    
+    return redirect('dashboard:api_keys')
