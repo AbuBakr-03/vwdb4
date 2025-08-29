@@ -610,8 +610,8 @@
             </label>
             <div class="relative">
               <select id="voice-provider" class="select select-bordered w-full bg-base-100">
-                <option value="openai" {% if assistant_config.voice.voice.provider == 'openai' or not assistant_config.voice.voice %}selected{% endif %}>🤖 OpenAI</option>
-                <option value="elevenlabs" {% if assistant_config.voice.voice.provider == 'elevenlabs' %}selected{% endif %}>🎵 ElevenLabs</option>
+                <option value="openai" {% if assistant_config.voice.voice.provider == 'openai' or not assistant_config.voice.voice %}selected{% endif %}> OpenAI</option>
+                <option value="elevenlabs" {% if assistant_config.voice.voice.provider == 'elevenlabs' %}selected{% endif %}> ElevenLabs</option>
               </select>
             </div>
           </div>
@@ -928,7 +928,7 @@
             <div class="relative">
               <select id="transcriber-provider" class="select select-bordered w-full bg-base-100">
                 <option value="deepgram" selected>🔵 Deepgram</option>
-                <option value="openai">🤖 OpenAI Whisper</option>
+                <option value="openai"> OpenAI Whisper</option>
                 <option value="assemblyai">🎯 AssemblyAI</option>
                 <option value="azure">☁️ Azure Speech</option>
                 <option value="google">🔍 Google Speech</option>
