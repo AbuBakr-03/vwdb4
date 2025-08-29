@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'people',
     'prompt',
     'reports',
+    'tools',
 ]
 
 MIDDLEWARE = [
