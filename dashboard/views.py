@@ -73,3 +73,85 @@ def home(request):
     }
     
     return render(request, "dashboard/index.html", context)
+
+
+def overview(request):
+    """Overview page for voice AI agents dashboard."""
+    context = {}
+    
+    # Add tenant info if available
+    if hasattr(request, 'tenant_flags'):
+        context['tenant_info'] = get_tenant_info(request)
+    
+    # Mock data for overview page - empty state since no calls yet
+    context['overview_data'] = {
+        'total_calls': 0,
+        'success_rate': 0,
+        'average_duration': 0,
+        'total_cost': 0.00,
+        'has_calls': False,
+        'assistants': [
+            {'name': 'Customer Support', 'active': True},
+            {'name': 'Sales Assistant', 'active': False}, 
+            {'name': 'Appointment Booking', 'active': True},
+        ]
+    }
+    
+    return render(request, "dashboard/Overview.html", context)
+
+
+def assistants(request):
+    """Assistants page with secondary sidebar."""
+    context = {}
+    
+    # Add tenant info if available
+    if hasattr(request, 'tenant_flags'):
+        context['tenant_info'] = get_tenant_info(request)
+    
+    # Mock assistants data
+    context['assistants'] = [
+        {
+            'id': 1,
+            'name': 'Riley',
+            'description': 'Elliot',
+            'is_active': True,
+            'selected': True
+        },
+        {
+            'id': 2,
+            'name': 'Customer Support',
+            'description': 'General Support Agent',
+            'is_active': True,
+            'selected': False
+        },
+        {
+            'id': 3,
+            'name': 'Sales Assistant',
+            'description': 'Sales Inquiry Handler',
+            'is_active': False,
+            'selected': False
+        },
+        {
+            'id': 4,
+            'name': 'Appointment Booking',
+            'description': 'Schedule Management',
+            'is_active': True,
+            'selected': False
+        },
+        {
+            'id': 5,
+            'name': 'Technical Support',
+            'description': 'Technical Issue Resolver',
+            'is_active': True,
+            'selected': False
+        },
+        {
+            'id': 6,
+            'name': 'Lead Qualification',
+            'description': 'Lead Scoring Agent',
+            'is_active': True,
+            'selected': False
+        }
+    ]
+    
+    return render(request, "dashboard/Assistants.html", context)
