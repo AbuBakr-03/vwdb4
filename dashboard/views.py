@@ -83,6 +83,20 @@ def overview(request):
     if hasattr(request, 'tenant_flags'):
         context['tenant_info'] = get_tenant_info(request)
     
+    # Organization data for breadcrumbs and components
+    context['organization'] = {
+        'name': 'Zain Telecom',
+        'slug': 'zain_bh',
+        'plan': 'Enterprise',
+        'credits': 25.50
+    }
+    
+    # Dynamic breadcrumb data
+    context['breadcrumb_items'] = [
+        {'text': 'Organization', 'href': '/dashboard/'},
+        {'text': context['organization']['name'], 'active': True}
+    ]
+    
     # Mock data for overview page - empty state since no calls yet
     context['overview_data'] = {
         'total_calls': 0,
@@ -107,6 +121,21 @@ def assistants(request):
     # Add tenant info if available
     if hasattr(request, 'tenant_flags'):
         context['tenant_info'] = get_tenant_info(request)
+    
+    # Organization data for breadcrumbs and components
+    context['organization'] = {
+        'name': 'Zain Telecom',
+        'slug': 'zain_bh',
+        'plan': 'Enterprise',
+        'credits': 25.50
+    }
+    
+    # Dynamic breadcrumb data
+    context['breadcrumb_items'] = [
+        {'text': 'Organization', 'href': '/dashboard/'},
+        {'text': context['organization']['name'], 'href': '/dashboard/overview/'},
+        {'text': 'Assistants', 'active': True}
+    ]
     
     # Mock assistants data
     context['assistants'] = [

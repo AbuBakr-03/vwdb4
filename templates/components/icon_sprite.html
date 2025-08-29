@@ -1,0 +1,44 @@
+{% comment %}
+Performance-Optimized SVG Sprite Icon Component
+
+Usage: {% include 'components/icon_sprite.html' with name="phone" size="md" class="text-primary" %}
+
+Parameters:
+- name: Icon name (required) - e.g., "phone", "check-circle", "settings"
+- size: Icon size (optional) - "xs", "sm", "md", "lg", "xl", or custom class like "w-4 h-4"
+- class: Additional CSS classes (optional)
+- stroke_width: SVG stroke width (1, 1.5, 2) - default: 2
+
+Available icons: phone, check-circle, settings, plus, search, help-circle, external-link, 
+users, home, analytics, campaigns, tickets, reports, brain, mic, headphones, wrench, zap,
+building, credit-card, book-open, message-circle, globe, server, chevron-down, chevron-right,
+dollar-sign, clock, activity, trending-up, etc.
+
+Performance Benefits:
+- Uses SVG sprite system for reduced DOM size
+- Faster rendering with symbol references
+- Reduced bandwidth usage
+- Better browser caching
+{% endcomment %}
+
+{% load static %}
+
+{% comment %} Set size classes {% endcomment %}
+{% if size == "xs" %}
+  {% with size_class="w-3 h-3" %}
+{% elif size == "sm" %}
+  {% with size_class="w-4 h-4" %}
+{% elif size == "lg" %}
+  {% with size_class="w-6 h-6" %}
+{% elif size == "xl" %}
+  {% with size_class="w-8 h-8" %}
+{% else %}
+  {% with size_class="w-5 h-5" %}
+{% endif %}
+
+{% comment %} Render SVG icon using sprite system {% endcomment %}
+<svg class="{{ size_class }} {{ class|default:'' }}" fill="none" stroke="currentColor" stroke-width="{{ stroke_width|default:'2' }}">
+  <use href="{% static 'icons/sprite.svg' %}#icon-{{ name }}"></use>
+</svg>
+
+{% endwith %}

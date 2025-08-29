@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Assistants - Watchtower{% endblock %}
 
 {% block secondary_sidebar %}
@@ -249,19 +250,19 @@
     </div>
     
     <!-- Advanced as Ghost Button -->
-    <button class="btn btn-ghost btn-sm text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 border border-amber-400/30 rounded-2xl" data-section="advanced">
+    <a href="#advanced-section" class="btn btn-ghost btn-sm text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 border border-amber-400/30 rounded-2xl" data-section="advanced">
       <!-- Lucide Settings icon -->
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
         <circle cx="12" cy="12" r="3"/>
       </svg>
       Advanced
-    </button>
+    </a>
   </div>
 </div>
 
 <!-- Scrollable Content -->
-<div class="space-y-6" style="padding-top: 140px;">
+<div class="space-y-6 content-with-fixed-header">
 
   <!-- Metrics Strip -->
   <div class="grid grid-cols-4 gap-3">
@@ -349,9 +350,9 @@
 
     <!-- Collapsible content -->
     <div id="collapsible-model-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-6 space-y-6">
+      <div class="p-4 space-y-3">
         <!-- Provider and Model Row -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Provider -->
         <div class="space-y-2">
           <label class="flex items-center space-x-2 text-sm font-medium text-base-content">
@@ -482,7 +483,7 @@
       </div>
 
       <!-- Max Tokens and Temperature Row -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Max Tokens -->
         <div class="space-y-2">
           <label class="flex items-center space-x-2 text-sm font-medium text-base-content">
@@ -593,8 +594,61 @@
 
     <!-- Collapsible content -->
     <div id="collapsible-voice-config-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-6 space-y-6">
-        <!-- Voice Configuration content will be added later -->
+      <div class="p-4 space-y-3">
+        <!-- Voice Configuration Form Fields -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          
+          <!-- Provider Selection -->
+          <div class="space-y-2">
+            <label for="voice-provider" class="block text-sm font-medium text-base-content">
+              Provider
+              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
+                Select the voice provider service for generating speech
+              </div>
+            </label>
+            <div class="relative">
+              <select id="voice-provider" class="select select-bordered w-full bg-base-100">
+                <option value="vapi" selected>🤖 Vapi</option>
+                <option value="elevenlabs">🎵 ElevenLabs</option>
+                <option value="azure">☁️ Azure</option>
+                <option value="aws">📦 AWS Polly</option>
+                <option value="google">🔍 Google</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Voice Selection -->
+          <div class="space-y-2">
+            <label for="voice-selection" class="block text-sm font-medium text-base-content">
+              Voice
+              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
+                Choose the specific voice model for speech synthesis
+              </div>
+            </label>
+            <div class="relative">
+              <select id="voice-selection" class="select select-bordered w-full bg-base-100">
+                <option value="elliot" selected>Elliot</option>
+                <option value="sarah">Sarah</option>
+                <option value="alex">Alex</option>
+                <option value="jordan">Jordan</option>
+                <option value="casey">Casey</option>
+                <option value="riley">Riley</option>
+                <option value="morgan">Morgan</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </section>
@@ -640,8 +694,113 @@
 
     <!-- Collapsible content -->
     <div id="collapsible-voice-additional-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-6 space-y-6">
-        <!-- Additional Configuration content will be added later -->
+      <div class="p-4 space-y-3">
+        <!-- Additional Configuration Form Fields -->
+        
+        <!-- Row 1: Background Sound + Background Sound URL -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          
+          <!-- Background Sound -->
+          <div class="space-y-2">
+            <label for="background-sound" class="block text-sm font-medium text-base-content">
+              Background Sound
+              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
+                Add ambient background sound during conversations
+              </div>
+            </label>
+            <div class="relative">
+              <select id="background-sound" class="select select-bordered w-full bg-base-100">
+                <option value="default" selected>Default</option>
+                <option value="office">Office Ambiance</option>
+                <option value="cafe">Cafe Noise</option>
+                <option value="nature">Nature Sounds</option>
+                <option value="rain">Rain</option>
+                <option value="none">None</option>
+                <option value="custom">Custom URL</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Background Sound URL -->
+          <div class="space-y-2">
+            <label for="background-sound-url" class="block text-sm font-medium text-base-content">
+              Background Sound URL
+              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
+                Custom URL for background sound audio file
+              </div>
+            </label>
+            <input 
+              type="url" 
+              id="background-sound-url" 
+              class="input input-bordered w-full bg-base-100" 
+              placeholder="https://www.soundjay.com/ambient/sounds/people-in-lounge-1.mp3"
+              value="https://www.soundjay.com/ambient/sounds/people-in-lounge-1.mp3"
+            />
+          </div>
+
+        </div>
+
+        <!-- Row 2: Input Min Characters (full width) -->
+        <div class="space-y-2">
+          <label for="input-min-characters" class="block text-sm font-medium text-base-content">
+            Input Min Characters
+            <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
+              Minimum number of characters required before processing input
+            </div>
+          </label>
+          <input 
+            type="number" 
+            id="input-min-characters" 
+            class="input input-bordered w-full lg:w-1/3 bg-base-100" 
+            placeholder="30"
+            value="30"
+            min="1"
+            max="1000"
+          />
+        </div>
+
+        <!-- Punctuation Boundaries Section -->
+        <div class="divider opacity-30 my-1"></div>
+        
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-medium text-base-content">Punctuation Boundaries</h3>
+          </div>
+          <p class="text-sm text-base-content/60">
+            These are the punctuations that are considered valid boundaries or delimiters. This helps decides the chunks that are sent to the voice provider for the voice generation as the LLM tokens are streaming in.
+          </p>
+          
+          <!-- Punctuation Boundaries Input -->
+          <div class="space-y-2">
+            <div class="relative">
+              <select class="select select-bordered w-full bg-base-100 text-base-content/60">
+                <option selected>No Punctuation Boundaries Added</option>
+                <option value="period">Period (.)</option>
+                <option value="comma">Comma (,)</option>
+                <option value="semicolon">Semicolon (;)</option>
+                <option value="question">Question Mark (?)</option>
+                <option value="exclamation">Exclamation Mark (!)</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -696,132 +855,174 @@
 
     <!-- Collapsible content -->
     <div id="collapsible-transcriber-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-6 space-y-6">
-      <!-- Provider and Language Row -->
-      <div class="grid grid-cols-2 gap-6">
-        <!-- Provider -->
+      <div class="p-4 space-y-3">
+        
+        <!-- Provider and Language Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          
+          <!-- Provider -->
+          <div class="space-y-2">
+            <label for="transcriber-provider" class="block text-sm font-medium text-base-content">
+              Provider
+              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
+                Select the transcription service provider
+              </div>
+            </label>
+            <div class="relative">
+              <select id="transcriber-provider" class="select select-bordered w-full bg-base-100">
+                <option value="deepgram" selected>🔵 Deepgram</option>
+                <option value="openai">🤖 OpenAI Whisper</option>
+                <option value="assemblyai">🎯 AssemblyAI</option>
+                <option value="azure">☁️ Azure Speech</option>
+                <option value="google">🔍 Google Speech</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Language -->
+          <div class="space-y-2">
+            <label for="transcriber-language" class="block text-sm font-medium text-base-content">
+              Language
+              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
+                Primary language for transcription
+              </div>
+            </label>
+            <div class="relative">
+              <select id="transcriber-language" class="select select-bordered w-full bg-base-100">
+                <option value="en" selected>En</option>
+                <option value="es">Es</option>
+                <option value="fr">Fr</option>
+                <option value="de">De</option>
+                <option value="it">It</option>
+                <option value="pt">Pt</option>
+                <option value="multi">Multi</option>
+              </select>
+            </div>
+            <div class="text-xs text-blue-400 mt-1">
+              Pro tip: If you want to support both English and Spanish, you can set the language to <span class="font-medium">multi</span> and use <span class="font-medium">ElevenLabs Turbo 2.5</span> in the Voice tab.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Model -->
         <div class="space-y-2">
-          <label class="text-sm font-medium text-base-content">Provider</label>
-          <div class="relative">
-            <select class="select w-full bg-base-300/50 border-base-content/20 text-base-content">
-              <option selected>🔵 Deepgram</option>
-              <option>OpenAI Whisper</option>
-              <option>AssemblyAI</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Language -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-base-content">Language</label>
-          <div class="relative">
-            <select class="select w-full bg-base-300/50 border-base-content/20 text-base-content">
-              <option selected>En</option>
-              <option>Es</option>
-              <option>Fr</option>
-              <option>De</option>
-            </select>
-          </div>
-          <div class="text-xs text-blue-400">
-            Pro tip: If you want to support both English and Spanish, you can set the language to <span class="font-medium">multi</span> and use <span class="font-medium">ElevenLabs Turbo 2.5</span> in the Voice tab.
-          </div>
-        </div>
-      </div>
-
-      <!-- Model -->
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-base-content">Model</label>
-        <select class="select w-full bg-base-300/50 border-base-content/20 text-base-content">
-          <option selected>Nova 3</option>
-          <option>Nova 2</option>
-          <option>Base</option>
-        </select>
-      </div>
-
-      <!-- Background Denoising Enabled -->
-      <div class="flex items-start space-x-3 py-3">
-        <div class="flex items-center justify-center w-5 h-5 mt-0.5">
-          <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M6.343 6.343a8 8 0 000 11.314m2.829-9.9a5 5 0 000 7.07"></path>
-          </svg>
-        </div>
-        <div class="flex-1">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-medium text-base-content">Background Denoising Enabled</h3>
-              <p class="text-xs text-base-content/60 mt-1">Filter background noise while the user is talking.</p>
+          <label for="transcriber-model" class="block text-sm font-medium text-base-content">
+            Model
+            <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
+              Transcription model version to use
             </div>
-            <input type="checkbox" class="toggle toggle-primary" checked>
+          </label>
+          <select id="transcriber-model" class="select select-bordered w-full bg-base-100">
+            <option value="nova-3" selected>Nova 3</option>
+            <option value="nova-2">Nova 2</option>
+            <option value="nova-1">Nova 1</option>
+            <option value="base">Base</option>
+            <option value="enhanced">Enhanced</option>
+          </select>
+        </div>
+
+        <!-- Background Denoising Enabled -->
+        <div class="flex items-start space-x-3">
+          <div class="flex items-center justify-center w-5 h-5 mt-0.5">
+            <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M6.343 6.343a8 8 0 000 11.314m2.829-9.9a5 5 0 000 7.07"></path>
+            </svg>
           </div>
-        </div>
-      </div>
-
-      <!-- Separator -->
-      <hr class="border-base-content/20 my-4">
-
-      <!-- Confidence Threshold -->
-      <div class="flex items-start space-x-3 py-3">
-        <div class="flex items-center justify-center w-5 h-5 mt-0.5">
-          <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
-        </div>
-        <div class="flex-1">
-          <h3 class="text-sm font-medium text-base-content">Confidence Threshold</h3>
-          <p class="text-xs text-base-content/60 mt-1 mb-4">Transcripts with a confidence score below this threshold will be filtered out.</p>
-          <div class="relative">
-            <input type="range" min="0" max="1" step="0.1" value="0.4" class="range range-primary w-full">
-            <div class="flex justify-between text-xs text-base-content/60 mt-1">
-              <span>0</span>
-              <span>1.0</span>
-            </div>
-            <div class="absolute -top-8 right-0">
-              <span class="text-xs font-medium text-base-content">0.4</span>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">Background Denoising Enabled</h3>
+                <p class="text-xs text-base-content/60">Filter background noise while the user is talking.</p>
+              </div>
+              <input type="checkbox" id="background-denoising" class="toggle toggle-primary" checked>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Separator -->
-      <hr class="border-base-content/20 my-4">
+        <!-- Divider -->
+        <div class="divider opacity-30 my-1"></div>
 
-      <!-- Use Numerals -->
-      <div class="flex items-start space-x-3 py-3">
-        <div class="flex items-center justify-center w-5 h-5 mt-0.5">
-          <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-          </svg>
-        </div>
-        <div class="flex-1">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-medium text-base-content">Use Numerals</h3>
-              <p class="text-xs text-base-content/60 mt-1">Convert numbers from words to digits in transcription.</p>
+        <!-- Confidence Threshold -->
+        <div class="flex items-start space-x-3">
+          <div class="flex items-center justify-center w-5 h-5 mt-0.5">
+            <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-sm font-medium text-base-content">Confidence Threshold</h3>
+            <p class="text-xs text-base-content/60 mb-3">Transcripts with a confidence score below this threshold will be filtered out.</p>
+            <div class="relative">
+              <input type="range" id="confidence-threshold" min="0" max="1" step="0.01" value="0.4" class="range range-primary w-full">
+              <div class="flex justify-between text-xs text-base-content/60 mt-2">
+                <span>0</span>
+                <span class="text-right">1.0</span>
+              </div>
+              <div class="absolute -top-8 right-0">
+                <span class="text-xs font-medium text-base-content">0.4</span>
+              </div>
             </div>
-            <input type="checkbox" class="toggle toggle-primary" checked>
           </div>
         </div>
-      </div>
 
-      <!-- Separator -->
-      <hr class="border-base-content/20 my-4">
+        <!-- Divider -->
+        <div class="divider opacity-30 my-1"></div>
 
-      <!-- Keywords -->
-      <div class="flex items-start space-x-3 py-3">
-        <div class="flex items-center justify-center w-5 h-5 mt-0.5">
-          <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-          </svg>
+        <!-- Use Numerals -->
+        <div class="flex items-start space-x-3">
+          <div class="flex items-center justify-center w-5 h-5 mt-0.5">
+            <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">Use Numerals</h3>
+                <p class="text-xs text-base-content/60">Convert numbers from words to digits in transcription.</p>
+              </div>
+              <input type="checkbox" id="use-numerals" class="toggle toggle-primary" checked>
+            </div>
+          </div>
         </div>
-        <div class="flex-1">
-          <h3 class="text-sm font-medium text-base-content mb-3">Keyterms</h3>
-          <textarea 
-            class="textarea w-full bg-base-300/50 border-base-content/20 text-base-content min-h-[120px] resize-none" 
-            placeholder=""
-          ></textarea>
-          <p class="text-xs text-base-content/60 mt-2">Enter keywords separated by spaces. These will be used as key terms for transcription.</p>
+
+        <!-- Divider -->
+        <div class="divider opacity-30 my-1"></div>
+
+        <!-- Keyterms -->
+        <div class="flex items-start space-x-3">
+          <div class="flex items-center justify-center w-5 h-5 mt-0.5">
+            <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-sm font-medium text-base-content mb-2">Keyterms</h3>
+            <textarea 
+              id="keyterms"
+              class="textarea textarea-bordered w-full bg-base-100 min-h-[120px] resize-none" 
+              placeholder="Enter keywords separated by spaces..."
+            ></textarea>
+            <p class="text-xs text-base-content/60 mt-1">Enter keywords separated by spaces. These will be used as key terms for transcription.</p>
+          </div>
         </div>
-      </div>
+
       </div>
     </div>
   </section>
@@ -834,6 +1035,82 @@
     </svg>
     <span>TOOLS</span>
   </div>
+
+  <!-- Tools subsection -->
+  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
+    <!-- Header button -->
+    <button
+      type="button"
+      aria-controls="collapsible-tools-main-tab-content"
+      aria-expanded="false"
+      data-state="closed"
+      class="group flex w-full flex-row items-center justify-between border-b bg-base-200/40 p-4"
+    >
+      <div class="flex flex-row items-start gap-3">
+        <!-- Section icon -->
+        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+
+        <!-- Title + helper -->
+        <div class="flex flex-col items-start">
+          <div class="flex flex-row items-center">
+            <h2 class="text-lg font-medium text-base-content" data-testid="tools-main-header">Tools</h2>
+            <!-- Hover-only helper icon (appears on hover like Vapi) -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
+                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
+              <path fill="currentColor"
+                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48A54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
+            </svg>
+          </div>
+          <p class="text-xs text-base-content/60">Tools enable voicebots to perform actions during calls. Add tools from the Tools Library to connect with Make.com or CHL workflows, or create custom tools with your backend.</p>
+        </div>
+      </div>
+
+      <!-- Right chevron: rotates when expanded -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
+           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
+        <path fill="currentColor"
+          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
+      </svg>
+    </button>
+
+    <!-- Collapsible content -->
+    <div id="collapsible-tools-main-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+      <div class="p-4 space-y-3">
+        <!-- Tools Content -->
+        
+        <!-- Information Notice -->
+        <div class="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+          <div class="flex items-start space-x-2">
+            <svg class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div class="text-xs text-blue-600">
+              <span class="font-medium">Note:</span> Tools have different Request and Response format as compared to Functions. Check our <span class="underline cursor-pointer">tools guide</span> for more details
+            </div>
+          </div>
+        </div>
+
+        <!-- Select Tools Section -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-medium text-base-content">Select Tools</h3>
+          
+          <!-- Tools Dropdown/Selection -->
+          <div class="relative">
+            <button class="btn btn-outline w-full justify-between text-left bg-base-100 border-base-content/20 hover:bg-base-200/50">
+              <span class="text-base-content/60">Select tools to add...</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
   <!-- Predefined Functions subsection -->
   <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
@@ -876,8 +1153,92 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-tools-predefined-tab-content" class="p-6 space-y-6" hidden>
-      <!-- Predefined Functions content will be added later -->
+    <div id="collapsible-tools-predefined-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+      <div class="p-4 space-y-3">
+        <!-- Predefined Functions Content -->
+        
+        <!-- Enable End Call Function -->
+        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">Enable End Call Function</h3>
+                <p class="text-xs text-base-content/60">This will allow the assistant to end the call from its side. (Best for gpt-4 and bigger models) <span class="text-blue-400 cursor-pointer hover:underline">Read More</span></p>
+              </div>
+              <input type="checkbox" class="toggle toggle-primary" checked>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dial Keypad -->
+        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 3v6h4l1 1h4V3H7zM3 21h18v-6H3v6z"></path>
+              <circle cx="7" cy="6" r="1"></circle>
+              <circle cx="10" cy="6" r="1"></circle>
+              <circle cx="13" cy="6" r="1"></circle>
+              <circle cx="7" cy="9" r="1"></circle>
+              <circle cx="10" cy="9" r="1"></circle>
+              <circle cx="13" cy="9" r="1"></circle>
+              <circle cx="7" cy="12" r="1"></circle>
+              <circle cx="10" cy="12" r="1"></circle>
+              <circle cx="13" cy="12" r="1"></circle>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">Dial Keypad</h3>
+                <p class="text-xs text-base-content/60">This sets whether the assistant can dial digits on the keypad. <span class="text-blue-400 cursor-pointer hover:underline">Read More</span></p>
+              </div>
+              <input type="checkbox" class="toggle toggle-primary" checked>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forwarding Phone Number -->
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2">
+            <h3 class="text-sm font-medium text-base-content">Forwarding Phone Number</h3>
+            <svg class="w-4 h-4 text-base-content/50 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          
+          <div class="flex space-x-2">
+            <!-- Country Code Dropdown -->
+            <div class="relative">
+              <select class="select select-bordered bg-base-100 w-20">
+                <option value="us" selected>🇺🇸</option>
+                <option value="ca">🇨🇦</option>
+                <option value="uk">🇬🇧</option>
+                <option value="au">🇦🇺</option>
+                <option value="de">🇩🇪</option>
+                <option value="fr">🇫🇷</option>
+                <option value="sa">🇸🇦</option>
+                <option value="ae">🇦🇪</option>
+              </select>
+            </div>
+            
+            <!-- Phone Number Input -->
+            <input 
+              type="tel" 
+              class="input input-bordered flex-1 bg-base-100" 
+              placeholder="4257623355"
+              value="4257623355"
+            />
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -922,8 +1283,38 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-tools-custom-tab-content" class="p-6 space-y-6" hidden>
-      <!-- Custom Functions content will be added later -->
+    <div id="collapsible-tools-custom-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+      <div class="p-4 space-y-3">
+        <!-- Custom Functions Content -->
+        
+        <!-- Information Notice -->
+        <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          <div class="flex items-start space-x-2">
+            <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div class="text-xs text-amber-600">
+              <span class="font-medium">Note:</span> Functions are the same as tools, except they follow older syntax as per the OpenAI Spec. Check our <span class="underline cursor-pointer">functions guide</span> for more details
+            </div>
+          </div>
+        </div>
+
+        <!-- Create New Function Button -->
+        <div class="flex justify-center">
+          <button class="btn btn-outline btn-sm border-dashed border-2 border-base-content/30 text-base-content/50 hover:border-primary hover:text-primary transition-colors duration-200 w-full py-8">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Create a new function
+            <svg class="w-4 h-4 ml-2 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -975,8 +1366,53 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-analysis-summary-tab-content" class="p-6 space-y-6" hidden>
-      <!-- Summary content will be added later -->
+    <div id="collapsible-analysis-summary-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+      <div class="p-4 space-y-3">
+        <!-- Summary Content -->
+        
+        <!-- Description -->
+        <p class="text-sm text-base-content/70">This is the prompt that's used to summarize the Call. The output is stored in call.analysis.summary. You can also find the summary in the Call Logs Page.</p>
+
+        <!-- Prompt Section -->
+        <div class="space-y-2">
+          <h3 class="text-sm font-medium text-base-content">Prompt</h3>
+          <textarea 
+            class="textarea textarea-bordered w-full bg-base-100 min-h-[120px] resize-none" 
+            placeholder="Enter summary prompt..."
+          >You are an expert note-taker. You will be given a transcript of a call. Summarize the call in 2-3 sentences, if applicable.</textarea>
+        </div>
+
+        <!-- Summary request timeout -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium text-base-content">Summary request timeout in seconds.</label>
+            <span class="text-sm font-medium text-base-content">10</span>
+          </div>
+          <div class="relative">
+            <input type="range" min="1" max="60" step="1" value="10" class="range range-primary w-full">
+            <div class="flex justify-between text-xs text-base-content/60 mt-1">
+              <span>1 (sec)</span>
+              <span class="text-right">60 (sec)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Minimum number of messages -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium text-base-content">Minimum number of messages to trigger analysis.</label>
+            <span class="text-sm font-medium text-base-content">2</span>
+          </div>
+          <div class="relative">
+            <input type="range" min="0" max="10" step="1" value="2" class="range range-primary w-full">
+            <div class="flex justify-between text-xs text-base-content/60 mt-1">
+              <span>0</span>
+              <span class="text-right">10</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -1020,8 +1456,55 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-analysis-success-tab-content" class="p-6 space-y-6" hidden>
-      <!-- Success Evaluation content will be added later -->
+    <div id="collapsible-analysis-success-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+      <div class="p-4 space-y-3">
+        <!-- Success Evaluation Content -->
+        
+        <!-- Description -->
+        <p class="text-sm text-base-content/70">Evaluate if your call was successful. You can use Rubric standalone or in combination with Success Evaluation Prompt. If both are provided, they are concatenated into appropriate instructions.</p>
+
+        <!-- Prompt Section -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-base-content">Prompt</label>
+          <p class="text-xs text-amber-500">This is the prompt that's used to evaluate if the call was successful.</p>
+          <textarea 
+            class="textarea textarea-bordered w-full bg-base-100 min-h-[120px] resize-none" 
+            placeholder="Enter success evaluation prompt..."
+          >You are an expert call evaluator. You will be given a transcript of a call and the system prompt of the AI participant. Determine if the call was successful based on the objectives inferred from the system prompt.</textarea>
+        </div>
+
+        <!-- Success Evaluation Rubric -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-base-content">Success Evaluation Rubric</label>
+          <p class="text-xs text-amber-500">This enforces the rubric of the evaluation upon the Success Evaluation.</p>
+          
+          <div class="relative">
+            <select class="select select-bordered w-full bg-base-100">
+              <option value="numeric" selected>NumericScale</option>
+              <option value="binary">Binary</option>
+              <option value="percentage">Percentage</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <p class="text-xs text-base-content/60">A scale of 1 to 10.</p>
+        </div>
+
+        <!-- Success evaluation request timeout -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium text-base-content">Success evaluation request timeout in seconds.</label>
+            <span class="text-sm font-medium text-base-content">11</span>
+          </div>
+          <div class="relative">
+            <input type="range" min="1" max="60" step="1" value="11" class="range range-primary w-full">
+            <div class="flex justify-between text-xs text-base-content/60 mt-1">
+              <span>1 (sec)</span>
+              <span class="text-right">60 (sec)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -1065,8 +1548,49 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-analysis-data-tab-content" class="p-6 space-y-6" hidden>
-      <!-- Structured Data content will be added later -->
+    <div id="collapsible-analysis-data-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+      <div class="p-4 space-y-3">
+        <!-- Structured Data Content -->
+        
+        <!-- Description -->
+        <p class="text-sm text-base-content/70">Extract structured data from call conversation. You can use Data Schema standalone or in combination with Structured Data Prompt. If both are provided, they are concatenated into appropriate instructions.</p>
+
+        <!-- Prompt Section -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-base-content">Prompt</label>
+          <p class="text-xs text-amber-500">This is the prompt that's used to extract structured data from the call.</p>
+          <textarea 
+            class="textarea textarea-bordered w-full bg-base-100 min-h-[120px] resize-none" 
+            placeholder="Enter structured data prompt..."
+          >You will be given a transcript of a call and the system prompt of the AI participant. Extract...</textarea>
+        </div>
+
+        <!-- Structured data request timeout -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium text-base-content">Structured data request timeout in seconds.</label>
+            <span class="text-sm font-medium text-base-content">10</span>
+          </div>
+          <div class="relative">
+            <input type="range" min="1" max="60" step="1" value="10" class="range range-primary w-full">
+            <div class="flex justify-between text-xs text-base-content/60 mt-1">
+              <span>1 (sec)</span>
+              <span class="text-right">60 (sec)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Property Button -->
+        <div class="pt-2">
+          <button class="btn btn-outline btn-sm border-dashed border-2 border-base-content/30 text-base-content/50 hover:border-primary hover:text-primary transition-colors duration-200">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add Property
+          </button>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -1118,7 +1642,7 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-advanced-privacy-tab-content" class="p-6 space-y-6" hidden>
+    <div id="collapsible-advanced-privacy-tab-content" class="p-4 space-y-4" hidden>
       <!-- Privacy content will be added later -->
     </div>
   </section>
@@ -1163,7 +1687,7 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-advanced-speaking-tab-content" class="p-6 space-y-6" hidden>
+    <div id="collapsible-advanced-speaking-tab-content" class="p-4 space-y-4" hidden>
       <!-- Start Speaking Plan content will be added later -->
     </div>
   </section>
@@ -1208,7 +1732,7 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-advanced-voicemail-tab-content" class="p-6 space-y-6" hidden>
+    <div id="collapsible-advanced-voicemail-tab-content" class="p-4 space-y-4" hidden>
       <!-- Voicemail Detection content will be added later -->
     </div>
   </section>
@@ -1254,7 +1778,7 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-advanced-stop-tab-content" class="p-6 space-y-6" hidden>
+    <div id="collapsible-advanced-stop-tab-content" class="p-4 space-y-4" hidden>
       <!-- Stop Speaking Plan content will be added later -->
     </div>
   </section>
@@ -1299,7 +1823,7 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-advanced-timeout-tab-content" class="p-6 space-y-6" hidden>
+    <div id="collapsible-advanced-timeout-tab-content" class="p-4 space-y-4" hidden>
       <!-- Call Timeout Settings content will be added later -->
     </div>
   </section>
@@ -1344,7 +1868,7 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-advanced-keypad-tab-content" class="p-6 space-y-6" hidden>
+    <div id="collapsible-advanced-keypad-tab-content" class="p-4 space-y-4" hidden>
       <!-- Keypad Input Settings content will be added later -->
     </div>
   </section>
@@ -1389,7 +1913,7 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-advanced-messaging-tab-content" class="p-6 space-y-6" hidden>
+    <div id="collapsible-advanced-messaging-tab-content" class="p-4 space-y-4" hidden>
       <!-- Messaging content will be added later -->
     </div>
   </section>
@@ -1442,134 +1966,14 @@
     </button>
 
     <!-- Collapsible content -->
-    <div id="collapsible-widget-tab-content" class="p-6 space-y-6" hidden>
+    <div id="collapsible-widget-tab-content" class="p-4 space-y-4" hidden>
       <!-- Widget content will be added later -->
     </div>
   </section>
 </div>
 
 
-<!-- Enhanced JS for smooth collapsible animations and tab navigation -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Function to toggle collapsible sections with smooth animation
-    function toggleCollapse(button, contentId) {
-        const content = document.getElementById(contentId);
-        const isCollapsed = content.dataset.collapsed === 'true';
-        
-        if (isCollapsed) {
-            // Expanding
-            content.style.maxHeight = content.scrollHeight + 'px';
-            content.dataset.collapsed = 'false';
-            button.setAttribute('aria-expanded', 'true');
-            button.setAttribute('data-state', 'open');
-        } else {
-            // Collapsing
-            content.style.maxHeight = '0px';
-            content.dataset.collapsed = 'true';
-            button.setAttribute('aria-expanded', 'false');
-            button.setAttribute('data-state', 'closed');
-        }
-    }
-    
-    // Add click handlers using event delegation for better performance
-    document.addEventListener('click', function(e) {
-        const button = e.target.closest('button[aria-controls]');
-        if (!button) return;
-        
-        e.preventDefault();
-        const contentId = button.getAttribute('aria-controls');
-        toggleCollapse(button, contentId);
-    });
-    
-    // Handle window resize to recalculate heights for expanded sections
-    window.addEventListener('resize', function() {
-        const expandedSections = document.querySelectorAll('[data-collapsed="false"]');
-        expandedSections.forEach(section => {
-            section.style.maxHeight = section.scrollHeight + 'px';
-        });
-    });
-    
-    // Tab navigation with smooth scrolling
-    function handleTabNavigation() {
-        const tabs = document.querySelectorAll('a[data-section]');
-        const sections = document.querySelectorAll('[id$="-section"]');
-        
-        // Click handlers for tabs
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Remove active styling from all tabs
-                tabs.forEach(t => {
-                    t.classList.remove('text-white', 'border-b-2', 'border-white', 'font-medium');
-                    t.classList.add('text-neutral-content/70');
-                    if (t.textContent.trim() === 'Advanced') {
-                        t.classList.remove('text-neutral-content/70');
-                        t.classList.add('text-red-400');
-                    }
-                });
-                
-                // Add active styling to clicked tab
-                this.classList.remove('text-neutral-content/70', 'text-red-400');
-                this.classList.add('text-white', 'border-b-2', 'border-white', 'font-medium');
-                
-                // Get target section
-                const targetId = this.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
-                
-                if (targetElement) {
-                    // Smooth scroll to section with offset for fixed header
-                    const headerOffset = 160; // Account for fixed header height + padding
-                    const elementPosition = targetElement.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                    
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-        
-        // Update active tab based on scroll position
-        function updateActiveTab() {
-            const scrollPosition = window.scrollY + 180; // Offset for better detection
-            
-            sections.forEach((section, index) => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.offsetHeight;
-                const sectionBottom = sectionTop + sectionHeight;
-                
-                if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-                    tabs.forEach(t => {
-                        t.classList.remove('text-white', 'border-b-2', 'border-white', 'font-medium');
-                        t.classList.add('text-neutral-content/70');
-                        if (t.textContent.trim() === 'Advanced') {
-                            t.classList.remove('text-neutral-content/70');
-                            t.classList.add('text-red-400');
-                        }
-                    });
-                    if (tabs[index]) {
-                        tabs[index].classList.remove('text-neutral-content/70', 'text-red-400');
-                        tabs[index].classList.add('text-white', 'border-b-2', 'border-white', 'font-medium');
-                    }
-                }
-            });
-        }
-        
-        // Throttled scroll listener for performance
-        let scrollTimeout;
-        window.addEventListener('scroll', function() {
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-            }
-            scrollTimeout = setTimeout(updateActiveTab, 10);
-        });
-    }
-    
-    // Initialize tab navigation
-    handleTabNavigation();
-});
-</script>
+<!-- Load component styles and page JavaScript -->
+<link rel="stylesheet" href="{% static 'css/components.css' %}">
+<script type="module" src="{% static 'js/assistants.js' %}" defer></script>
 {% endblock %}
