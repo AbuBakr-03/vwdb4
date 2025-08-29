@@ -29,11 +29,9 @@ urlpatterns = [
     path("", include("dashboard.urls")),  # Dashboard at root
     path("dashboard/", dashboard_redirect, name="dashboard_redirect"),  # Redirect old URLs
     path("authorization/", include("authorization.urls")),
-    path("prompt/", include("prompt.urls")),
     path("campaigns/", include("campaigns.urls")),
     path("accounts/", include("accounts.urls")),
     path("reports/", include("reports.urls")),
-    path("tickets/", include("tickets.urls")),
     path("people/", include("people.urls")),
     path("tools/", include("tools.urls")),
 ]

@@ -23,7 +23,7 @@
 
   <!-- Create Assistant Button -->
   <div class="px-4 py-3">
-    <button class="btn btn-primary w-full">
+    <button id="create-assistant-btn" class="btn btn-primary w-full">
       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
       </svg>
@@ -41,75 +41,49 @@
     </div>
   </div>
 
+  <!-- Quick Create Assistant Option -->
+  <div class="px-4 py-2">
+    <button id="quick-create-assistant" class="w-full p-2 text-left hover:bg-base-300/50 rounded-lg transition-colors group">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+          <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-medium text-base-content">Create Assistant</div>
+          <div class="text-xs text-base-content/60">Start with "Maha" template</div>
+        </div>
+      </div>
+    </button>
+  </div>
+
   <!-- Assistants List -->
   <div class="flex-1 px-4 py-2 overflow-y-auto">
-    <div class="space-y-1">
-      <!-- Assistant Item - Selected -->
-      <div class="p-3 rounded-lg bg-primary/20 border border-primary/30 cursor-pointer transition-colors">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium text-primary text-sm truncate">Riley</h3>
-            <p class="text-xs text-primary/70 truncate">Elliot</p>
+    {% if assistants %}
+      <div class="space-y-1">
+        {% for assistant in assistants %}
+          <div class="p-3 rounded-lg {% if assistant.selected %}bg-primary/20 border border-primary/30{% else %}hover:bg-base-300/50{% endif %} cursor-pointer transition-colors assistant-item" data-assistant-id="{{ assistant.id }}">
+            <div class="flex items-center justify-between">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium {% if assistant.selected %}text-primary{% else %}text-base-content/90{% endif %} text-sm truncate">{{ assistant.name }}</h3>
+                <p class="text-xs {% if assistant.selected %}text-primary/70{% else %}text-base-content/60{% endif %} truncate">{{ assistant.description|default:"AI Assistant" }}</p>
+              </div>
+              <div class="w-2 h-2 {% if assistant.is_active %}bg-primary{% else %}bg-base-content/30{% endif %} rounded-full flex-shrink-0"></div>
+            </div>
           </div>
-          <div class="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
-        </div>
+        {% endfor %}
       </div>
-
-      <!-- Assistant Item - Normal -->
-      <div class="p-3 rounded-lg hover:bg-base-300/50 cursor-pointer transition-colors">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium text-base-content/90 text-sm truncate">Customer Support</h3>
-            <p class="text-xs text-base-content/60 truncate">General Support Agent</p>
-          </div>
-          <div class="w-2 h-2 bg-base-content/30 rounded-full flex-shrink-0"></div>
-        </div>
+    {% else %}
+      <!-- Empty State -->
+      <div class="flex flex-col items-center justify-center h-48 text-center">
+        <svg class="w-12 h-12 text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+        <h3 class="text-base-content/60 font-medium mb-2">No assistants yet</h3>
+        <p class="text-base-content/40 text-sm">Create your first AI assistant to get started</p>
       </div>
-
-      <!-- Assistant Item - Normal -->
-      <div class="p-3 rounded-lg hover:bg-base-300/50 cursor-pointer transition-colors">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium text-base-content/90 text-sm truncate">Sales Assistant</h3>
-            <p class="text-xs text-base-content/60 truncate">Sales Inquiry Handler</p>
-          </div>
-          <div class="w-2 h-2 bg-base-content/30 rounded-full flex-shrink-0"></div>
-        </div>
-      </div>
-
-      <!-- Assistant Item - Normal -->
-      <div class="p-3 rounded-lg hover:bg-base-300/50 cursor-pointer transition-colors">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium text-base-content/90 text-sm truncate">Appointment Booking</h3>
-            <p class="text-xs text-base-content/60 truncate">Schedule Management</p>
-          </div>
-          <div class="w-2 h-2 bg-base-content/30 rounded-full flex-shrink-0"></div>
-        </div>
-      </div>
-
-      <!-- Assistant Item - Normal -->
-      <div class="p-3 rounded-lg hover:bg-base-300/50 cursor-pointer transition-colors">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium text-base-content/90 text-sm truncate">Technical Support</h3>
-            <p class="text-xs text-base-content/60 truncate">Technical Issue Resolver</p>
-          </div>
-          <div class="w-2 h-2 bg-base-content/30 rounded-full flex-shrink-0"></div>
-        </div>
-      </div>
-
-      <!-- Assistant Item - Normal -->
-      <div class="p-3 rounded-lg hover:bg-base-300/50 cursor-pointer transition-colors">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium text-base-content/90 text-sm truncate">Lead Qualification</h3>
-            <p class="text-xs text-base-content/60 truncate">Lead Scoring Agent</p>
-          </div>
-          <div class="w-2 h-2 bg-base-content/30 rounded-full flex-shrink-0"></div>
-        </div>
-      </div>
-    </div>
+    {% endif %}
   </div>
 </aside>
 {% endblock %}
@@ -120,19 +94,27 @@
   <div class="flex items-center justify-between">
     <!-- Left: Assistant Name & Status -->
     <div class="flex items-center space-x-3">
-      <h1 class="text-lg font-bold text-white">Riley</h1>
-      <div class="badge badge-success badge-sm gap-1">
-        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-        Published
-      </div>
-      <span class="text-sm text-neutral-content/60 font-mono">dc8d68a4-3d4c-48b8-b0f5...</span>
-      <button class="btn btn-ghost btn-xs text-neutral-content/70 hover:text-white">
-        <!-- Lucide Copy icon -->
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-          <path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-        </svg>
-      </button>
+      {% if selected_assistant %}
+        <h1 id="assistant-name" class="text-lg font-bold text-white">{{ selected_assistant.name }}</h1>
+        <div class="badge {% if selected_assistant.status == 'published' %}badge-success{% elif selected_assistant.status == 'draft' %}badge-warning{% else %}badge-ghost{% endif %} badge-sm gap-1">
+          <div class="w-2 h-2 {% if selected_assistant.status == 'published' %}bg-green-400{% elif selected_assistant.status == 'draft' %}bg-yellow-400{% else %}bg-gray-400{% endif %} rounded-full"></div>
+          {{ selected_assistant.status|title }}
+        </div>
+        <span id="assistant-external-id" class="text-sm text-neutral-content/60 font-mono">{{ selected_assistant.external_id|slice:":20" }}...</span>
+        <button class="btn btn-ghost btn-xs text-neutral-content/70 hover:text-white" onclick="copyToClipboard('{{ selected_assistant.external_id }}')">
+          <!-- Lucide Copy icon -->
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+            <path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+          </svg>
+        </button>
+      {% else %}
+        <h1 class="text-lg font-bold text-white">No Assistant Selected</h1>
+        <div class="badge badge-ghost badge-sm gap-1">
+          <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+          None
+        </div>
+      {% endif %}
     </div>
     
     <!-- Right: Segmented Controls + Primary Button -->
@@ -170,6 +152,19 @@
           Call
         </button>
       </div>
+      
+      <!-- Save Configuration Button -->
+      {% if selected_assistant %}
+      <button id="save-config-btn" class="btn btn-success bg-green-500 hover:bg-green-600 text-white border-0 rounded-2xl shadow-lg">
+        <!-- Lucide Save icon -->
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17,21 17,13 7,13 7,21"/>
+          <polyline points="7,3 7,8 15,8"/>
+        </svg>
+        Save Configuration
+      </button>
+      {% endif %}
       
       <!-- Primary CTA -->
       <button class="btn btn-primary bg-cyan-500 hover:bg-cyan-600 text-white border-0 rounded-2xl shadow-lg">
@@ -264,7 +259,9 @@
 <!-- Scrollable Content -->
 <div class="space-y-6 content-with-fixed-header">
 
+{% if selected_assistant %}
   <!-- Metrics Strip -->
+  {% if metrics %}
   <div class="grid grid-cols-4 gap-3">
     <!-- Cost/min Tile -->
     <div class="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-2xl p-4 border border-cyan-200/50 dark:border-cyan-700/50 cursor-pointer hover:shadow-lg transition-all">
@@ -272,7 +269,7 @@
         <div class="text-xs font-medium text-cyan-700 dark:text-cyan-300 uppercase tracking-wider">Cost/min</div>
         <div class="w-2 h-2 rounded-full bg-cyan-500"></div>
       </div>
-      <div class="text-xl font-bold text-cyan-900 dark:text-cyan-100">$0.15</div>
+      <div class="text-xl font-bold text-cyan-900 dark:text-cyan-100">${{ metrics.cost_per_minute|floatformat:2 }}</div>
       <div class="text-xs text-cyan-600/80 dark:text-cyan-400/80">Web calls</div>
     </div>
     
@@ -282,7 +279,7 @@
         <div class="text-xs font-medium text-amber-700 dark:text-amber-300 uppercase tracking-wider">Avg Latency</div>
         <div class="w-2 h-2 rounded-full bg-amber-500"></div>
       </div>
-      <div class="text-xl font-bold text-amber-900 dark:text-amber-100">1.05s</div>
+      <div class="text-xl font-bold text-amber-900 dark:text-amber-100">{{ metrics.avg_latency|floatformat:2 }}s</div>
       <div class="text-xs text-amber-600/80 dark:text-amber-400/80">Response time</div>
     </div>
     
@@ -292,7 +289,7 @@
         <div class="text-xs font-medium text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Call Success</div>
         <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
       </div>
-      <div class="text-xl font-bold text-emerald-900 dark:text-emerald-100">94.2%</div>
+      <div class="text-xl font-bold text-emerald-900 dark:text-emerald-100">{{ metrics.call_success|floatformat:1 }}%</div>
       <div class="text-xs text-emerald-600/80 dark:text-emerald-400/80">Success rate</div>
     </div>
     
@@ -302,10 +299,11 @@
         <div class="text-xs font-medium text-violet-700 dark:text-violet-300 uppercase tracking-wider">ASR WER</div>
         <div class="w-2 h-2 rounded-full bg-violet-500"></div>
       </div>
-      <div class="text-xl font-bold text-violet-900 dark:text-violet-100">2.8%</div>
+      <div class="text-xl font-bold text-violet-900 dark:text-violet-100">{{ metrics.asr_wer|floatformat:1 }}%</div>
       <div class="text-xs text-violet-600/80 dark:text-violet-400/80">Error rate</div>
     </div>
   </div>
+  {% endif %}
 
   <!-- MODEL Section Divider -->
   <div id="model-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
@@ -358,10 +356,8 @@
           <label class="flex items-center space-x-2 text-sm font-medium text-base-content">
             <span>Provider</span>
           </label>
-          <select class="select select-bordered w-full bg-base-200/50">
-            <option selected>OpenAI</option>
-            <option>Anthropic</option>
-            <option>Google</option>
+          <select id="model-provider" class="select select-bordered w-full bg-base-200/50">
+            <option value="azure_openai" {% if assistant_config.model.provider == 'azure_openai' %}selected{% endif %}>Azure OpenAI</option>
           </select>
         </div>
 
@@ -383,10 +379,11 @@
               </div>
             </div>
           </label>
-          <select class="select select-bordered w-full bg-base-200/50">
-            <option selected>GPT 4o Cluster</option>
-            <option>GPT 4o</option>
-            <option>GPT 3.5 Turbo</option>
+          <select id="model-name" class="select select-bordered w-full bg-base-200/50">
+            <option value="gpt-4o-realtime" {% if assistant_config.model.model_name == 'gpt-4o-realtime' or not assistant_config.model.model_name %}selected{% endif %}>gpt-4o-realtime</option>
+            <option value="gpt-4o-mini-realtime" {% if assistant_config.model.model_name == 'gpt-4o-mini-realtime' %}selected{% endif %}>gpt-4o-mini-realtime</option>
+            <option value="gpt-4" {% if assistant_config.model.model_name == 'gpt-4' %}selected{% endif %}>gpt-4</option>
+            <option value="gpt-3.5-turbo" {% if assistant_config.model.model_name == 'gpt-3.5-turbo' %}selected{% endif %}>gpt-3.5-turbo</option>
           </select>
         </div>
       </div>
@@ -409,10 +406,10 @@
             </div>
           </div>
         </label>
-        <select class="select select-bordered w-full bg-base-200/50">
-          <option selected>Assistant speaks first</option>
-          <option>User speaks first</option>
-          <option>Both speak</option>
+        <select id="first-message-mode" class="select select-bordered w-full bg-base-200/50">
+          <option value="assistant_speaks_first" {% if assistant_config.model.first_message_mode == 'assistant_speaks_first' or not assistant_config.model.first_message_mode %}selected{% endif %}>Assistant speaks first</option>
+          <option value="user_speaks_first" {% if assistant_config.model.first_message_mode == 'user_speaks_first' %}selected{% endif %}>User speaks first</option>
+          <option value="both_speak" {% if assistant_config.model.first_message_mode == 'both_speak' %}selected{% endif %}>Both speak</option>
         </select>
       </div>
 
@@ -434,7 +431,7 @@
             </div>
           </div>
         </label>
-        <input type="text" class="input input-bordered w-full bg-base-200/50" value="Thank you for calling Wellness Partners. This is Riley, your scheduling assistant. How may I help you today?" />
+        <input id="first-message" type="text" class="input input-bordered w-full bg-base-200/50" value="{% if assistant_config.model.first_message %}{{ assistant_config.model.first_message }}{% else %}Thank you for calling Wellness Partners. This is Riley, your scheduling assistant. How may I help you today?{% endif %}" />
       </div>
 
       <!-- System Prompt -->
@@ -469,7 +466,7 @@
             Generate
           </button>
         </label>
-        <textarea class="textarea textarea-bordered w-full bg-base-200/50 h-32 resize-none" placeholder="Add your prompt here..."></textarea>
+        <textarea id="system-prompt" class="textarea textarea-bordered w-full bg-base-200/50 h-32 resize-none" placeholder="Add your prompt here...">{% if assistant_config.model.system_prompt %}{{ assistant_config.model.system_prompt }}{% endif %}</textarea>
       </div>
 
       <!-- Files -->
@@ -508,7 +505,7 @@
               </div>
             </div>
           </label>
-          <input type="number" class="input input-bordered w-full bg-base-200/50" value="250" />
+          <input id="max-tokens" type="number" class="input input-bordered w-full bg-base-200/50" value="{% if assistant_config.model.max_tokens %}{{ assistant_config.model.max_tokens }}{% else %}250{% endif %}" />
         </div>
 
         <!-- Temperature -->
@@ -536,9 +533,9 @@
                 </div>
               </div>
             </div>
-            <span class="text-sm text-base-content/70">0.5</span>
+            <span id="temperature-value" class="text-sm text-base-content/70">{% if assistant_config.model.temperature %}{{ assistant_config.model.temperature }}{% else %}0.5{% endif %}</span>
           </label>
-          <input type="range" min="0" max="1" step="0.1" value="0.5" class="range range-primary" />
+          <input id="temperature" type="range" min="0" max="1" step="0.1" value="{% if assistant_config.model.temperature %}{{ assistant_config.model.temperature }}{% else %}0.5{% endif %}" class="range range-primary" oninput="document.getElementById('temperature-value').textContent = this.value" />
         </div>
       </div>
       </div>
@@ -613,11 +610,8 @@
             </label>
             <div class="relative">
               <select id="voice-provider" class="select select-bordered w-full bg-base-100">
-                <option value="vapi" selected>🤖 Vapi</option>
-                <option value="elevenlabs">🎵 ElevenLabs</option>
-                <option value="azure">☁️ Azure</option>
-                <option value="aws">📦 AWS Polly</option>
-                <option value="google">🔍 Google</option>
+                <option value="openai" {% if assistant_config.voice.voice.provider == 'openai' or not assistant_config.voice.voice %}selected{% endif %}> OpenAI</option>
+                <option value="elevenlabs" {% if assistant_config.voice.voice.provider == 'elevenlabs' %}selected{% endif %}> ElevenLabs</option>
               </select>
             </div>
           </div>
@@ -636,14 +630,8 @@
               </div>
             </label>
             <div class="relative">
-              <select id="voice-selection" class="select select-bordered w-full bg-base-100">
-                <option value="elliot" selected>Elliot</option>
-                <option value="sarah">Sarah</option>
-                <option value="alex">Alex</option>
-                <option value="jordan">Jordan</option>
-                <option value="casey">Casey</option>
-                <option value="riley">Riley</option>
-                <option value="morgan">Morgan</option>
+              <select id="voice-selection" class="select select-bordered w-full bg-base-100" data-current-voice="{% if assistant_config.voice.voice %}{{ assistant_config.voice.voice.voice_id }}{% endif %}">
+                <!-- Options will be populated dynamically by JavaScript -->
               </select>
             </div>
           </div>
@@ -697,57 +685,122 @@
       <div class="p-4 space-y-3">
         <!-- Additional Configuration Form Fields -->
         
-        <!-- Row 1: Background Sound + Background Sound URL -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Ambient Sound Configuration -->
+        <div class="space-y-4">
+          <h3 class="text-base font-medium text-base-content">Ambient Sound</h3>
           
-          <!-- Background Sound -->
-          <div class="space-y-2">
-            <label for="background-sound" class="block text-sm font-medium text-base-content">
-              Background Sound
-              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          <!-- Enable Ambient Sound -->
+          <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+            <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+              <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M6.343 6.343a8 8 0 000 11.314m2.829-9.9a5 5 0 000 7.07"></path>
               </svg>
-              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
-                Add ambient background sound during conversations
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <h4 class="text-sm font-medium text-base-content">Enable Ambient Sound</h4>
+                  <p class="text-xs text-base-content/60">Play ambient background sound during conversations</p>
+                </div>
+                <input type="checkbox" id="ambient-sound-enabled" class="toggle toggle-primary" {% if assistant_config.voice.ambient_sound_enabled %}checked{% endif %}>
               </div>
-            </label>
-            <div class="relative">
-              <select id="background-sound" class="select select-bordered w-full bg-base-100">
-                <option value="default" selected>Default</option>
-                <option value="office">Office Ambiance</option>
-                <option value="cafe">Cafe Noise</option>
-                <option value="nature">Nature Sounds</option>
-                <option value="rain">Rain</option>
-                <option value="none">None</option>
-                <option value="custom">Custom URL</option>
-              </select>
+              
+              <!-- Ambient Sound Settings (shown when enabled) -->
+              <div id="ambient-sound-settings" class="space-y-3 mt-3" style="display: {% if assistant_config.voice.ambient_sound_enabled %}block{% else %}none{% endif %};">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  <!-- Sound Type -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Sound Type</label>
+                    <select id="ambient-sound-type" class="select select-sm select-bordered w-full bg-base-100">
+                      <option value="none" {% if assistant_config.voice.ambient_sound_type == 'none' %}selected{% endif %}>None</option>
+                      <option value="office_ambience" {% if assistant_config.voice.ambient_sound_type == 'office_ambience' or not assistant_config.voice.ambient_sound_type %}selected{% endif %}>Office Ambience</option>
+                      <option value="custom" {% if assistant_config.voice.ambient_sound_type == 'custom' %}selected{% endif %}>Custom URL</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Volume -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Volume (0-100)</label>
+                    <input type="number" id="ambient-sound-volume" class="input input-sm input-bordered w-full bg-base-100" 
+                           value="{% if assistant_config.voice.ambient_sound_volume %}{{ assistant_config.voice.ambient_sound_volume }}{% else %}10.0{% endif %}" 
+                           min="0" max="100" step="0.1">
+                  </div>
+                </div>
+                
+                <!-- Custom URL (shown when custom is selected) -->
+                <div id="ambient-sound-url-container" style="display: {% if assistant_config.voice.ambient_sound_type == 'custom' %}block{% else %}none{% endif %};">
+                  <label class="text-xs font-medium text-base-content/80">Custom URL</label>
+                  <input type="url" id="ambient-sound-url" class="input input-sm input-bordered w-full bg-base-100" 
+                         value="{% if assistant_config.voice.ambient_sound_url %}{{ assistant_config.voice.ambient_sound_url }}{% endif %}"
+                         placeholder="https://example.com/ambient-sound.mp3">
+                </div>
+              </div>
             </div>
           </div>
-
-          <!-- Background Sound URL -->
-          <div class="space-y-2">
-            <label for="background-sound-url" class="block text-sm font-medium text-base-content">
-              Background Sound URL
-              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </div>
+        
+        <!-- Thinking Sound Configuration -->
+        <div class="space-y-4">
+          <h3 class="text-base font-medium text-base-content">Thinking Sound</h3>
+          
+          <!-- Enable Thinking Sound -->
+          <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+            <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+              <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
               </svg>
-              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
-                Custom URL for background sound audio file
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <h4 class="text-sm font-medium text-base-content">Enable Thinking Sound</h4>
+                  <p class="text-xs text-base-content/60">Play keyboard typing sound when the agent is thinking</p>
+                </div>
+                <input type="checkbox" id="thinking-sound-enabled" class="toggle toggle-primary" {% if assistant_config.voice.thinking_sound_enabled %}checked{% endif %}>
               </div>
-            </label>
-            <input 
-              type="url" 
-              id="background-sound-url" 
-              class="input input-bordered w-full bg-base-100" 
-              placeholder="https://www.soundjay.com/ambient/sounds/people-in-lounge-1.mp3"
-              value="https://www.soundjay.com/ambient/sounds/people-in-lounge-1.mp3"
-            />
+              
+              <!-- Thinking Sound Settings (shown when enabled) -->
+              <div id="thinking-sound-settings" class="space-y-3 mt-3" style="display: {% if assistant_config.voice.thinking_sound_enabled %}block{% else %}none{% endif %};">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  <!-- Primary Sound -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Primary Sound</label>
+                    <select id="thinking-sound-primary" class="select select-sm select-bordered w-full bg-base-100">
+                      <option value="none" {% if assistant_config.voice.thinking_sound_primary == 'none' %}selected{% endif %}>None</option>
+                      <option value="keyboard_typing" {% if assistant_config.voice.thinking_sound_primary == 'keyboard_typing' or not assistant_config.voice.thinking_sound_primary %}selected{% endif %}>Keyboard Typing</option>
+                      <option value="keyboard_typing2" {% if assistant_config.voice.thinking_sound_primary == 'keyboard_typing2' %}selected{% endif %}>Keyboard Typing 2</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Primary Volume -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Primary Volume (0-1)</label>
+                    <input type="number" id="thinking-sound-primary-volume" class="input input-sm input-bordered w-full bg-base-100" 
+                           value="{% if assistant_config.voice.thinking_sound_primary_volume %}{{ assistant_config.voice.thinking_sound_primary_volume }}{% else %}0.8{% endif %}" 
+                           min="0" max="1" step="0.1">
+                  </div>
+                  
+                  <!-- Secondary Sound -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Secondary Sound</label>
+                    <select id="thinking-sound-secondary" class="select select-sm select-bordered w-full bg-base-100">
+                      <option value="none" {% if assistant_config.voice.thinking_sound_secondary == 'none' %}selected{% endif %}>None</option>
+                      <option value="keyboard_typing" {% if assistant_config.voice.thinking_sound_secondary == 'keyboard_typing' %}selected{% endif %}>Keyboard Typing</option>
+                      <option value="keyboard_typing2" {% if assistant_config.voice.thinking_sound_secondary == 'keyboard_typing2' or not assistant_config.voice.thinking_sound_secondary %}selected{% endif %}>Keyboard Typing 2</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Secondary Volume -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Secondary Volume (0-1)</label>
+                    <input type="number" id="thinking-sound-secondary-volume" class="input input-sm input-bordered w-full bg-base-100" 
+                           value="{% if assistant_config.voice.thinking_sound_secondary_volume %}{{ assistant_config.voice.thinking_sound_secondary_volume }}{% else %}0.7{% endif %}" 
+                           min="0" max="1" step="0.1">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
         </div>
 
         <!-- Row 2: Input Min Characters (full width) -->
@@ -875,7 +928,7 @@
             <div class="relative">
               <select id="transcriber-provider" class="select select-bordered w-full bg-base-100">
                 <option value="deepgram" selected>🔵 Deepgram</option>
-                <option value="openai">🤖 OpenAI Whisper</option>
+                <option value="openai"> OpenAI Whisper</option>
                 <option value="assemblyai">🎯 AssemblyAI</option>
                 <option value="azure">☁️ Azure Speech</option>
                 <option value="google">🔍 Google Speech</option>
@@ -2698,10 +2751,454 @@
       </div>
     </div>
   </section>
+
+{% else %}
+  <!-- Empty State - No Assistant Selected -->
+  <div class="flex flex-col items-center justify-center h-96 text-center">
+    <div class="w-24 h-24 bg-base-200 rounded-full flex items-center justify-center mb-6">
+      <svg class="w-12 h-12 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+      </svg>
+    </div>
+    
+    <h2 class="text-xl font-semibold text-base-content mb-2">No Assistant Selected</h2>
+    <p class="text-base-content/60 mb-6 max-w-md">
+      {% if assistant_count == 0 %}
+        Create your first AI assistant to get started with voice conversations.
+      {% else %}
+        Select an assistant from the sidebar to view and configure its settings.
+      {% endif %}
+    </p>
+    
+    {% if assistant_count == 0 %}
+    <button id="empty-state-create-btn" class="btn btn-primary">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+      </svg>
+      Create Your First Assistant
+    </button>
+    {% endif %}
+  </div>
+{% endif %}
+
 </div>
 
 
 <!-- Load component styles and page JavaScript -->
 <link rel="stylesheet" href="{% static 'css/components.css' %}">
 <script type="module" src="{% static 'js/assistants.js' %}" defer></script>
+
+<script>
+// Get CSRF token
+function getCSRFToken() {
+    const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrfInput) {
+        return csrfInput.value;
+    }
+    // Fallback to meta tag or Django template variable
+    const csrfMeta = document.querySelector('meta[name=csrf-token]');
+    if (csrfMeta) {
+        return csrfMeta.getAttribute('content');
+    }
+    return '{{ csrf_token }}';
+}
+
+// Save Assistant Configuration
+async function saveAssistantConfig(btn) {
+    const originalText = btn.innerHTML;
+    
+    // Show loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading loading-spinner loading-sm mr-2"></span>Saving...';
+    
+    try {
+        console.log('Saving assistant configuration...');
+        
+        // Get the selected assistant ID from URL
+        const currentUrl = new URL(window.location);
+        const selectedAssistantId = currentUrl.searchParams.get('selected') || '{{ selected_assistant.id }}';
+        
+        if (!selectedAssistantId || selectedAssistantId === 'None') {
+            throw new Error('No assistant selected');
+        }
+        
+        // Collect form data
+        const configData = {
+            model: {
+                provider: document.getElementById('model-provider')?.value || '',
+                model_name: document.getElementById('model-name')?.value || '',
+                first_message_mode: document.getElementById('first-message-mode')?.value || '',
+                first_message: document.getElementById('first-message')?.value || '',
+                system_prompt: document.getElementById('system-prompt')?.value || '',
+                max_tokens: document.getElementById('max-tokens')?.value || '',
+                temperature: document.getElementById('temperature')?.value || ''
+            },
+            voice: {
+                voice_id: document.getElementById('voice-selection')?.value || '',
+                ambient_sound_enabled: document.getElementById('ambient-sound-enabled')?.checked || false,
+                ambient_sound_type: document.getElementById('ambient-sound-type')?.value || '',
+                ambient_sound_volume: document.getElementById('ambient-sound-volume')?.value || '',
+                ambient_sound_url: document.getElementById('ambient-sound-url')?.value || '',
+                thinking_sound_enabled: document.getElementById('thinking-sound-enabled')?.checked || false,
+                thinking_sound_primary: document.getElementById('thinking-sound-primary')?.value || '',
+                thinking_sound_primary_volume: document.getElementById('thinking-sound-primary-volume')?.value || '',
+                thinking_sound_secondary: document.getElementById('thinking-sound-secondary')?.value || '',
+                thinking_sound_secondary_volume: document.getElementById('thinking-sound-secondary-volume')?.value || ''
+            }
+        };
+        
+        console.log('Configuration data:', configData);
+        
+        const response = await fetch(`{% url "dashboard:save_assistant_config" "00000000-0000-0000-0000-000000000000" %}`.replace('00000000-0000-0000-0000-000000000000', selectedAssistantId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            },
+            body: JSON.stringify(configData)
+        });
+        
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.success) {
+            // Show success message
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success fixed top-4 right-4 z-50 max-w-sm';
+            alert.innerHTML = `
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>${data.message}</span>
+            `;
+            document.body.appendChild(alert);
+            
+            // Remove alert after 3 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        } else {
+            throw new Error(data.error || 'Failed to save configuration');
+        }
+    } catch (error) {
+        console.error('Error saving configuration:', error);
+        
+        // Show error message
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-error fixed top-4 right-4 z-50 max-w-sm';
+        alert.innerHTML = `
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            <span>Error: ${error.message}</span>
+        `;
+        document.body.appendChild(alert);
+        
+        // Remove alert after 5 seconds
+        setTimeout(() => {
+            alert.remove();
+        }, 5000);
+    } finally {
+        // Restore button state
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// Create Assistant functionality
+async function createAssistant(btn) {
+    const originalText = btn.innerHTML;
+    
+    // Show loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading loading-spinner loading-sm mr-2"></span>Creating...';
+    
+    try {
+        console.log('Creating assistant...');
+        const response = await fetch('{% url "dashboard:create_assistant" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCSRFToken(),
+            },
+            body: 'name=Maha'
+        });
+        
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.success) {
+            // Show success message
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success fixed top-4 right-4 z-50 max-w-sm';
+            alert.innerHTML = `
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>${data.message}</span>
+            `;
+            document.body.appendChild(alert);
+            
+            // Remove alert after 3 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+            
+            // Reload page to show new assistant
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            throw new Error(data.error || 'Failed to create assistant');
+        }
+    } catch (error) {
+        console.error('Error creating assistant:', error);
+        
+        // Show error message
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-error fixed top-4 right-4 z-50 max-w-sm';
+        alert.innerHTML = `
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            <span>Error: ${error.message}</span>
+        `;
+        document.body.appendChild(alert);
+        
+        // Remove alert after 5 seconds
+        setTimeout(() => {
+            alert.remove();
+        }, 5000);
+    } finally {
+        // Restore button state
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// Load assistant details
+function selectAssistant(assistantId) {
+    console.log('Selecting assistant:', assistantId);
+    // Navigate to the same page with selected assistant parameter
+    const currentUrl = new URL(window.location);
+    currentUrl.searchParams.set('selected', assistantId);
+    window.location.href = currentUrl.toString();
+}
+
+// Voice data mapping
+const VOICE_DATA = {
+    openai: [
+        { id: 'alloy', name: 'Alloy (OpenAI)' },
+        { id: 'ash', name: 'Ash (OpenAI)' },
+        { id: 'ballad', name: 'Ballad (OpenAI)' },
+        { id: 'coral', name: 'Coral (OpenAI)' },
+        { id: 'sage', name: 'Sage (OpenAI)' },
+        { id: 'verse', name: 'Verse (OpenAI)' }
+    ],
+    elevenlabs: [
+        { id: 'maha_voice_id', name: 'Maha (ElevenLabs)' },
+        { id: 'sarah_voice_id', name: 'Sarah (ElevenLabs)' },
+        { id: 'alex_voice_id', name: 'Alex (ElevenLabs)' },
+        { id: 'jordan_voice_id', name: 'Jordan (ElevenLabs)' },
+        { id: 'casey_voice_id', name: 'Casey (ElevenLabs)' },
+        { id: 'riley_voice_id', name: 'Riley (ElevenLabs)' },
+        { id: 'morgan_voice_id', name: 'Morgan (ElevenLabs)' },
+        { id: 'elliot_voice_id', name: 'Elliot (ElevenLabs)' }
+    ]
+};
+
+// Update voice selection based on provider
+function updateVoiceSelection(provider, currentVoiceId = null) {
+    const voiceSelect = document.getElementById('voice-selection');
+    if (!voiceSelect) return;
+    
+    console.log('Updating voice selection for provider:', provider, 'current voice:', currentVoiceId);
+    
+    // Clear existing options
+    voiceSelect.innerHTML = '';
+    
+    // Get voices for the selected provider
+    const voices = VOICE_DATA[provider] || [];
+    
+    // Add new options
+    voices.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.id;
+        option.textContent = voice.name;
+        
+        // Set as selected if it matches current voice
+        if (currentVoiceId && voice.id === currentVoiceId) {
+            option.selected = true;
+        }
+        
+        voiceSelect.appendChild(option);
+    });
+    
+    // If no current voice is set, select the first option for OpenAI (Ash) or first for ElevenLabs
+    if (!currentVoiceId && voices.length > 0) {
+        if (provider === 'openai') {
+            // Default to Ash for OpenAI
+            const ashOption = voiceSelect.querySelector('option[value="ash"]');
+            if (ashOption) {
+                ashOption.selected = true;
+            } else {
+                voiceSelect.selectedIndex = 0;
+            }
+        } else {
+            voiceSelect.selectedIndex = 0;
+        }
+    }
+}
+
+// Handle voice provider change
+function handleVoiceProviderChange() {
+    const providerSelect = document.getElementById('voice-provider');
+    const voiceSelect = document.getElementById('voice-selection');
+    
+    if (!providerSelect || !voiceSelect) return;
+    
+    providerSelect.addEventListener('change', function() {
+        const selectedProvider = this.value;
+        console.log('Voice provider changed to:', selectedProvider);
+        updateVoiceSelection(selectedProvider);
+    });
+}
+
+// Handle audio configuration toggles
+function handleAudioConfigurationToggles() {
+    // Ambient sound toggle
+    const ambientSoundToggle = document.getElementById('ambient-sound-enabled');
+    const ambientSoundSettings = document.getElementById('ambient-sound-settings');
+    
+    if (ambientSoundToggle && ambientSoundSettings) {
+        ambientSoundToggle.addEventListener('change', function() {
+            ambientSoundSettings.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+    
+    // Thinking sound toggle
+    const thinkingSoundToggle = document.getElementById('thinking-sound-enabled');
+    const thinkingSoundSettings = document.getElementById('thinking-sound-settings');
+    
+    if (thinkingSoundToggle && thinkingSoundSettings) {
+        thinkingSoundToggle.addEventListener('change', function() {
+            thinkingSoundSettings.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+    
+    // Ambient sound type change (show/hide custom URL)
+    const ambientSoundType = document.getElementById('ambient-sound-type');
+    const ambientSoundUrlContainer = document.getElementById('ambient-sound-url-container');
+    
+    if (ambientSoundType && ambientSoundUrlContainer) {
+        ambientSoundType.addEventListener('change', function() {
+            ambientSoundUrlContainer.style.display = this.value === 'custom' ? 'block' : 'none';
+        });
+    }
+}
+
+// Copy to clipboard function
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success feedback
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-info fixed top-4 right-4 z-50 max-w-sm';
+        alert.innerHTML = `
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+            </svg>
+            <span>Copied to clipboard!</span>
+        `;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.remove();
+        }, 2000);
+    });
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing...');
+    
+    // Main create button
+    const createBtn = document.getElementById('create-assistant-btn');
+    if (createBtn) {
+        console.log('Found create button');
+        createBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            createAssistant(createBtn);
+        });
+    } else {
+        console.log('Create button not found');
+    }
+    
+    // Quick create button under search
+    const quickCreateBtn = document.getElementById('quick-create-assistant');
+    if (quickCreateBtn) {
+        console.log('Found quick create button');
+        quickCreateBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            createAssistant(quickCreateBtn);
+        });
+    }
+    
+    // Empty state create button
+    const emptyStateBtn = document.getElementById('empty-state-create-btn');
+    if (emptyStateBtn) {
+        console.log('Found empty state button');
+        emptyStateBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            createAssistant(emptyStateBtn);
+        });
+    }
+    
+    // Save configuration button
+    const saveConfigBtn = document.getElementById('save-config-btn');
+    if (saveConfigBtn) {
+        console.log('Found save config button');
+        saveConfigBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveAssistantConfig(saveConfigBtn);
+        });
+    }
+    
+    // Assistant selection functionality
+    const assistantItems = document.querySelectorAll('.assistant-item');
+    console.log('Found assistant items:', assistantItems.length);
+    assistantItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const assistantId = this.dataset.assistantId;
+            console.log('Clicked assistant:', assistantId);
+            selectAssistant(assistantId);
+        });
+    });
+    
+    // Initialize voice provider change handler
+    handleVoiceProviderChange();
+    
+    // Initialize audio configuration toggles
+    handleAudioConfigurationToggles();
+    
+    // Initialize voice selection based on current configuration
+    const voiceProviderSelect = document.getElementById('voice-provider');
+    const voiceSelectionSelect = document.getElementById('voice-selection');
+    
+    if (voiceProviderSelect && voiceSelectionSelect) {
+        const currentProvider = voiceProviderSelect.value;
+        const currentVoiceId = voiceSelectionSelect.dataset.currentVoice;
+        
+        console.log('Initializing voice selection with provider:', currentProvider, 'voice:', currentVoiceId);
+        
+        // Update voice selection to show only voices for current provider
+        updateVoiceSelection(currentProvider, currentVoiceId);
+    }
+});
+</script>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
 {% endblock %}
