@@ -19,6 +19,7 @@ from .models import (
     PredefinedFunctions, AssistantKPI, seed_example_assistant,
     ModelProvider, VoiceProvider, TranscriberProvider
 )
+from .config_models import Voice
 
 
 def home(request):
@@ -228,12 +229,24 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
                     'temperature': float(assistant.model_config.temperature),
                 },
                 'voice': {
-                    'provider': assistant.voice_config.provider,
-                    'voice': assistant.voice_config.voice,
+                    'provider': assistant.voice_config.voice.provider if assistant.voice_config.voice else None,
+                    'voice': assistant.voice_config.voice.name if assistant.voice_config.voice else None,
+                    'voice_id': assistant.voice_config.voice.voice_id if assistant.voice_config.voice else None,
                     'background_sound': assistant.voice_config.background_sound,
                     'background_sound_url': assistant.voice_config.background_sound_url,
                     'input_min_characters': assistant.voice_config.input_min_characters,
                     'punctuation_boundaries': assistant.voice_config.punctuation_boundaries,
+                    # Ambient sound configuration
+                    'ambient_sound_enabled': assistant.voice_config.ambient_sound_enabled,
+                    'ambient_sound_type': assistant.voice_config.ambient_sound_type,
+                    'ambient_sound_volume': float(assistant.voice_config.ambient_sound_volume),
+                    'ambient_sound_url': assistant.voice_config.ambient_sound_url,
+                    # Thinking sound configuration
+                    'thinking_sound_enabled': assistant.voice_config.thinking_sound_enabled,
+                    'thinking_sound_primary': assistant.voice_config.thinking_sound_primary,
+                    'thinking_sound_primary_volume': float(assistant.voice_config.thinking_sound_primary_volume),
+                    'thinking_sound_secondary': assistant.voice_config.thinking_sound_secondary,
+                    'thinking_sound_secondary_volume': float(assistant.voice_config.thinking_sound_secondary_volume),
                 },
                 'stt': {
                     'provider': assistant.stt_config.provider,
@@ -343,7 +356,7 @@ class CreateAssistantView(LoginRequiredMixin, View):
             
             # Configure model with custom defaults
             mc = assistant.model_config
-            mc.provider = ModelProvider.OPENAI
+            mc.provider = ModelProvider.AZURE_OPENAI
             mc.model_name = "gpt-4o-realtime"
             mc.first_message = f"Hello! This is {assistant_name}, your AI assistant. How can I help you today?"
             mc.system_prompt = f"""You are {assistant_name}, a friendly and professional AI assistant for Zain Telecom. 
@@ -351,10 +364,24 @@ You help customers with their telecom needs, answer questions, and provide excel
 Keep your responses concise, helpful, and maintain a professional tone."""
             mc.save()
 
-            # Configure voice with ElevenLabs
+            # Configure voice with OpenAI "Ash" as default
             vc = assistant.voice_config
-            vc.provider = VoiceProvider.ELEVENLABS
-            vc.voice = "Maha"  # Custom voice name
+            
+            # Get the default OpenAI "Ash" voice
+            try:
+                default_voice = Voice.objects.get(
+                    provider=VoiceProvider.OPENAI,
+                    voice_id="ash"
+                )
+                vc.voice = default_voice
+            except Voice.DoesNotExist:
+                # Fallback: get any OpenAI voice if Ash doesn't exist
+                default_voice = Voice.objects.filter(
+                    provider=VoiceProvider.OPENAI,
+                    is_active=True
+                ).first()
+                vc.voice = default_voice
+            
             vc.background_sound_url = "https://www.soundjay.com/ambient/sounds/office-ambiance.mp3"
             vc.save()
 
@@ -435,8 +462,9 @@ class AssistantDetailView(LoginRequiredMixin, View):
                     'temperature': float(assistant.model_config.temperature),
                 },
                 'voice': {
-                    'provider': assistant.voice_config.provider,
-                    'voice': assistant.voice_config.voice,
+                    'provider': assistant.voice_config.voice.provider if assistant.voice_config.voice else None,
+                    'voice': assistant.voice_config.voice.name if assistant.voice_config.voice else None,
+                    'voice_id': assistant.voice_config.voice.voice_id if assistant.voice_config.voice else None,
                     'background_sound': assistant.voice_config.background_sound,
                     'background_sound_url': assistant.voice_config.background_sound_url,
                 },
@@ -506,10 +534,40 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                 voice_data = config_data['voice']
                 vc = assistant.voice_config
                 
-                if 'provider' in voice_data:
-                    vc.provider = voice_data['provider'].lower()
-                if 'voice' in voice_data:
-                    vc.voice = voice_data['voice']
+                if 'voice_id' in voice_data:
+                    try:
+                        # Find the Voice object by voice_id
+                        voice_obj = Voice.objects.get(voice_id=voice_data['voice_id'])
+                        vc.voice = voice_obj
+                    except Voice.DoesNotExist:
+                        return JsonResponse({
+                            'success': False,
+                            'error': f'Voice with ID {voice_data["voice_id"]} not found'
+                        }, status=400)
+                
+                # Handle ambient sound configuration
+                if 'ambient_sound_enabled' in voice_data:
+                    vc.ambient_sound_enabled = voice_data['ambient_sound_enabled']
+                if 'ambient_sound_type' in voice_data:
+                    vc.ambient_sound_type = voice_data['ambient_sound_type']
+                if 'ambient_sound_volume' in voice_data:
+                    vc.ambient_sound_volume = float(voice_data['ambient_sound_volume'])
+                if 'ambient_sound_url' in voice_data:
+                    vc.ambient_sound_url = voice_data['ambient_sound_url']
+                
+                # Handle thinking sound configuration
+                if 'thinking_sound_enabled' in voice_data:
+                    vc.thinking_sound_enabled = voice_data['thinking_sound_enabled']
+                if 'thinking_sound_primary' in voice_data:
+                    vc.thinking_sound_primary = voice_data['thinking_sound_primary']
+                if 'thinking_sound_primary_volume' in voice_data:
+                    vc.thinking_sound_primary_volume = float(voice_data['thinking_sound_primary_volume'])
+                if 'thinking_sound_secondary' in voice_data:
+                    vc.thinking_sound_secondary = voice_data['thinking_sound_secondary']
+                if 'thinking_sound_secondary_volume' in voice_data:
+                    vc.thinking_sound_secondary_volume = float(voice_data['thinking_sound_secondary_volume'])
+                
+                # Legacy background sound support
                 if 'background_sound' in voice_data:
                     vc.background_sound = voice_data['background_sound']
                 if 'background_sound_url' in voice_data:

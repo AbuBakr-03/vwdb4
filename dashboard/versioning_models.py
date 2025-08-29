@@ -94,8 +94,21 @@ class AssistantVersion(TenantScopedModel):
             if field.name in ['id', 'assistant', 'client_id', 'created_at', 'updated_at']:
                 continue
             value = getattr(config_obj, field.name)
+            
             if isinstance(value, Decimal):
                 data[field.name] = float(value)
+            elif hasattr(value, '_meta'):  # Check if it's a model instance
+                # For ForeignKey relationships, store a representation
+                if hasattr(value, 'id'):
+                    data[field.name] = {
+                        'id': value.id,
+                        'model': f"{value._meta.app_label}.{value._meta.model_name}",
+                        'str': str(value)
+                    }
+                else:
+                    data[field.name] = str(value)
+            elif value is None:
+                data[field.name] = None
             else:
                 data[field.name] = value
         return data

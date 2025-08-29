@@ -11,7 +11,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .models import (
     TenantScopedModel, Assistant, ModelProvider, FirstMessageMode,
     VoiceProvider, BackgroundSound, TranscriberProvider, SuccessRubric,
-    AudioFormat
+    AudioFormat, AmbientSoundType, ThinkingSoundType
 )
 
 
@@ -31,7 +31,7 @@ class ModelConfig(TenantScopedModel):
     provider = models.CharField(
         max_length=20,
         choices=ModelProvider.choices,
-        default=ModelProvider.OPENAI
+        default=ModelProvider.AZURE_OPENAI
     )
     model_name = models.CharField(
         max_length=64,
@@ -82,6 +82,38 @@ class ModelConfig(TenantScopedModel):
         return f"{self.assistant.name} - {self.provider} {self.model_name}"
 
 
+class Voice(TenantScopedModel):
+    """Available voice options for different providers."""
+    provider = models.CharField(
+        max_length=20,
+        choices=VoiceProvider.choices,
+        help_text="Voice provider (openai, elevenlabs, etc.)"
+    )
+    name = models.CharField(
+        max_length=64,
+        help_text="Display name of the voice"
+    )
+    voice_id = models.CharField(
+        max_length=128,
+        help_text="Provider-specific voice identifier"
+    )
+    description = models.TextField(
+        blank=True,
+        help_text="Optional description for the voice"
+    )
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = [('provider', 'voice_id')]
+        indexes = [
+            models.Index(fields=['provider', 'is_active']),
+            models.Index(fields=['client_id', 'provider']),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.provider}: {self.name}"
+
+
 class VoiceConfig(TenantScopedModel):
     """Voice synthesis configuration for assistants."""
     assistant = models.OneToOneField(
@@ -90,16 +122,13 @@ class VoiceConfig(TenantScopedModel):
         related_name='voice_config'
     )
     
-    # Voice provider settings
-    provider = models.CharField(
-        max_length=20,
-        choices=VoiceProvider.choices,
-        default=VoiceProvider.VAPI
-    )
-    voice = models.CharField(
-        max_length=64,
-        default='Elliot',
-        help_text="Voice model identifier"
+    # Voice selection
+    voice = models.ForeignKey(
+        Voice,
+        on_delete=models.SET_NULL,
+        null=True, 
+        blank=True,
+        help_text="Selected voice from available options"
     )
     
     # Background audio
@@ -124,6 +153,61 @@ class VoiceConfig(TenantScopedModel):
         help_text="Punctuation marks for speech chunking"
     )
     
+    # Ambient sound configuration
+    ambient_sound_enabled = models.BooleanField(
+        default=False,
+        help_text="Enable ambient background sound"
+    )
+    ambient_sound_type = models.CharField(
+        max_length=20,
+        choices=AmbientSoundType.choices,
+        default=AmbientSoundType.OFFICE_AMBIENCE,
+        help_text="Type of ambient sound to play"
+    )
+    ambient_sound_volume = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        default=Decimal('10.0'),
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Ambient sound volume (0-100)"
+    )
+    ambient_sound_url = models.URLField(
+        blank=True,
+        help_text="Custom ambient sound URL"
+    )
+    
+    # Thinking sound configuration
+    thinking_sound_enabled = models.BooleanField(
+        default=False,
+        help_text="Enable thinking sound when agent is processing"
+    )
+    thinking_sound_primary = models.CharField(
+        max_length=20,
+        choices=ThinkingSoundType.choices,
+        default=ThinkingSoundType.KEYBOARD_TYPING,
+        help_text="Primary thinking sound"
+    )
+    thinking_sound_primary_volume = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        default=Decimal('0.8'),
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        help_text="Primary thinking sound volume (0-1)"
+    )
+    thinking_sound_secondary = models.CharField(
+        max_length=20,
+        choices=ThinkingSoundType.choices,
+        default=ThinkingSoundType.KEYBOARD_TYPING2,
+        help_text="Secondary thinking sound"
+    )
+    thinking_sound_secondary_volume = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        default=Decimal('0.7'),
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        help_text="Secondary thinking sound volume (0-1)"
+    )
+    
     # Provider-specific settings
     provider_settings = models.JSONField(
         default=dict,
@@ -133,11 +217,12 @@ class VoiceConfig(TenantScopedModel):
 
     class Meta:
         indexes = [
-            models.Index(fields=['client_id', 'provider']),
+            models.Index(fields=['client_id']),
         ]
 
     def __str__(self) -> str:
-        return f"{self.assistant.name} - {self.provider} {self.voice}"
+        voice_name = self.voice.name if self.voice else "No Voice"
+        return f"{self.assistant.name} - {voice_name}"
 
 
 class TranscriberConfig(TenantScopedModel):

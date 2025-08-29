@@ -11,6 +11,7 @@ from .models import (
     FileAsset, AssistantFile, ToolLibrary, AssistantTool,
     PredefinedFunctions, CustomFunction, AssistantVersion, AssistantKPI
 )
+from .config_models import Voice
 
 
 # ============================================================================
@@ -62,10 +63,17 @@ class ModelConfigAdmin(admin.ModelAdmin):
     list_filter = ('provider', 'first_message_mode')
 
 
+@admin.register(Voice)
+class VoiceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'provider', 'voice_id', 'is_active')
+    list_filter = ('provider', 'is_active')
+    search_fields = ('name', 'voice_id', 'description')
+
+
 @admin.register(VoiceConfig)
 class VoiceConfigAdmin(admin.ModelAdmin):
-    list_display = ('assistant', 'provider', 'voice', 'background_sound')
-    list_filter = ('provider', 'background_sound')
+    list_display = ('assistant', 'voice', 'background_sound')
+    list_filter = ('background_sound',)
 
 
 @admin.register(TranscriberConfig)

@@ -357,10 +357,7 @@
             <span>Provider</span>
           </label>
           <select id="model-provider" class="select select-bordered w-full bg-base-200/50">
-            <option value="openai" {% if assistant_config.model.provider == 'openai' %}selected{% endif %}>OpenAI</option>
-            <option value="anthropic" {% if assistant_config.model.provider == 'anthropic' %}selected{% endif %}>Anthropic</option>
-            <option value="azure" {% if assistant_config.model.provider == 'azure' %}selected{% endif %}>Azure</option>
-            <option value="together" {% if assistant_config.model.provider == 'together' %}selected{% endif %}>Together</option>
+            <option value="azure_openai" {% if assistant_config.model.provider == 'azure_openai' %}selected{% endif %}>Azure OpenAI</option>
           </select>
         </div>
 
@@ -613,11 +610,8 @@
             </label>
             <div class="relative">
               <select id="voice-provider" class="select select-bordered w-full bg-base-100">
-                <option value="vapi" {% if assistant_config.voice.provider == 'vapi' %}selected{% endif %}>🤖 Vapi</option>
-                <option value="elevenlabs" {% if assistant_config.voice.provider == 'elevenlabs' or not assistant_config.voice.provider %}selected{% endif %}>🎵 ElevenLabs</option>
-                <option value="azure" {% if assistant_config.voice.provider == 'azure' %}selected{% endif %}>☁️ Azure</option>
-                <option value="aws" {% if assistant_config.voice.provider == 'aws' %}selected{% endif %}>📦 AWS Polly</option>
-                <option value="google" {% if assistant_config.voice.provider == 'google' %}selected{% endif %}>🔍 Google</option>
+                <option value="openai" {% if assistant_config.voice.voice.provider == 'openai' or not assistant_config.voice.voice %}selected{% endif %}>🤖 OpenAI</option>
+                <option value="elevenlabs" {% if assistant_config.voice.voice.provider == 'elevenlabs' %}selected{% endif %}>🎵 ElevenLabs</option>
               </select>
             </div>
           </div>
@@ -636,15 +630,8 @@
               </div>
             </label>
             <div class="relative">
-              <select id="voice-selection" class="select select-bordered w-full bg-base-100">
-                <option value="maha" {% if assistant_config.voice.voice == 'maha' or assistant_config.voice.voice == 'Maha' %}selected{% endif %}>Maha</option>
-                <option value="elliot" {% if assistant_config.voice.voice == 'elliot' %}selected{% endif %}>Elliot</option>
-                <option value="sarah" {% if assistant_config.voice.voice == 'sarah' %}selected{% endif %}>Sarah</option>
-                <option value="alex" {% if assistant_config.voice.voice == 'alex' %}selected{% endif %}>Alex</option>
-                <option value="jordan" {% if assistant_config.voice.voice == 'jordan' %}selected{% endif %}>Jordan</option>
-                <option value="casey" {% if assistant_config.voice.voice == 'casey' %}selected{% endif %}>Casey</option>
-                <option value="riley" {% if assistant_config.voice.voice == 'riley' %}selected{% endif %}>Riley</option>
-                <option value="morgan" {% if assistant_config.voice.voice == 'morgan' %}selected{% endif %}>Morgan</option>
+              <select id="voice-selection" class="select select-bordered w-full bg-base-100" data-current-voice="{% if assistant_config.voice.voice %}{{ assistant_config.voice.voice.voice_id }}{% endif %}">
+                <!-- Options will be populated dynamically by JavaScript -->
               </select>
             </div>
           </div>
@@ -698,57 +685,122 @@
       <div class="p-4 space-y-3">
         <!-- Additional Configuration Form Fields -->
         
-        <!-- Row 1: Background Sound + Background Sound URL -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Ambient Sound Configuration -->
+        <div class="space-y-4">
+          <h3 class="text-base font-medium text-base-content">Ambient Sound</h3>
           
-          <!-- Background Sound -->
-          <div class="space-y-2">
-            <label for="background-sound" class="block text-sm font-medium text-base-content">
-              Background Sound
-              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          <!-- Enable Ambient Sound -->
+          <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+            <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+              <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M6.343 6.343a8 8 0 000 11.314m2.829-9.9a5 5 0 000 7.07"></path>
               </svg>
-              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
-                Add ambient background sound during conversations
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <h4 class="text-sm font-medium text-base-content">Enable Ambient Sound</h4>
+                  <p class="text-xs text-base-content/60">Play ambient background sound during conversations</p>
+                </div>
+                <input type="checkbox" id="ambient-sound-enabled" class="toggle toggle-primary" {% if assistant_config.voice.ambient_sound_enabled %}checked{% endif %}>
               </div>
-            </label>
-            <div class="relative">
-              <select id="background-sound" class="select select-bordered w-full bg-base-100">
-                <option value="default" selected>Default</option>
-                <option value="office">Office Ambiance</option>
-                <option value="cafe">Cafe Noise</option>
-                <option value="nature">Nature Sounds</option>
-                <option value="rain">Rain</option>
-                <option value="none">None</option>
-                <option value="custom">Custom URL</option>
-              </select>
+              
+              <!-- Ambient Sound Settings (shown when enabled) -->
+              <div id="ambient-sound-settings" class="space-y-3 mt-3" style="display: {% if assistant_config.voice.ambient_sound_enabled %}block{% else %}none{% endif %};">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  <!-- Sound Type -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Sound Type</label>
+                    <select id="ambient-sound-type" class="select select-sm select-bordered w-full bg-base-100">
+                      <option value="none" {% if assistant_config.voice.ambient_sound_type == 'none' %}selected{% endif %}>None</option>
+                      <option value="office_ambience" {% if assistant_config.voice.ambient_sound_type == 'office_ambience' or not assistant_config.voice.ambient_sound_type %}selected{% endif %}>Office Ambience</option>
+                      <option value="custom" {% if assistant_config.voice.ambient_sound_type == 'custom' %}selected{% endif %}>Custom URL</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Volume -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Volume (0-100)</label>
+                    <input type="number" id="ambient-sound-volume" class="input input-sm input-bordered w-full bg-base-100" 
+                           value="{% if assistant_config.voice.ambient_sound_volume %}{{ assistant_config.voice.ambient_sound_volume }}{% else %}10.0{% endif %}" 
+                           min="0" max="100" step="0.1">
+                  </div>
+                </div>
+                
+                <!-- Custom URL (shown when custom is selected) -->
+                <div id="ambient-sound-url-container" style="display: {% if assistant_config.voice.ambient_sound_type == 'custom' %}block{% else %}none{% endif %};">
+                  <label class="text-xs font-medium text-base-content/80">Custom URL</label>
+                  <input type="url" id="ambient-sound-url" class="input input-sm input-bordered w-full bg-base-100" 
+                         value="{% if assistant_config.voice.ambient_sound_url %}{{ assistant_config.voice.ambient_sound_url }}{% endif %}"
+                         placeholder="https://example.com/ambient-sound.mp3">
+                </div>
+              </div>
             </div>
           </div>
-
-          <!-- Background Sound URL -->
-          <div class="space-y-2">
-            <label for="background-sound-url" class="block text-sm font-medium text-base-content">
-              Background Sound URL
-              <svg class="inline w-4 h-4 ml-1 text-base-content/50 cursor-help hover:text-primary transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </div>
+        
+        <!-- Thinking Sound Configuration -->
+        <div class="space-y-4">
+          <h3 class="text-base font-medium text-base-content">Thinking Sound</h3>
+          
+          <!-- Enable Thinking Sound -->
+          <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+            <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+              <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
               </svg>
-              <div class="tooltip tooltip-primary absolute z-10 opacity-0 pointer-events-none transition-opacity duration-200 bg-base-300 text-base-content text-xs rounded-lg px-3 py-2 max-w-xs">
-                Custom URL for background sound audio file
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <h4 class="text-sm font-medium text-base-content">Enable Thinking Sound</h4>
+                  <p class="text-xs text-base-content/60">Play keyboard typing sound when the agent is thinking</p>
+                </div>
+                <input type="checkbox" id="thinking-sound-enabled" class="toggle toggle-primary" {% if assistant_config.voice.thinking_sound_enabled %}checked{% endif %}>
               </div>
-            </label>
-            <input 
-              type="url" 
-              id="background-sound-url" 
-              class="input input-bordered w-full bg-base-100" 
-              placeholder="https://www.soundjay.com/ambient/sounds/people-in-lounge-1.mp3"
-              value="https://www.soundjay.com/ambient/sounds/people-in-lounge-1.mp3"
-            />
+              
+              <!-- Thinking Sound Settings (shown when enabled) -->
+              <div id="thinking-sound-settings" class="space-y-3 mt-3" style="display: {% if assistant_config.voice.thinking_sound_enabled %}block{% else %}none{% endif %};">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  <!-- Primary Sound -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Primary Sound</label>
+                    <select id="thinking-sound-primary" class="select select-sm select-bordered w-full bg-base-100">
+                      <option value="none" {% if assistant_config.voice.thinking_sound_primary == 'none' %}selected{% endif %}>None</option>
+                      <option value="keyboard_typing" {% if assistant_config.voice.thinking_sound_primary == 'keyboard_typing' or not assistant_config.voice.thinking_sound_primary %}selected{% endif %}>Keyboard Typing</option>
+                      <option value="keyboard_typing2" {% if assistant_config.voice.thinking_sound_primary == 'keyboard_typing2' %}selected{% endif %}>Keyboard Typing 2</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Primary Volume -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Primary Volume (0-1)</label>
+                    <input type="number" id="thinking-sound-primary-volume" class="input input-sm input-bordered w-full bg-base-100" 
+                           value="{% if assistant_config.voice.thinking_sound_primary_volume %}{{ assistant_config.voice.thinking_sound_primary_volume }}{% else %}0.8{% endif %}" 
+                           min="0" max="1" step="0.1">
+                  </div>
+                  
+                  <!-- Secondary Sound -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Secondary Sound</label>
+                    <select id="thinking-sound-secondary" class="select select-sm select-bordered w-full bg-base-100">
+                      <option value="none" {% if assistant_config.voice.thinking_sound_secondary == 'none' %}selected{% endif %}>None</option>
+                      <option value="keyboard_typing" {% if assistant_config.voice.thinking_sound_secondary == 'keyboard_typing' %}selected{% endif %}>Keyboard Typing</option>
+                      <option value="keyboard_typing2" {% if assistant_config.voice.thinking_sound_secondary == 'keyboard_typing2' or not assistant_config.voice.thinking_sound_secondary %}selected{% endif %}>Keyboard Typing 2</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Secondary Volume -->
+                  <div>
+                    <label class="text-xs font-medium text-base-content/80">Secondary Volume (0-1)</label>
+                    <input type="number" id="thinking-sound-secondary-volume" class="input input-sm input-bordered w-full bg-base-100" 
+                           value="{% if assistant_config.voice.thinking_sound_secondary_volume %}{{ assistant_config.voice.thinking_sound_secondary_volume }}{% else %}0.7{% endif %}" 
+                           min="0" max="1" step="0.1">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
         </div>
 
         <!-- Row 2: Input Min Characters (full width) -->
@@ -2782,8 +2834,16 @@ async function saveAssistantConfig(btn) {
                 temperature: document.getElementById('temperature')?.value || ''
             },
             voice: {
-                provider: document.getElementById('voice-provider')?.value || '',
-                voice: document.getElementById('voice-selection')?.value || ''
+                voice_id: document.getElementById('voice-selection')?.value || '',
+                ambient_sound_enabled: document.getElementById('ambient-sound-enabled')?.checked || false,
+                ambient_sound_type: document.getElementById('ambient-sound-type')?.value || '',
+                ambient_sound_volume: document.getElementById('ambient-sound-volume')?.value || '',
+                ambient_sound_url: document.getElementById('ambient-sound-url')?.value || '',
+                thinking_sound_enabled: document.getElementById('thinking-sound-enabled')?.checked || false,
+                thinking_sound_primary: document.getElementById('thinking-sound-primary')?.value || '',
+                thinking_sound_primary_volume: document.getElementById('thinking-sound-primary-volume')?.value || '',
+                thinking_sound_secondary: document.getElementById('thinking-sound-secondary')?.value || '',
+                thinking_sound_secondary_volume: document.getElementById('thinking-sound-secondary-volume')?.value || ''
             }
         };
         
@@ -2927,6 +2987,118 @@ function selectAssistant(assistantId) {
     window.location.href = currentUrl.toString();
 }
 
+// Voice data mapping
+const VOICE_DATA = {
+    openai: [
+        { id: 'alloy', name: 'Alloy (OpenAI)' },
+        { id: 'ash', name: 'Ash (OpenAI)' },
+        { id: 'ballad', name: 'Ballad (OpenAI)' },
+        { id: 'coral', name: 'Coral (OpenAI)' },
+        { id: 'sage', name: 'Sage (OpenAI)' },
+        { id: 'verse', name: 'Verse (OpenAI)' }
+    ],
+    elevenlabs: [
+        { id: 'maha_voice_id', name: 'Maha (ElevenLabs)' },
+        { id: 'sarah_voice_id', name: 'Sarah (ElevenLabs)' },
+        { id: 'alex_voice_id', name: 'Alex (ElevenLabs)' },
+        { id: 'jordan_voice_id', name: 'Jordan (ElevenLabs)' },
+        { id: 'casey_voice_id', name: 'Casey (ElevenLabs)' },
+        { id: 'riley_voice_id', name: 'Riley (ElevenLabs)' },
+        { id: 'morgan_voice_id', name: 'Morgan (ElevenLabs)' },
+        { id: 'elliot_voice_id', name: 'Elliot (ElevenLabs)' }
+    ]
+};
+
+// Update voice selection based on provider
+function updateVoiceSelection(provider, currentVoiceId = null) {
+    const voiceSelect = document.getElementById('voice-selection');
+    if (!voiceSelect) return;
+    
+    console.log('Updating voice selection for provider:', provider, 'current voice:', currentVoiceId);
+    
+    // Clear existing options
+    voiceSelect.innerHTML = '';
+    
+    // Get voices for the selected provider
+    const voices = VOICE_DATA[provider] || [];
+    
+    // Add new options
+    voices.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.id;
+        option.textContent = voice.name;
+        
+        // Set as selected if it matches current voice
+        if (currentVoiceId && voice.id === currentVoiceId) {
+            option.selected = true;
+        }
+        
+        voiceSelect.appendChild(option);
+    });
+    
+    // If no current voice is set, select the first option for OpenAI (Ash) or first for ElevenLabs
+    if (!currentVoiceId && voices.length > 0) {
+        if (provider === 'openai') {
+            // Default to Ash for OpenAI
+            const ashOption = voiceSelect.querySelector('option[value="ash"]');
+            if (ashOption) {
+                ashOption.selected = true;
+            } else {
+                voiceSelect.selectedIndex = 0;
+            }
+        } else {
+            voiceSelect.selectedIndex = 0;
+        }
+    }
+}
+
+// Handle voice provider change
+function handleVoiceProviderChange() {
+    const providerSelect = document.getElementById('voice-provider');
+    const voiceSelect = document.getElementById('voice-selection');
+    
+    if (!providerSelect || !voiceSelect) return;
+    
+    providerSelect.addEventListener('change', function() {
+        const selectedProvider = this.value;
+        console.log('Voice provider changed to:', selectedProvider);
+        updateVoiceSelection(selectedProvider);
+    });
+}
+
+// Handle audio configuration toggles
+function handleAudioConfigurationToggles() {
+    // Ambient sound toggle
+    const ambientSoundToggle = document.getElementById('ambient-sound-enabled');
+    const ambientSoundSettings = document.getElementById('ambient-sound-settings');
+    
+    if (ambientSoundToggle && ambientSoundSettings) {
+        ambientSoundToggle.addEventListener('change', function() {
+            ambientSoundSettings.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+    
+    // Thinking sound toggle
+    const thinkingSoundToggle = document.getElementById('thinking-sound-enabled');
+    const thinkingSoundSettings = document.getElementById('thinking-sound-settings');
+    
+    if (thinkingSoundToggle && thinkingSoundSettings) {
+        thinkingSoundToggle.addEventListener('change', function() {
+            thinkingSoundSettings.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+    
+    // Ambient sound type change (show/hide custom URL)
+    const ambientSoundType = document.getElementById('ambient-sound-type');
+    const ambientSoundUrlContainer = document.getElementById('ambient-sound-url-container');
+    
+    if (ambientSoundType && ambientSoundUrlContainer) {
+        ambientSoundType.addEventListener('change', function() {
+            ambientSoundUrlContainer.style.display = this.value === 'custom' ? 'block' : 'none';
+        });
+    }
+}
+
 // Copy to clipboard function
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(function() {
@@ -3004,6 +3176,26 @@ document.addEventListener('DOMContentLoaded', function() {
             selectAssistant(assistantId);
         });
     });
+    
+    // Initialize voice provider change handler
+    handleVoiceProviderChange();
+    
+    // Initialize audio configuration toggles
+    handleAudioConfigurationToggles();
+    
+    // Initialize voice selection based on current configuration
+    const voiceProviderSelect = document.getElementById('voice-provider');
+    const voiceSelectionSelect = document.getElementById('voice-selection');
+    
+    if (voiceProviderSelect && voiceSelectionSelect) {
+        const currentProvider = voiceProviderSelect.value;
+        const currentVoiceId = voiceSelectionSelect.dataset.currentVoice;
+        
+        console.log('Initializing voice selection with provider:', currentProvider, 'voice:', currentVoiceId);
+        
+        // Update voice selection to show only voices for current provider
+        updateVoiceSelection(currentProvider, currentVoiceId);
+    }
 });
 </script>
 

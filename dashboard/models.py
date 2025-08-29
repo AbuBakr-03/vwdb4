@@ -28,10 +28,7 @@ class AssistantStatus(models.TextChoices):
 
 class ModelProvider(models.TextChoices):
     """AI model provider options."""
-    OPENAI = 'openai', 'OpenAI'
-    ANTHROPIC = 'anthropic', 'Anthropic'
-    GOOGLE = 'google', 'Google'
-    AZURE = 'azure', 'Azure'
+    AZURE_OPENAI = 'azure_openai', 'Azure OpenAI'
 
 
 class FirstMessageMode(models.TextChoices):
@@ -43,11 +40,8 @@ class FirstMessageMode(models.TextChoices):
 
 class VoiceProvider(models.TextChoices):
     """Voice synthesis provider options."""
-    VAPI = 'vapi', 'Vapi'
+    OPENAI = 'openai', 'OpenAI'
     ELEVENLABS = 'elevenlabs', 'ElevenLabs'
-    AZURE = 'azure', 'Azure'
-    AWS = 'aws', 'AWS Polly'
-    GOOGLE = 'google', 'Google'
 
 
 class BackgroundSound(models.TextChoices):
@@ -84,6 +78,20 @@ class AudioFormat(models.TextChoices):
     MP3 = 'mp3', 'MP3'
     FLAC = 'flac', 'FLAC'
     OGG = 'ogg', 'OGG'
+
+
+class AmbientSoundType(models.TextChoices):
+    """Ambient sound options."""
+    NONE = 'none', 'None'
+    OFFICE_AMBIENCE = 'office_ambience', 'Office Ambience'
+    CUSTOM = 'custom', 'Custom URL'
+
+
+class ThinkingSoundType(models.TextChoices):
+    """Thinking sound options."""
+    NONE = 'none', 'None'
+    KEYBOARD_TYPING = 'keyboard_typing', 'Keyboard Typing'
+    KEYBOARD_TYPING2 = 'keyboard_typing2', 'Keyboard Typing 2'
 
 
 # ============================================================================
@@ -320,10 +328,11 @@ def seed_example_assistant(client_id: str, owner: Optional[User] = None) -> Assi
         if not owner:
             raise ValueError("No owner provided and no superuser found")
     
-    # Create assistant
+    # Create assistant with unique external_id
+    import uuid as uuid_module
     assistant = Assistant.objects.create(
         client_id=client_id,
-        external_id="dc8d68a4-3d4c-48b8-b0f5",
+        external_id=str(uuid_module.uuid4())[:32],  # Generate unique external_id
         name="Riley",
         description="Friendly scheduling assistant for Wellness Partners",
         owner=owner
@@ -331,7 +340,7 @@ def seed_example_assistant(client_id: str, owner: Optional[User] = None) -> Assi
     
     # Configure model
     mc = assistant.model_config
-    mc.provider = ModelProvider.OPENAI
+    mc.provider = ModelProvider.AZURE_OPENAI
     mc.model_name = "gpt-4o-realtime"
     mc.first_message_mode = FirstMessageMode.ASSISTANT_FIRST
     mc.first_message = (
@@ -344,8 +353,23 @@ def seed_example_assistant(client_id: str, owner: Optional[User] = None) -> Assi
 
     # Configure voice
     vc = assistant.voice_config
-    vc.provider = VoiceProvider.VAPI
-    vc.voice = "Elliot"
+    
+    # Import Voice model here to avoid circular imports
+    from .config_models import Voice
+    
+    # Create or get a Voice instance for OpenAI "Alloy"
+    voice_instance, created = Voice.objects.get_or_create(
+        provider=VoiceProvider.OPENAI,
+        voice_id="alloy",  # OpenAI voice ID
+        defaults={
+            'client_id': client_id,
+            'name': 'Alloy',
+            'description': 'OpenAI voice for scheduling assistants',
+            'is_active': True
+        }
+    )
+    
+    vc.voice = voice_instance
     vc.background_sound = BackgroundSound.DEFAULT
     vc.background_sound_url = "https://www.soundjay.com/ambient/sounds/people-in-lounge-1.mp3"
     vc.input_min_characters = 30
