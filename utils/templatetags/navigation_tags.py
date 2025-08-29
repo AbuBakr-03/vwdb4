@@ -2,7 +2,7 @@
 Template tags for navigation utilities.
 """
 from django import template
-from utils.navigation import get_active_section, get_section_tabs, get_sidebar_items
+from utils.navigation import get_active_section, get_section_tabs, get_sidebar_items, get_tabs_for_section as nav_get_tabs_for_section
 
 register = template.Library()
 
@@ -15,20 +15,19 @@ def get_navigation_context(request):
     Returns:
         Dictionary with sidebar_items, active_section, and section_tabs
     """
-    request_path = request.path
-    active_section = get_active_section(request_path)
+    active_section = get_active_section(request)
     
     return {
-        'sidebar_items': get_sidebar_items(request_path),
+        'sidebar_items': get_sidebar_items(request),
         'active_section': active_section,
-        'section_tabs': get_section_tabs(active_section, request_path)
+        'section_tabs': get_section_tabs(active_section)
     }
 
 
 @register.simple_tag
 def get_sidebar_navigation(request):
     """Get sidebar navigation items."""
-    return get_sidebar_items(request.path)
+    return get_sidebar_items(request)
 
 
 @register.simple_tag
@@ -43,13 +42,10 @@ def get_tabs_for_section(request, section=None):
     Returns:
         List of tab dictionaries or None
     """
-    if section is None:
-        section = get_active_section(request.path)
-    
-    return get_section_tabs(section, request.path)
+    return nav_get_tabs_for_section(request)
 
 
 @register.simple_tag
 def is_section_active(request, section_name):
     """Check if a section is currently active."""
-    return get_active_section(request.path) == section_name
+    return get_active_section(request) == section_name

@@ -33,6 +33,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("reports/", include("reports.urls")),
     path("people/", include("people.urls")),
+    path("tools/", include("tools.urls")),
 ]
 
 # Serve static and media files during development

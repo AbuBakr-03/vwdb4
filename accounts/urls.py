@@ -19,5 +19,6 @@ urlpatterns = [
     # Placeholder routes for new navigation tabs
     path('teams/', views.placeholder_view, name='teams'),
     path('permissions/', views.placeholder_view, name='permissions'),
+    
 
 ]

@@ -1,0 +1,937 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Tools - Watchtower{% endblock %}
+
+{% block secondary_sidebar %}
+<!-- Secondary Sidebar for Tools -->
+<aside class="w-80 bg-base-200 border-r border-base-content/10 flex flex-col">
+  <!-- Header with Title and Docs Button -->
+  <div class="flex items-center justify-between px-4 py-4 border-b border-base-content/10">
+    <div class="flex items-center space-x-2">
+      <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      </svg>
+      <h2 class="text-lg font-semibold text-base-content">Tools</h2>
+    </div>
+    <button class="btn btn-ghost btn-sm">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+      </svg>
+      Docs
+    </button>
+  </div>
+
+  <!-- Create Tool Button with Dropdown -->
+  <div class="px-4 py-3">
+    <div class="dropdown dropdown-bottom w-full">
+      <div tabindex="0" role="button" class="btn btn-primary w-full">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Create Tool
+      </div>
+      <div tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-300 rounded-xl w-full border border-base-content/20">
+        <!-- SMTP Tool -->
+        <div class="menu-item">
+          <a href="{% url 'tools:create_tool' 'smtp' %}" class="flex items-center space-x-3 px-3 py-3 hover:bg-base-100/80 rounded-lg transition-colors">
+            <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26c.3.16.67.16.97 0L19 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <span class="text-sm font-medium text-base-content">SMTP</span>
+          </a>
+        </div>
+        
+        <!-- SMPP Tool -->
+        <div class="menu-item">
+          <a href="{% url 'tools:create_tool' 'smpp' %}" class="flex items-center space-x-3 px-3 py-3 hover:bg-base-100/80 rounded-lg transition-colors">
+            <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </div>
+            <span class="text-sm font-medium text-base-content">SMPP</span>
+          </a>
+        </div>
+        
+        <!-- MCP Tool -->
+        <div class="menu-item">
+          <a href="{% url 'tools:create_tool' 'mcp' %}" class="flex items-center space-x-3 px-3 py-3 hover:bg-base-100/80 rounded-lg transition-colors">
+            <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+              </svg>
+            </div>
+            <span class="text-sm font-medium text-base-content">MCP</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Box -->
+  <div class="px-4 py-2">
+    <form method="GET" action="{% url 'tools:tools_list' %}">
+      <div class="relative">
+        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Search Tools" class="input input-sm w-full bg-base-300/50 border-none text-sm pl-8 pr-8">
+        <svg class="w-4 h-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        {% if search_query %}
+          <a href="{% url 'tools:tools_list' %}" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-content/60 hover:text-base-content">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Tools List -->
+  <div class="flex-1 px-4 py-2 overflow-y-auto">
+    <div class="space-y-1">
+      {% if created_tools %}
+        {% for tool in created_tools %}
+          <!-- Tool Item -->
+          <a href="{% url 'tools:tool_detail' tool.id %}" class="block p-3 rounded-lg {% if selected_tool and selected_tool.id == tool.id %}bg-primary/20 border border-primary/30{% else %}hover:bg-base-300/50{% endif %} cursor-pointer transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 {% if tool.type == 'smtp' %}bg-blue-500{% elif tool.type == 'smpp' %}bg-green-500{% elif tool.type == 'mcp' %}bg-red-500{% else %}bg-gray-500{% endif %} rounded-lg flex items-center justify-center flex-shrink-0">
+                {% if tool.type == 'smtp' %}
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26c.3.16.67.16.97 0L19 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                  </svg>
+                {% elif tool.type == 'smpp' %}
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                  </svg>
+                {% elif tool.type == 'mcp' %}
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                  </svg>
+                {% endif %}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium {% if selected_tool and selected_tool.id == tool.id %}text-primary{% else %}text-base-content/90{% endif %} text-sm truncate">{{ tool.name }}</h3>
+                <p class="text-xs {% if selected_tool and selected_tool.id == tool.id %}text-primary/70{% else %}text-base-content/60{% endif %} truncate">{{ tool.type|upper }}</p>
+              </div>
+              {% if selected_tool and selected_tool.id == tool.id %}
+                <div class="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+              {% else %}
+                <div class="w-2 h-2 bg-base-content/30 rounded-full flex-shrink-0"></div>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      {% else %}
+        {% if search_query %}
+          <!-- No Search Results -->
+          <div class="text-center py-8">
+            <svg class="w-12 h-12 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <h3 class="text-sm font-medium text-base-content/70 mb-2">No tools match your search</h3>
+            <p class="text-xs text-base-content/50 mb-4">Try adjusting your search terms or <a href="{% url 'tools:tools_list' %}" class="text-primary hover:underline">clear the search</a>.</p>
+          </div>
+        {% else %}
+          <!-- No Tools Message -->
+          <div class="text-center py-8">
+            <svg class="w-12 h-12 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            <h3 class="text-sm font-medium text-base-content/70 mb-2">No tools found</h3>
+            <p class="text-xs text-base-content/50 mb-4">Create your first tool to get started with integrating external services.</p>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!-- Django Messages Integration with Standardized Toast -->
+{% if messages %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      {% for message in messages %}
+        {% if message.tags == 'success' %}
+          showSuccessToast('{{ message|escapejs }}');
+        {% elif message.tags == 'error' %}
+          showErrorToast('{{ message|escapejs }}');
+        {% elif message.tags == 'warning' %}
+          showWarningToast('{{ message|escapejs }}');
+        {% else %}
+          showInfoToast('{{ message|escapejs }}');
+        {% endif %}
+      {% endfor %}
+    });
+  </script>
+{% endif %}
+
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col">
+  {% if confirming_delete %}
+    <!-- Delete Confirmation -->
+    <div class="flex-1 flex items-center justify-center">
+      <div class="max-w-md w-full bg-base-200 rounded-lg p-6 shadow-lg">
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 bg-error/20 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          
+          <h2 class="text-xl font-semibold text-base-content mb-2">Delete Tool</h2>
+          <p class="text-base-content/70 mb-6">
+            Are you sure you want to delete "<span class="font-medium">{{ selected_tool.name }}</span>"? This action cannot be undone.
+          </p>
+          
+          <div class="flex space-x-3 justify-center">
+            <form method="POST" class="inline">
+              {% csrf_token %}
+              <input type="hidden" name="confirm_delete" value="yes">
+              <button type="submit" class="btn btn-error">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                Delete Tool
+              </button>
+            </form>
+            
+            <a href="{% url 'tools:tool_detail' selected_tool.id %}" class="btn btn-ghost">
+              Cancel
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  {% elif selected_tool %}
+    <!-- Tool Configuration Form -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 {% if selected_tool.type == 'smtp' %}bg-blue-500{% elif selected_tool.type == 'smpp' %}bg-green-500{% elif selected_tool.type == 'mcp' %}bg-red-500{% else %}bg-gray-500{% endif %} rounded-xl flex items-center justify-center">
+            {% if selected_tool.type == 'smtp' %}
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26c.3.16.67.16.97 0L19 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            {% elif selected_tool.type == 'smpp' %}
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            {% elif selected_tool.type == 'mcp' %}
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+              </svg>
+            {% endif %}
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-base-content">{{ selected_tool.name }}</h1>
+            <p class="text-base-content/70">{{ selected_tool.type|upper }} • {{ selected_tool.id }}</p>
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <button type="submit" form="tool-config-form" class="btn btn-primary">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+            Save
+          </button>
+          <button class="btn btn-ghost">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+            </svg>
+            Code
+          </button>
+          <button class="btn btn-ghost">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1M9 10H7a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2v-7a2 2 0 00-2-2h-2M9 10v7"></path>
+            </svg>
+            Test
+          </button>
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+              </svg>
+            </div>
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-200 rounded-box w-52">
+              <li>
+                <a href="{% url 'tools:delete_tool' selected_tool.id %}" class="text-error hover:bg-error/10">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                  Delete Tool
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool Configuration Form -->
+    <form id="tool-config-form" method="POST" action="{% url 'tools:save_tool_config' selected_tool.id %}">
+      {% csrf_token %}
+      <div class="space-y-6">
+        {% if selected_tool.type == 'smtp' %}
+          <!-- SMTP Tool Configuration -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Tool Name -->
+            <div>
+              <label class="block text-sm font-medium text-base-content mb-2">Tool Name</label>
+              <input type="text" name="tool_name" value="{{ selected_tool.name }}" 
+                     class="input input-bordered w-full bg-base-200 border-base-content/20">
+            </div>
+
+            <!-- Description -->
+            <div class="lg:col-span-2">
+              <label class="block text-sm font-medium text-base-content mb-2">Description</label>
+              <div class="relative">
+                <textarea name="description" rows="4" class="textarea textarea-bordered w-full bg-base-200 border-base-content/20 resize-none" 
+                          placeholder="Describe the email tool functionality">{{ selected_tool.description|default:"" }}</textarea>
+                <div class="absolute bottom-3 right-3 text-xs text-base-content/50">0/1000</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SMTP Server Settings -->
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold text-base-content mb-4">SMTP Server Settings</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- SMTP Server -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">SMTP Server</label>
+                <input type="text" name="smtp_server" value="{{ selected_tool.smtp_server|default:'smtp.gmail.com' }}" 
+                       placeholder="smtp.gmail.com"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- SMTP Port -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">Port</label>
+                <select name="smtp_port" class="select select-bordered w-full bg-base-200 border-base-content/20">
+                  <option value="587">587 (STARTTLS)</option>
+                  <option value="465">465 (SSL/TLS)</option>
+                  <option value="25">25 (Plain)</option>
+                </select>
+              </div>
+
+              <!-- Username -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">Username/Email</label>
+                <input type="email" name="smtp_username" value="{{ selected_tool.smtp_username|default:'' }}" 
+                       placeholder="user@example.com"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- Password -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">Password/App Password</label>
+                <input type="password" name="smtp_password" value="{{ selected_tool.smtp_password|default:'' }}" 
+                       placeholder="••••••••••••••••••••••••••••••••"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Configuration -->
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold text-base-content mb-4">Email Configuration</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- From Email -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">From Email</label>
+                <input type="email" name="from_email" value="{{ selected_tool.from_email|default:'' }}" 
+                       placeholder="noreply@example.com"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- From Name -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">From Name</label>
+                <input type="text" name="from_name" value="{{ selected_tool.from_name|default:'' }}" 
+                       placeholder="Company Name"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- Subject Template -->
+              <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-base-content mb-2">Subject Template</label>
+                <input type="text" name="subject_template" value="{{ selected_tool.subject_template|default:'' }}" 
+                       placeholder="{{subject}} - {{company_name}}"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- Body Template -->
+              <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-base-content mb-2">Email Body Template</label>
+                <textarea name="body_template" rows="6" 
+                          class="textarea textarea-bordered w-full bg-base-200 border-base-content/20 resize-none" 
+                          placeholder="Dear {{recipient_name}},&#10;&#10;{{email_body}}&#10;&#10;Best regards,&#10;{{sender_name}}">{{ selected_tool.body_template|default:"" }}</textarea>
+                <p class="text-xs text-base-content/60 mt-1">Available variables: {{recipient_name}}, {{email_body}}, {{sender_name}}, {{company_name}}</p>
+              </div>
+            </div>
+          </div>
+
+        {% elif selected_tool.type == 'smpp' %}
+          <!-- SMPP Tool Configuration -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Tool Name -->
+            <div>
+              <label class="block text-sm font-medium text-base-content mb-2">Tool Name</label>
+              <input type="text" name="tool_name" value="{{ selected_tool.name }}" 
+                     class="input input-bordered w-full bg-base-200 border-base-content/20">
+            </div>
+
+            <!-- Description -->
+            <div class="lg:col-span-2">
+              <label class="block text-sm font-medium text-base-content mb-2">Description</label>
+              <div class="relative">
+                <textarea name="description" rows="4" class="textarea textarea-bordered w-full bg-base-200 border-base-content/20 resize-none" 
+                          placeholder="Describe the SMS tool functionality">{{ selected_tool.description|default:"" }}</textarea>
+                <div class="absolute bottom-3 right-3 text-xs text-base-content/50">0/1000</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SMPP Connection Settings -->
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold text-base-content mb-4">SMPP Connection Settings</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- SMPP Host -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">SMPP Host</label>
+                <input type="text" name="smpp_host" value="{{ selected_tool.smpp_host|default:'smpp.provider.com' }}" 
+                       placeholder="smpp.provider.com"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- SMPP Port -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">Port</label>
+                <input type="number" name="smpp_port" value="{{ selected_tool.smpp_port|default:'2775' }}" 
+                       placeholder="2775"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- System ID -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">System ID</label>
+                <input type="text" name="system_id" value="{{ selected_tool.system_id|default:'' }}" 
+                       placeholder="Your system ID"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- Password -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">Password</label>
+                <input type="password" name="smpp_password" value="{{ selected_tool.smpp_password|default:'' }}" 
+                       placeholder="••••••••••••••••••••••••••••••••"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+            </div>
+          </div>
+
+          <!-- SMS Configuration -->
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold text-base-content mb-4">SMS Configuration</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Source Address -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">Source Address (Sender ID)</label>
+                <input type="text" name="source_address" value="{{ selected_tool.source_address|default:'' }}" 
+                       placeholder="COMPANY or +1234567890"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- Data Coding -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">Data Coding</label>
+                <select name="data_coding" class="select select-bordered w-full bg-base-200 border-base-content/20">
+                  <option value="0">0 - Default (GSM 7-bit)</option>
+                  <option value="8">8 - UCS2 (Unicode)</option>
+                </select>
+              </div>
+
+              <!-- Message Template -->
+              <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-base-content mb-2">Message Template</label>
+                <textarea name="message_template" rows="4" 
+                          class="textarea textarea-bordered w-full bg-base-200 border-base-content/20 resize-none" 
+                          placeholder="{{message_body}}&#10;&#10;Reply STOP to opt out.">{{ selected_tool.message_template|default:"" }}</textarea>
+                <p class="text-xs text-base-content/60 mt-1">Available variables: {{message_body}}, {{recipient_name}}, {{company_name}}</p>
+              </div>
+
+              <!-- Options -->
+              <div class="lg:col-span-2">
+                <label class="flex items-center space-x-2 mb-2">
+                  <input type="checkbox" name="request_delivery_receipt" class="checkbox checkbox-primary checkbox-sm">
+                  <span class="text-sm">Request delivery receipt</span>
+                </label>
+                <label class="flex items-center space-x-2">
+                  <input type="checkbox" name="flash_message" class="checkbox checkbox-primary checkbox-sm">
+                  <span class="text-sm">Send as flash message</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        {% elif selected_tool.type == 'mcp' %}
+          <!-- MCP Tool Configuration -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Tool Name -->
+            <div>
+              <label class="block text-sm font-medium text-base-content mb-2">Tool Name</label>
+              <input type="text" name="tool_name" value="{{ selected_tool.name }}" 
+                     class="input input-bordered w-full bg-base-200 border-base-content/20">
+            </div>
+
+            <!-- Description -->
+            <div class="lg:col-span-2">
+              <label class="block text-sm font-medium text-base-content mb-2">Description</label>
+              <div class="relative">
+                <textarea name="description" rows="4" class="textarea textarea-bordered w-full bg-base-200 border-base-content/20 resize-none" 
+                          placeholder="Describe the tool in a few sentences">{{ selected_tool.description|default:"" }}</textarea>
+                <div class="absolute bottom-3 right-3 text-xs text-base-content/50">0/1000</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Server Settings -->
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold text-base-content mb-4">Server Settings</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Server URL -->
+              <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-base-content mb-2">Server URL</label>
+                <input type="url" name="server_url" value="{{ selected_tool.server_url|default:'https://api.example.com/function' }}" 
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- Timeout -->
+              <div>
+                <label class="block text-sm font-medium text-base-content mb-2">Timeout (seconds)</label>
+                <input type="number" name="timeout" value="{{ selected_tool.timeout|default:'20' }}" 
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+
+              <!-- Secret Token -->
+              <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-base-content mb-2">Secret Token</label>
+                <input type="password" name="secret_token" value="{{ selected_tool.secret_token|default:'' }}" 
+                       placeholder="••••••••••••••••••••••••••••••••"
+                       class="input input-bordered w-full bg-base-200 border-base-content/20">
+              </div>
+            </div>
+          </div>
+
+          <!-- HTTP Headers -->
+          <div class="mt-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-base-content">HTTP Headers</h3>
+              <button type="button" class="btn btn-sm btn-ghost" onclick="addHeader()">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add Header
+              </button>
+            </div>
+            <div class="bg-base-100/50 rounded-lg border border-base-content/10">
+              <div class="p-4">
+                <p class="text-sm text-base-content/70 mb-4">Custom HTTP headers to include in API requests to your server</p>
+                
+                <!-- Headers Container -->
+                <div id="headers-container" class="space-y-3">
+                  <!-- No headers message -->
+                  <div id="no-headers" class="text-center py-8 border-2 border-dashed border-base-content/20 rounded-lg">
+                    <p class="text-sm text-base-content/50">No headers configured. Click "Add Header" to add your first header.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MCP Settings -->
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold text-base-content mb-4">MCP Settings</h3>
+            <div class="bg-base-100/50 rounded-lg border border-base-content/10 p-6">
+              <div class="mb-6">
+                <h4 class="text-sm font-medium text-base-content mb-4">Protocol</h4>
+                <div class="space-y-4">
+                  <!-- SHTTP Option -->
+                  <label class="flex items-start space-x-3 p-4 border-2 border-primary bg-primary/5 rounded-lg cursor-pointer">
+                    <input type="radio" name="mcp_protocol" value="shttp" checked class="radio radio-primary mt-1">
+                    <div class="flex-1">
+                      <div class="font-medium text-base-content">Streamable HTTP (SHTTP)</div>
+                      <div class="text-sm text-base-content/70 mt-1">Uses HTTP-based streaming for communication</div>
+                    </div>
+                  </label>
+                  
+                  <!-- SSE Option -->
+                  <label class="flex items-start space-x-3 p-4 border-2 border-base-content/20 bg-base-200/50 rounded-lg cursor-pointer hover:border-base-content/40">
+                    <input type="radio" name="mcp_protocol" value="sse" class="radio radio-primary mt-1">
+                    <div class="flex-1">
+                      <div class="font-medium text-base-content">Server-Sent Events (SSE)</div>
+                      <div class="text-sm text-base-content/70 mt-1">Uses event-driven communication</div>
+                    </div>
+                  </label>
+                </div>
+                <p class="text-xs text-base-content/60 mt-4">Choose the communication protocol for MCP server connections. Streamable HTTP (SHTTP) is recommended for most use cases.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <div class="mt-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-base-content">Messages</h3>
+              <button type="button" class="btn btn-sm btn-ghost" onclick="addMessage()">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add Message
+              </button>
+            </div>
+            <div class="bg-base-100/50 rounded-lg border border-base-content/10 p-6">
+              <p class="text-sm text-base-content/70 mb-6">Configure messages to be spoken during different stages of tool execution</p>
+              
+              <!-- Request Start Message -->
+              <div class="bg-base-200/50 rounded-lg border border-base-content/10 p-4">
+                <div class="flex items-center justify-between mb-4">
+                  <h4 class="font-medium text-base-content">Request Start</h4>
+                  <button type="button" class="btn btn-ghost btn-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+                
+                <div class="space-y-3">
+                  <!-- Message Type Options -->
+                  <label class="flex items-center space-x-3">
+                    <input type="radio" name="request_start_type" value="default" checked class="radio radio-sm radio-primary">
+                    <span class="text-sm">Default (server will use default message)</span>
+                  </label>
+                  
+                  <label class="flex items-center space-x-3">
+                    <input type="radio" name="request_start_type" value="none" class="radio radio-sm radio-primary">
+                    <span class="text-sm">None (no message will be spoken)</span>
+                  </label>
+                  
+                  <label class="flex items-center space-x-3">
+                    <input type="radio" name="request_start_type" value="custom" class="radio radio-sm radio-primary">
+                    <span class="text-sm">Custom</span>
+                  </label>
+                  
+                  <!-- Custom Message Input (hidden by default) -->
+                  <div id="custom-message-input" class="ml-6 hidden">
+                    <input type="text" name="request_start_custom" placeholder="Enter custom message..." 
+                           class="input input-sm w-full bg-base-300 border-base-content/20">
+                  </div>
+                </div>
+                
+                <!-- Wait for message checkbox -->
+                <div class="mt-4 pt-4 border-t border-base-content/10">
+                  <label class="flex items-center space-x-3">
+                    <input type="checkbox" name="wait_for_message" class="checkbox checkbox-sm checkbox-primary">
+                    <span class="text-sm">Wait for message to be spoken before triggering tool call</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conditions -->
+          <div class="mt-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-base-content">Conditions</h3>
+              <button type="button" class="btn btn-sm btn-ghost" onclick="addCondition()">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add Condition
+              </button>
+            </div>
+            <div class="bg-base-100/50 rounded-lg border border-base-content/10 p-6">
+              <div id="conditions-container">
+                <div class="text-center py-8">
+                  <p class="text-sm text-base-content/50 italic">No conditions defined</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </form>
+
+  {% else %}
+    <!-- Empty State -->
+    <div class="flex-1 flex items-center justify-center">
+      <div class="text-center max-w-md">
+        <div class="w-24 h-24 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
+          <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </div>
+        
+        <h2 class="text-xl font-semibold text-base-content mb-3">No tools found</h2>
+        <p class="text-base-content/60 mb-6 leading-relaxed">
+          Create your first tool to get started with integrating external services.
+        </p>
+        
+        <div class="dropdown dropdown-top">
+          <div tabindex="0" role="button" class="btn btn-primary">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Create Tool
+          </div>
+          <div tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-300 rounded-xl w-64 border border-base-content/20">
+            <!-- SMTP Tool -->
+            <div class="menu-item">
+              <a href="{% url 'tools:create_tool' 'smtp' %}" class="flex items-center space-x-3 px-3 py-3 hover:bg-base-100/80 rounded-lg transition-colors">
+                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26c.3.16.67.16.97 0L19 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-base-content">SMTP</span>
+              </a>
+            </div>
+            
+            <!-- SMPP Tool -->
+            <div class="menu-item">
+              <a href="{% url 'tools:create_tool' 'smpp' %}" class="flex items-center space-x-3 px-3 py-3 hover:bg-base-100/80 rounded-lg transition-colors">
+                <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-base-content">SMPP</span>
+            </a>
+          </div>
+          
+          <!-- MCP Tool -->
+          <div class="menu-item">
+            <a href="{% url 'tools:create_tool' 'mcp' %}" class="flex items-center space-x-3 px-3 py-3 hover:bg-base-100/80 rounded-lg transition-colors">
+              <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-base-content">MCP</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+</div>
+
+<!-- Tools Page Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle custom message radio button
+  const radioButtons = document.querySelectorAll('input[name="request_start_type"]');
+  const customInput = document.getElementById('custom-message-input');
+  
+  radioButtons.forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.value === 'custom') {
+        customInput.classList.remove('hidden');
+      } else {
+        customInput.classList.add('hidden');
+      }
+    });
+  });
+});
+
+// Add HTTP Header function
+let headerCount = 0;
+function addHeader() {
+  const container = document.getElementById('headers-container');
+  const noHeaders = document.getElementById('no-headers');
+  
+  // Hide no headers message
+  if (noHeaders) {
+    noHeaders.style.display = 'none';
+  }
+  
+  headerCount++;
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'flex items-center space-x-3 p-3 bg-base-200/50 rounded-lg border border-base-content/10';
+  headerDiv.innerHTML = `
+    <div class="flex-1 grid grid-cols-2 gap-3">
+      <input type="text" name="header_key_${headerCount}" placeholder="Header name" 
+             class="input input-sm bg-base-300 border-base-content/20">
+      <input type="text" name="header_value_${headerCount}" placeholder="Header value" 
+             class="input input-sm bg-base-300 border-base-content/20">
+    </div>
+    <button type="button" onclick="removeHeader(this)" class="btn btn-ghost btn-xs text-error">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+      </svg>
+    </button>
+  `;
+  
+  container.appendChild(headerDiv);
+}
+
+function removeHeader(button) {
+  const headerDiv = button.closest('.flex.items-center');
+  headerDiv.remove();
+  
+  // Show no headers message if container is empty
+  const container = document.getElementById('headers-container');
+  const remainingHeaders = container.querySelectorAll('.flex.items-center:not(#no-headers)');
+  if (remainingHeaders.length === 0) {
+    document.getElementById('no-headers').style.display = 'block';
+  }
+}
+
+// Add Message function
+let messageCount = 1; // Start at 1 since we have Request Start
+function addMessage() {
+  const container = document.querySelector('#conditions-container').parentElement.parentElement;
+  messageCount++;
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'mt-4 bg-base-200/50 rounded-lg border border-base-content/10 p-4';
+  messageDiv.innerHTML = `
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-3">
+        <h4 class="font-medium text-base-content">Message ${messageCount}</h4>
+        <select name="message_${messageCount}_stage" class="select select-sm bg-base-300 border-base-content/20">
+          <option value="request_start">Request Start</option>
+          <option value="request_complete">Request Complete</option>
+          <option value="request_failed">Request Failed</option>
+          <option value="tool_start">Tool Start</option>
+          <option value="tool_complete">Tool Complete</option>
+        </select>
+      </div>
+      <button type="button" onclick="removeMessage(this)" class="btn btn-ghost btn-xs text-error">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="space-y-3">
+      <label class="flex items-center space-x-3">
+        <input type="radio" name="message_${messageCount}_type" value="default" checked class="radio radio-sm radio-primary">
+        <span class="text-sm">Default</span>
+      </label>
+      
+      <label class="flex items-center space-x-3">
+        <input type="radio" name="message_${messageCount}_type" value="none" class="radio radio-sm radio-primary">
+        <span class="text-sm">None</span>
+      </label>
+      
+      <label class="flex items-center space-x-3">
+        <input type="radio" name="message_${messageCount}_type" value="custom" class="radio radio-sm radio-primary">
+        <span class="text-sm">Custom</span>
+      </label>
+      
+      <div class="ml-6 hidden custom-message-input-${messageCount}">
+        <input type="text" name="message_${messageCount}_custom" placeholder="Enter custom message..." 
+               class="input input-sm w-full bg-base-300 border-base-content/20">
+      </div>
+    </div>
+  `;
+  
+  // Insert before the conditions section
+  container.insertBefore(messageDiv, container.lastElementChild);
+  
+  // Add event listeners for the new message
+  const radioButtons = messageDiv.querySelectorAll(`input[name="message_${messageCount}_type"]`);
+  radioButtons.forEach(radio => {
+    radio.addEventListener('change', function() {
+      const customInput = messageDiv.querySelector(`.custom-message-input-${messageCount}`);
+      if (this.value === 'custom') {
+        customInput.classList.remove('hidden');
+      } else {
+        customInput.classList.add('hidden');
+      }
+    });
+  });
+}
+
+function removeMessage(button) {
+  const messageDiv = button.closest('.mt-4.bg-base-200\\/50');
+  messageDiv.remove();
+}
+
+// Add Condition function
+let conditionCount = 0;
+function addCondition() {
+  const container = document.getElementById('conditions-container');
+  
+  // Remove "no conditions" message if it exists
+  const noConditions = container.querySelector('.text-center');
+  if (noConditions) {
+    noConditions.remove();
+  }
+  
+  conditionCount++;
+  const conditionDiv = document.createElement('div');
+  conditionDiv.className = 'p-4 bg-base-200/50 rounded-lg border border-base-content/10 mb-4';
+  conditionDiv.innerHTML = `
+    <div class="flex items-center justify-between mb-4">
+      <h4 class="font-medium text-base-content">Condition ${conditionCount}</h4>
+      <button type="button" onclick="removeCondition(this)" class="btn btn-ghost btn-xs text-error">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <select name="condition_${conditionCount}_field" class="select select-sm bg-base-300 border-base-content/20">
+        <option value="">Select field...</option>
+        <option value="user_input">User Input</option>
+        <option value="call_duration">Call Duration</option>
+        <option value="time_of_day">Time of Day</option>
+        <option value="user_sentiment">User Sentiment</option>
+        <option value="previous_action">Previous Action</option>
+      </select>
+      
+      <select name="condition_${conditionCount}_operator" class="select select-sm bg-base-300 border-base-content/20">
+        <option value="">Select operator...</option>
+        <option value="equals">Equals</option>
+        <option value="contains">Contains</option>
+        <option value="starts_with">Starts with</option>
+        <option value="ends_with">Ends with</option>
+        <option value="greater_than">Greater than</option>
+        <option value="less_than">Less than</option>
+      </select>
+      
+      <input type="text" name="condition_${conditionCount}_value" placeholder="Enter value..." 
+             class="input input-sm bg-base-300 border-base-content/20">
+    </div>
+  `;
+  
+  container.appendChild(conditionDiv);
+}
+
+function removeCondition(button) {
+  const conditionDiv = button.closest('.p-4.bg-base-200\\/50');
+  conditionDiv.remove();
+  
+  // Show "no conditions" message if container is empty
+  const container = document.getElementById('conditions-container');
+  if (container.children.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-8">
+        <p class="text-sm text-base-content/50 italic">No conditions defined</p>
+      </div>
+    `;
+  }
+}
+</script>
+{% endblock %}

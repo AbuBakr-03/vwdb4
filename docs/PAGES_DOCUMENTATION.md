@@ -2,7 +2,208 @@
 
 ## Overview
 
-This document provides comprehensive documentation for the **Overview** and **Assistants** pages in Watchtower v2, including all features, optimizations, and file locations for easy maintenance and future development.
+This document provides comprehensive documentation for the pages in Watchtower v2, including layout standards, features, optimizations, and file locations for easy maintenance and future development.
+
+---
+
+## 🎨 Layout Standards
+
+### **Page Structure Standard**
+
+All dashboard pages should follow this standardized layout pattern to ensure consistency, proper spacing, and optimal user experience:
+
+#### 1. **Main Container Structure**
+```html
+{% block content %}
+<div class="min-h-screen bg-base-100">
+  <main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-10 pb-24">
+    <!-- Page content sections here -->
+  </main>
+</div>
+{% endblock %}
+```
+
+**Key Elements:**
+- **Container**: `max-w-[1400px] mx-auto` - Centered with max width on large screens
+- **Responsive Padding**: `px-4 sm:px-6 lg:px-8` - Consistent edge spacing
+- **Vertical Spacing**: `py-6 lg:py-10` - Top/bottom padding that scales
+- **Section Spacing**: `space-y-10` - Consistent vertical rhythm between sections
+- **Bottom Padding**: `pb-24` - Extra space to prevent sticky footer overlap
+
+#### 2. **Top Bar Pattern**
+```html
+<!-- Top Bar -->
+<div class="grid grid-cols-1 md:grid-cols-2 items-start gap-4">
+  <div>
+    <h1 class="text-3xl font-bold text-base-content">Page Title</h1>
+    <p class="text-base-content/70 mt-1">Page description</p>
+  </div>
+  <div class="md:justify-self-end flex flex-wrap gap-2">
+    <!-- Action buttons -->
+    <button class="btn btn-outline btn-sm h-9 min-h-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+      Action
+    </button>
+  </div>
+</div>
+```
+
+**Features:**
+- **Responsive Grid**: Title/description left, actions right
+- **Consistent Button Height**: `h-9 min-h-9` for all action buttons
+- **Accessible Focus**: `focus-visible:outline` for keyboard navigation
+- **Flexible Actions**: Wraps properly on smaller screens
+
+#### 3. **Filter Card Pattern**
+```html
+<!-- Filters Card -->
+<div class="card bg-base-200/40 border border-base-content/10">
+  <div class="card-body p-5 sm:p-6 lg:p-7 space-y-5">
+    <!-- Search input -->
+    <div class="relative">
+      <input class="input input-bordered w-full pl-10 h-11 bg-base-100 border-base-content/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" />
+      <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-base-content/50">...</svg>
+    </div>
+    
+    <!-- Filter controls -->
+    <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+      <!-- Dropdowns, selects, buttons -->
+    </div>
+    
+    <!-- Applied filters -->
+    <div class="flex flex-wrap gap-2 pt-1">
+      <!-- Filter chips -->
+    </div>
+  </div>
+</div>
+```
+
+**Features:**
+- **Generous Padding**: `p-5 sm:p-6 lg:p-7` scales with screen size
+- **Consistent Height**: `h-11` for search inputs
+- **Proper Spacing**: `space-y-5` for internal sections
+- **Enhanced Dropdowns**: `shadow-xl border z-20` for better visibility
+
+#### 4. **Card Grid Patterns**
+
+**Featured/Recommended Grid:**
+```html
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-7">
+  <div class="card h-full bg-base-200/50 border border-base-content/10 hover:shadow-lg transition group">
+    <!-- Card content -->
+  </div>
+</div>
+```
+
+**Compact Grid (All Items):**
+```html
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 lg:gap-5">
+  <div class="card h-full bg-base-200/30 border border-base-content/10 hover:shadow-md transition group">
+    <!-- Card content -->
+  </div>
+</div>
+```
+
+#### 5. **Card Structure Standard**
+```html
+<div class="card h-full bg-base-200/50 border border-base-content/10 hover:shadow-lg transition group">
+  <figure class="relative aspect-square overflow-hidden rounded-t-2xl">
+    <img class="w-full h-full object-cover" src="..." alt="..." />
+    <!-- Overlay content -->
+    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+      <!-- Overlay buttons -->
+    </div>
+    <!-- Badges -->
+    <div class="absolute top-2 left-2">
+      <span class="badge badge-primary badge-sm">Badge</span>
+    </div>
+  </figure>
+  <div class="card-body p-4 flex flex-col">
+    <h3 class="card-title text-lg leading-tight">Title</h3>
+    <p class="text-sm text-base-content/60">Description</p>
+    
+    <!-- Tags -->
+    <div class="flex flex-wrap gap-1 mt-2">
+      <span class="badge badge-outline badge-xs">Tag</span>
+    </div>
+
+    <!-- Footer - always at bottom -->
+    <div class="mt-auto pt-3 flex justify-between items-center text-xs">
+      <div class="font-mono text-sm">$0.03/min</div>
+      <div class="text-base-content/60">~400ms</div>
+    </div>
+  </div>
+</div>
+```
+
+**Key Features:**
+- **Equal Height**: `h-full` ensures column alignment
+- **Flexible Layout**: `flex flex-col` with `mt-auto` pushes footer down
+- **Aspect Ratio**: `aspect-square` for consistent image sizing
+- **Object Cover**: Prevents image distortion
+- **Proper Contrast**: `text-base-content/60` for readable secondary text
+
+#### 6. **Button Standards**
+
+**Action Buttons (Top Bar):**
+```html
+<button class="btn btn-outline btn-sm h-9 min-h-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+  <svg class="w-4 h-4">...</svg>
+  Action
+</button>
+```
+
+**Card Action Buttons:**
+```html
+<button class="btn btn-ghost btn-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" title="Action">
+  <svg class="w-3 h-3">...</svg>
+</button>
+```
+
+#### 7. **Typography & Spacing**
+
+**Section Headers:**
+```html
+<h2 class="text-2xl font-semibold text-base-content mb-6">Section Title</h2>
+```
+
+**Meta Information:**
+```html
+<div class="text-sm text-base-content/60">8 items</div>
+```
+
+**Content Text:**
+- Primary: `text-base-content`
+- Secondary: `text-base-content/60` 
+- Tertiary: `text-base-content/50` (use sparingly)
+
+#### 8. **Accessibility Standards**
+
+**Focus Indicators:**
+- All interactive elements: `focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary`
+- Keyboard navigation support
+- Proper ARIA labels for icons
+
+**Image Standards:**
+- Always include `alt` attributes
+- Use `object-cover` for consistent sizing
+- `rounded-2xl` for consistent corner radius
+
+#### 9. **Implementation Checklist**
+
+When creating new pages, ensure:
+
+- [ ] Main container uses standardized padding and spacing
+- [ ] Top bar follows grid pattern with proper button heights
+- [ ] Filter cards use generous padding and consistent input heights
+- [ ] All cards have `h-full` for equal heights
+- [ ] Card bodies use `flex flex-col` with `mt-auto` for footers
+- [ ] Images use `aspect-square object-cover`
+- [ ] All buttons include focus-visible styles
+- [ ] Text contrast follows the `/60` pattern for secondary content
+- [ ] Grids use appropriate gap sizes (`gap-6 lg:gap-7` for featured, `gap-4 lg:gap-5` for compact)
+- [ ] Bottom padding includes space for sticky elements (`pb-24`)
+
+This standard ensures all pages have consistent spacing, proper accessibility, and optimal user experience across all screen sizes.
 
 ---
 
@@ -448,6 +649,177 @@ python manage.py check
 # Test JavaScript modules
 # Open browser console and check for import errors
 ```
+
+---
+
+## 🎊 Toast Notification System
+
+### **Standardized Toast Notifications**
+
+All pages now use a centralized, standardized toast notification system located in `base.html` for consistent user feedback across the application.
+
+#### **Features:**
+- **Global availability**: Available on all pages automatically
+- **Consistent positioning**: Bottom-right corner (toast-bottom toast-end)
+- **Multiple types**: Success, Error, Warning, Info
+- **Smooth animations**: Slide-in from right with fade effects
+- **Auto-dismiss**: Configurable duration with manual close option
+- **Anti-stacking**: Only one toast visible at a time
+- **Accessibility**: Proper ARIA labels and keyboard support
+
+#### **Usage:**
+```javascript
+// Basic usage
+showToast(message, type, duration);
+
+// Convenience functions
+showSuccessToast('Operation completed successfully!');
+showErrorToast('Something went wrong!');
+showWarningToast('Please check your input.');
+showInfoToast('Information message here.');
+
+// With custom duration
+showSuccessToast('Custom message', 5000); // 5 seconds
+```
+
+#### **Toast Types and Styling:**
+```javascript
+// Success Toast (Green)
+showSuccessToast('Voice added to project successfully!');
+
+// Error Toast (Red) 
+showErrorToast('Failed to copy voice ID to clipboard');
+
+// Warning Toast (Yellow)
+showWarningToast('Please select at least one item');
+
+// Info Toast (Blue)
+showInfoToast('Loading voice details...');
+```
+
+#### **Implementation in Templates:**
+
+**For Django Messages Integration:**
+```html
+<!-- Django Messages Integration with Standardized Toast -->
+{% if messages %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      {% for message in messages %}
+        {% if message.tags == 'success' %}
+          showSuccessToast('{{ message|escapejs }}');
+        {% elif message.tags == 'error' %}
+          showErrorToast('{{ message|escapejs }}');
+        {% elif message.tags == 'warning' %}
+          showWarningToast('{{ message|escapejs }}');
+        {% else %}
+          showInfoToast('{{ message|escapejs }}');
+        {% endif %}
+      {% endfor %}
+    });
+  </script>
+{% endif %}
+```
+
+**For JavaScript Actions:**
+```javascript
+// Copy to clipboard with feedback
+function copyVoiceId(voiceId) {
+  navigator.clipboard.writeText(voiceId).then(() => {
+    showSuccessToast(`Voice ID "${voiceId}" copied to clipboard!`);
+  }).catch(() => {
+    showErrorToast('Failed to copy voice ID to clipboard');
+  });
+}
+
+// Form submission feedback
+function saveSettings() {
+  // ... save logic
+  showSuccessToast('Settings saved successfully!');
+}
+```
+
+#### **Toast Structure:**
+```html
+<div class="toast toast-bottom toast-end z-50 global-toast">
+  <div class="alert alert-success shadow-lg border border-base-content/20 backdrop-blur">
+    <div class="flex items-center gap-3">
+      <svg class="w-5 h-5 flex-shrink-0">[Icon SVG]</svg>
+      <span class="text-sm font-medium">Message text</span>
+      <button class="btn btn-ghost btn-xs btn-circle ml-auto" onclick="this.closest('.global-toast').remove()">
+        [Close icon]
+      </button>
+    </div>
+  </div>
+</div>
+```
+
+#### **Animation Classes:**
+- **Entrance**: `slideInRight` - Slides in from right edge
+- **Exit**: `slideOutRight` - Slides out to right edge
+- **Duration**: 300ms for smooth transitions
+
+#### **Configuration:**
+```javascript
+// Default durations
+Success: 3000ms (3 seconds)
+Error: 4000ms (4 seconds) 
+Warning: 3500ms (3.5 seconds)
+Info: 3000ms (3 seconds)
+```
+
+#### **Files Updated:**
+- **`templates/base.html`**: Global toast system and animations
+- **`dashboard/templates/dashboard/VoiceLibrary.html`**: Updated copyVoiceId function
+- **`tools/templates/tools/tools_list.html`**: Django messages integration
+- **Voice Details Drawer**: addVoiceToProject and duplicateVoice functions
+
+---
+
+## 🎪 Voice Details Drawer System
+
+### **Global Responsive Voice Details Modal**
+
+A comprehensive, responsive voice details drawer that's globally available across all pages for displaying detailed voice information.
+
+#### **Features:**
+- **Global availability**: Accessible from any page via `base.html`
+- **Fully responsive**: Adapts to all screen sizes (mobile to desktop)
+- **Interactive tabs**: Overview, Pricing, Latency, Samples
+- **Smooth animations**: Slide-in from right with backdrop
+- **Keyboard support**: ESC to close, full tab navigation
+- **Touch-friendly**: Optimized for mobile interactions
+
+#### **Screen Size Breakpoints:**
+```css
+Mobile (< 640px): max-w-md (384px)
+Small (640px+): max-w-lg (512px)  
+Medium (768px+): max-w-xl (576px)
+Large (1024px+): max-w-2xl (672px)
+Extra Large (1280px+): max-w-3xl (768px)
+```
+
+#### **Usage:**
+```javascript
+// Open voice details for specific voice
+openVoiceDetails('voice-id-here');
+
+// Functions automatically available globally
+switchVoiceTab('pricing'); // Switch to pricing tab
+addVoiceToProject(); // Add current voice to project
+duplicateVoice(); // Duplicate current voice
+```
+
+#### **Responsive Design Features:**
+- **Adaptive sizing**: Elements scale based on screen size
+- **Flexible layout**: Stacked on mobile, side-by-side on desktop
+- **Touch optimization**: Larger tap targets on mobile
+- **Scrollable content**: Proper overflow handling
+- **Readable text**: Font sizes adjust for readability
+
+#### **Files:**
+- **`templates/base.html`**: Global drawer HTML and JavaScript
+- **`dashboard/templates/dashboard/VoiceLibrary.html`**: Content generation functions
 
 ---
 
