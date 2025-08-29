@@ -32,6 +32,21 @@ class Command(BaseCommand):
                     'description': 'OpenAI Alloy voice - versatile and natural'
                 },
                 {
+                    'name': 'Ash',
+                    'voice_id': 'ash',
+                    'description': 'OpenAI Ash voice - smooth and calming'
+                },
+                {
+                    'name': 'Ballad',
+                    'voice_id': 'ballad',
+                    'description': 'OpenAI Ballad voice - melodic and expressive'
+                },
+                {
+                    'name': 'Coral',
+                    'voice_id': 'coral',
+                    'description': 'OpenAI Coral voice - warm and friendly'
+                },
+                {
                     'name': 'Echo',
                     'voice_id': 'echo',
                     'description': 'OpenAI Echo voice - clear and professional'
@@ -42,14 +57,19 @@ class Command(BaseCommand):
                     'description': 'OpenAI Fable voice - warm and engaging'
                 },
                 {
+                    'name': 'Nova',
+                    'voice_id': 'nova',
+                    'description': 'OpenAI Nova voice - bright and energetic'
+                },
+                {
                     'name': 'Onyx',
                     'voice_id': 'onyx',
                     'description': 'OpenAI Onyx voice - deep and authoritative'
                 },
                 {
-                    'name': 'Nova',
-                    'voice_id': 'nova',
-                    'description': 'OpenAI Nova voice - bright and energetic'
+                    'name': 'Sage',
+                    'voice_id': 'sage',
+                    'description': 'OpenAI Sage voice - wise and measured'
                 },
                 {
                     'name': 'Shimmer',
