@@ -1,0 +1,71 @@
+{% comment %}
+Standardized Page Layout Component
+Usage: {% extends 'components/page_layout.html' %} with various blocks
+
+This component provides a consistent page structure using the new CSS layout classes:
+- .main-content for the main container
+- .page-header with title, subtitle, and actions
+- .card-grid for content grids
+- .filter-bar for search and filters
+- Debug tagging throughout for easier development
+
+Blocks available for customization:
+- page_title: Page title text
+- page_subtitle: Optional subtitle text  
+- page_actions: Action buttons in the header
+- page_filters: Filter bar content
+- page_content: Main page content
+- extra_css: Additional page-specific CSS
+- extra_js: Additional page-specific JavaScript
+{% endcomment %}
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Main Content Container with standardized layout -->
+<div class="main-content" data-component="page-layout" data-page-id="{% block page_id %}{% endblock %}">
+  
+  <!-- Page Header with Actions -->
+  <div class="page-header" data-component="page-header">
+    <div class="page-header-content">
+      <h1 class="page-header-title">{% block page_title %}Page Title{% endblock %}</h1>
+      {% block page_subtitle %}{% endblock %}
+    </div>
+    
+    {% block page_actions %}
+    <div class="page-header-actions" data-component="page-actions">
+      <!-- Action buttons will be inserted here -->
+    </div>
+    {% endblock %}
+  </div>
+
+  <!-- Optional Filter Bar -->
+  {% block page_filters %}
+  <!-- Filter bar will be inserted here if needed -->
+  {% endblock %}
+
+  <!-- Main Page Content -->
+  <div data-component="page-content">
+    {% block page_content %}
+    <!-- Main content will be inserted here -->
+    {% endblock %}
+  </div>
+
+  <!-- Optional Footer Section -->
+  {% block page_footer %}
+  <!-- Footer content will be inserted here if needed -->
+  {% endblock %}
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Page-specific CSS -->
+{% block page_css %}{% endblock %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- Page-specific JavaScript -->
+{% block page_js %}{% endblock %}
+{% endblock %}

@@ -148,255 +148,12 @@
         padding-left: 1.5rem !important;
       }
       
-      /* Enhanced collapsible sidebar styles */
-      .sidebar-collapsed {
-        width: 4rem !important;
-      }
-      .sidebar-collapsed .sidebar-text {
-        display: none;
-      }
-      .sidebar-collapsed .logo-text {
-        display: none;
-      }
-      .sidebar-collapsed .workspace-dropdown {
-        display: none;
-      }
-      .sidebar-collapsed .user-info-card {
-        display: none;
-      }
 
-      /* Collapsed: make the content area flush so centering is true to the sidebar edges */
-      #sidebar.sidebar-collapsed #sidebarContent { 
-        padding-left: 0 !important; 
-        padding-right: 0 !important; 
-      }
-
-      /* Kill DaisyUI menu left padding/indent while collapsed */
-      #sidebar.sidebar-collapsed .menu { 
-        padding-left: 0 !important; 
-        padding-right: 0 !important; 
-      }
-      #sidebar.sidebar-collapsed .menu :where(li > a, li > button, li > span) {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        width: 100%;
-        height: 3rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      /* Never reveal the inline label when collapsed */
-      #sidebar.sidebar-collapsed .sidebar-text,
-      #sidebar.sidebar-collapsed .sidebar-link:hover .sidebar-text,
-      #sidebar.sidebar-collapsed .sidebar-link:focus .sidebar-text,
-      .__sidebar-init-collapsed #sidebar .sidebar-text {
-        display: none !important;
-      }
-
-      /* In collapsed mode, anchors are centered squares (icons only) */
-      #sidebar.sidebar-collapsed .sidebar-link {
-        --item-size: 2.75rem;       /* visual size of icon hit area */
-        width: var(--item-size) !important;
-        height: var(--item-size) !important;
-        margin: 0 auto;              /* center inside the column */
-        border-radius: 9999px !important; /* circle instead of pill */
-        justify-content: center !important;
-        align-items: center !important;
-        display: flex !important;
-        padding: 0 !important;
-        transform: none !important;  /* avoid scale shift on hover */
-      }
-
-      /* Keep list rows neutral; we center via the link itself */
-      #sidebar.sidebar-collapsed .menu :where(li > a, li > button, li > span) {
-        padding: 0 !important;
-        justify-content: center !important;
-      }
-
-      /* Ensure the SVG is truly centered even if DaisyUI applies inline styles */
-      #sidebar.sidebar-collapsed .sidebar-link .sidebar-icon {
-        display: block !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-      }
-
-      /* Optional: center the header logo when collapsed */
-      #sidebar.sidebar-collapsed #sidebarHeader { 
-        justify-content: center !important;
-        padding: 0.5rem !important;
-      }
-
-      /* Default hover (collapsed): soft circular glow */
-      #sidebar.sidebar-collapsed .sidebar-link:hover {
-        background: radial-gradient(closest-side, hsl(var(--p) / .12), transparent 72%);
-        box-shadow:
-          inset 0 0 0 1px hsl(var(--bc) / .06),
-          0 1px 2px 0 rgb(0 0 0 / .15);
-      }
-
-      /* Active state (collapsed): stronger circular ring + subtle inner */
-      #sidebar.sidebar-collapsed .sidebar-link.active {
-        background: radial-gradient(closest-side, hsl(var(--p) / .18), transparent 70%);
-        box-shadow:
-          inset 0 0 0 2px hsl(var(--p) / .35),
-          0 1px 3px 0 rgb(0 0 0 / .25);
-        color: hsl(var(--p));
-        border: 0 !important; /* remove pill border look */
-      }
-      /* Tooltip: label appears to the right, never inline */
-      #sidebar.sidebar-collapsed .sidebar-link:hover::after {
-        content: attr(title);
-        position: absolute;
-        left: calc(100% + 0.5rem);
-        top: 50%;
-        transform: translateY(-50%);
-        background: hsl(var(--b1));
-        color: hsl(var(--bc));
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.375rem;
-        border: 1px solid hsl(var(--bc) / .08);
-        white-space: nowrap;
-        font-size: 0.8125rem;
-        line-height: 1rem;
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / .25), 0 4px 6px -4px rgb(0 0 0 / .2);
-        z-index: 50;
-        pointer-events: none;
-      }
-
-      /* Tooltip arrow */
-      #sidebar.sidebar-collapsed .sidebar-link:hover::before {
-        content: "";
-        position: absolute;
-        left: calc(100% + 0.5rem - 6px);
-        top: 50%;
-        transform: translateY(-50%) rotate(45deg);
-        width: 8px;
-        height: 8px;
-        background: hsl(var(--b1));
-        border-left: 1px solid hsl(var(--bc) / .08);
-        border-top: 1px solid hsl(var(--bc) / .08);
-        box-shadow: -1px -1px 0 rgb(0 0 0 / .02);
-        z-index: 49;
-        pointer-events: none;
-      }
-      .sidebar-expand-btn {
-        position: absolute;
-        right: -0.75rem;
-        top: 1rem;
-        z-index: 10;
-        background-color: var(--b2);
-        border: 1px solid var(--b3);
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        border-radius: 50%;
-        width: 2rem;
-        height: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 200ms;
-      }
-      .sidebar-expand-btn:hover {
-        background-color: var(--p);
-        color: var(--pc);
-      }
-      .sidebar-header-collapsed {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      
-      /* Center all content in collapsed sidebar - overridden by more specific rules below */
-      
-      .sidebar-collapsed .sidebar-nav {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      /* Pre-paint initialization classes */
-      .__sidebar-init-collapsed #sidebar { 
-        width: 4rem !important;
-      }
-      .__sidebar-init-collapsed #sidebar .sidebar-text {
-        display: none;
-      }
-      .__sidebar-init-collapsed #sidebar .logo-text {
-        display: none;
-      }
-      .__sidebar-init-collapsed #sidebar .workspace-dropdown {
-        display: none;
-      }
-      .__sidebar-init-collapsed #sidebar .user-info-card {
-        display: none;
-      }
-      .__sidebar-init-collapsed #sidebar .sidebar-link {
-        --item-size: 2.75rem;       /* visual size of icon hit area */
-        width: var(--item-size) !important;
-        height: var(--item-size) !important;
-        margin: 0 auto;              /* center inside the column */
-        border-radius: 9999px !important; /* circle instead of pill */
-        justify-content: center !important;
-        align-items: center !important;
-        display: flex !important;
-        padding: 0 !important;
-        transform: none !important;  /* avoid scale shift on hover */
-      }
-      .__sidebar-init-collapsed .sidebar-link > * + * {
-        margin-left: 0;
-      }
-      .__sidebar-init-collapsed #sidebarContent {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-      }
-      .__sidebar-init-collapsed .sidebar-nav {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .__sidebar-init-collapsed .menu { 
-        padding-left: 0 !important; 
-        padding-right: 0 !important; 
-      }
-      .__sidebar-init-collapsed .menu :where(li > a, li > button, li > span) {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        width: 100%;
-        height: 3rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .__sidebar-init-collapsed #expandBtn { 
-        display: inline-flex;
-      }
-      .__sidebar-init-collapsed #collapseBtn { 
-        display: none;
-      }
     </style>
 
     {% block extra_css %}{% endblock %}
     
-    <script>
-      // Apply collapsed state ASAP to avoid FOUC - only collapse if user explicitly requested it
-      (function () {
-        try {
-          var collapsed = localStorage.getItem('sidebarCollapsed');
-          if (collapsed === 'true') {
-            document.documentElement.classList.add('__sidebar-init-collapsed');
-          }
-          // Default behavior: sidebar remains open/expanded
-        } catch (e) {}
-      })();
-    </script>
+
   </head>
   <body class="h-full bg-base-300">
     <div class="drawer lg:drawer-open">
@@ -479,75 +236,9 @@
           id="sidebar"
             class="w-80 bg-slate-900 border-r border-slate-700/50 transition-all duration-300 relative"
         >
-          <!-- Expand Button (visible when collapsed) -->
-          <button id="expandBtn" onclick="toggleSidebar()" class="sidebar-expand-btn hidden">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
-          
-          <!-- Collapse Button (visible when expanded) -->
-          <button id="collapseBtn" onclick="toggleSidebar()" class="sidebar-expand-btn">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-          </button>
+
 
           <div id="sidebarContent" class="flex flex-col h-full">
-            <!-- Org Switcher at Top -->
-            <div class="px-4 py-3 border-b border-slate-700/50">
-              <div class="dropdown dropdown-end w-full">
-                <div tabindex="0" role="button" class="btn btn-ghost btn-sm w-full justify-between text-left hover:bg-slate-800/50">
-                  <div class="flex items-center space-x-3">
-                    <div class="avatar placeholder">
-                      <div class="bg-cyan-500 text-white rounded-lg w-8 h-8">
-                        <span class="text-xs font-bold">ZT</span>
-              </div>
-            </div>
-                    <div class="flex flex-col items-start">
-                      <span class="text-sm font-semibold text-white">Zain Telecom</span>
-                      <span class="text-xs text-slate-400">Enterprise</span>
-                    </div>
-                  </div>
-                  <!-- Lucide ChevronDown -->
-                  <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path d="m6 9 6 6 6-6"/>
-                  </svg>
-                </div>
-                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-slate-800 rounded-2xl w-72 border border-slate-600">
-                  <li><a class="flex items-center space-x-3 p-3 hover:bg-slate-700 text-white">
-                    <div class="avatar placeholder">
-                      <div class="bg-cyan-500 text-white rounded-lg w-8 h-8">
-                        <span class="text-xs font-bold">ZT</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="font-semibold">Zain Telecom</div>
-                      <div class="text-xs text-slate-400">Current organization</div>
-                    </div>
-                  </a></li>
-                  <li><a class="flex items-center space-x-3 p-3 hover:bg-slate-700 text-white">
-                    <div class="avatar placeholder">
-                      <div class="bg-amber-500 text-white rounded-lg w-8 h-8">
-                        <span class="text-xs font-bold">STC</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="font-semibold">STC Group</div>
-                      <div class="text-xs text-slate-400">Switch organization</div>
-                    </div>
-                  </a></li>
-                  <div class="divider my-1 border-slate-600"></div>
-                  <li><a class="flex items-center space-x-3 p-3 hover:bg-slate-700 text-white">
-                    <!-- Lucide Plus -->
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                      <path d="M5 12h14m-7-7v14"/>
-                    </svg>
-                    <span>Create Organization</span>
-                  </a></li>
-                </ul>
-              </div>
-            </div>
 
             <!-- Logo -->
             <div id="sidebarHeader" class="px-4 py-4">
@@ -724,59 +415,18 @@
           localStorage.setItem("theme", newTheme);
         });
 
-        // Initialize sidebar state - always default to open (expanded)
-        const savedSidebarState = localStorage.getItem("sidebarCollapsed");
-        const shouldBeCollapsed = savedSidebarState === "true"; // Only collapse if user explicitly collapsed it before
-        
+        // Initialize sidebar state - static expanded mode
         const sidebar = document.getElementById("sidebar");
-        const expandBtn = document.getElementById("expandBtn");
-        const collapseBtn = document.getElementById("collapseBtn");
         const sidebarHeader = document.getElementById("sidebarHeader");
         
-        // Remove pre-paint class
+        // Remove any collapsed classes and ensure expanded state
         document.documentElement.classList.remove('__sidebar-init-collapsed');
-        
-        if (shouldBeCollapsed) {
-          sidebar.classList.add("sidebar-collapsed");
-          expandBtn.classList.remove("hidden");
-          collapseBtn.classList.add("hidden");
-          sidebarHeader.classList.add("sidebar-header-collapsed");
-          sidebarHeader.classList.remove("flex", "items-center", "space-x-3");
-        } else {
-          sidebar.classList.remove("sidebar-collapsed");
-          expandBtn.classList.add("hidden");
-          collapseBtn.classList.remove("hidden");
-          sidebarHeader.classList.remove("sidebar-header-collapsed");
-          sidebarHeader.classList.add("flex", "items-center", "space-x-3");
-        }
+        sidebar.classList.remove("sidebar-collapsed");
+        sidebarHeader.classList.remove("sidebar-header-collapsed");
+        sidebarHeader.classList.add("flex", "items-center", "space-x-3");
       });
 
-      // Enhanced sidebar toggle function
-      function toggleSidebar() {
-        const sidebar = document.getElementById("sidebar");
-        const expandBtn = document.getElementById("expandBtn");
-        const collapseBtn = document.getElementById("collapseBtn");
-        const sidebarHeader = document.getElementById("sidebarHeader");
-        const isCollapsed = sidebar.classList.contains("sidebar-collapsed");
-        
-        if (isCollapsed) {
-          // Expand sidebar
-          sidebar.classList.remove("sidebar-collapsed");
-          expandBtn.classList.add("hidden");
-          collapseBtn.classList.remove("hidden");
-          sidebarHeader.classList.remove("sidebar-header-collapsed");
-          sidebarHeader.classList.add("flex", "items-center", "space-x-3");
-          localStorage.setItem("sidebarCollapsed", "false");
-        } else {
-          // Collapse sidebar
-          sidebar.classList.add("sidebar-collapsed");
-          expandBtn.classList.remove("hidden");
-          collapseBtn.classList.add("hidden");
-          sidebarHeader.classList.add("sidebar-header-collapsed");
-          sidebarHeader.classList.remove("flex", "items-center", "space-x-3");
-          localStorage.setItem("sidebarCollapsed", "true");
-        }
-      }
+
     </script>
 
     {% block extra_js %}{% endblock %}

@@ -1,0 +1,56 @@
+{% comment %}
+Standardized Filter Card Component
+Usage: {% include 'components/filter_card.html' with search_placeholder="Search..." filters=filter_list %}
+
+Parameters:
+- search_placeholder: Placeholder text for search input
+- search_value: Current search value
+- filters: List of filter controls (HTML)
+- applied_filters: List of applied filter chips (HTML)
+- show_search: Boolean to show/hide search (default: true)
+- filter_id: Unique identifier for debugging
+- class: Additional CSS classes
+{% endcomment %}
+
+{% load static %}
+
+<!-- Filters Card - Tagged for debugging -->
+<div class="card bg-base-200/40 border border-base-content/10 {{ class|default:'' }}" 
+     data-component="filter-card" 
+     {% if filter_id %}data-filter-id="{{ filter_id }}"{% endif %}>
+  <div class="card-body p-5 sm:p-6 lg:p-7 space-y-5" data-component="filter-card-body">
+    
+    <!-- Search Input -->
+    {% if show_search != False %}
+      <div class="relative" data-component="search-input">
+        <input class="input input-bordered w-full pl-10 h-11 bg-base-100 border-base-content/20 
+                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" 
+               type="text" 
+               placeholder="{{ search_placeholder|default:'Search...' }}"
+               value="{{ search_value|default:'' }}"
+               data-element="search-field"
+               data-search-type="{{ filter_id|default:'general' }}" />
+        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-base-content/50" 
+             fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </div>
+    {% endif %}
+    
+    <!-- Filter Controls -->
+    {% if filters %}
+      <div class="flex flex-wrap items-center gap-3 sm:gap-4" data-component="filter-controls">
+        {{ filters }}
+      </div>
+    {% endif %}
+    
+    <!-- Applied Filters -->
+    {% if applied_filters %}
+      <div class="flex flex-wrap gap-2 pt-1" data-component="applied-filters">
+        {{ applied_filters }}
+      </div>
+    {% endif %}
+    
+  </div>
+</div>

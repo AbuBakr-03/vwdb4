@@ -21,15 +21,7 @@
     </button>
   </div>
 
-  <!-- Create Assistant Button -->
-  <div class="px-4 py-3">
-    <button id="create-assistant-btn" class="btn btn-primary w-full">
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-      </svg>
-      Create Assistant
-    </button>
-  </div>
+
 
   <!-- Search Box -->
   <div class="px-4 py-2">
@@ -90,7 +82,7 @@
 
 {% block content %}
 <!-- Fixed Header -->
-<div class="fixed top-0 z-50 bg-neutral text-neutral-content border-b border-neutral-content/20 px-6 py-3" style="left: 320px; right: 0;">
+<div id="assistants-fixed-header" class="fixed top-0 z-50 bg-neutral text-neutral-content border-b border-neutral-content/20 px-6 py-3" style="left: 640px; right: 0;">
   <div class="flex items-center justify-between">
     <!-- Left: Assistant Name & Status -->
     <div class="flex items-center space-x-3">
@@ -2635,17 +2627,7 @@ function showAlert(message, type = 'info') {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');
     
-    // Main create button
-    const createBtn = document.getElementById('create-assistant-btn');
-    if (createBtn) {
-        console.log('Found create button');
-        createBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            createAssistant(createBtn);
-        });
-    } else {
-        console.log('Create button not found');
-    }
+
     
     // Quick create button under search
     const quickCreateBtn = document.getElementById('quick-create-assistant');
@@ -2740,7 +2722,38 @@ document.addEventListener('DOMContentLoaded', function() {
     if (selectedAssistantId && selectedAssistantId !== 'None') {
         loadKnowledgeBaseData(selectedAssistantId);
     }
+    
+    // Initialize header positioning based on sidebar states
+    initializeAssistantHeaderPositioning();
 });
+
+/**
+ * Initialize the fixed header positioning with static sidebar width
+ */
+function initializeAssistantHeaderPositioning() {
+    const fixedHeader = document.getElementById('assistants-fixed-header');
+    const secondarySidebar = document.querySelector('.secondary-sidebar, aside[class*="w-80"]');
+    
+    if (!fixedHeader) {
+        console.warn('Assistant fixed header not found');
+        return;
+    }
+    
+    console.log('Initializing assistant header positioning with static sidebar...');
+    
+    // Static positioning - main sidebar is always 320px, secondary is 320px
+    const mainSidebarWidth = 320; // Static width
+    const secondarySidebarWidth = secondarySidebar && secondarySidebar.offsetWidth > 0 ? 320 : 0;
+    const totalLeftMargin = mainSidebarWidth + secondarySidebarWidth;
+    
+    console.log('Setting static header position:', {
+        mainSidebarWidth,
+        secondarySidebarWidth,
+        totalLeftMargin
+    });
+    
+    fixedHeader.style.left = `${totalLeftMargin}px`;
+}
 </script>
 
 <!-- Add CSRF token for AJAX requests -->
