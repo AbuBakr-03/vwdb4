@@ -2,7 +2,7 @@
 
 # Docker Build and Push Script for Watchtower V2
 # Usage: ./docker-build.sh [registry] [tag] [push]
-
+# ./docker-build.sh docker.io/zaidkaraymeh99 v1.0.1 push
 set -e
 
 # Configuration
