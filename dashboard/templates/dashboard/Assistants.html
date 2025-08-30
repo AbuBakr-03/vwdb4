@@ -222,15 +222,6 @@
       </a>
     </div>
     
-    <!-- Advanced as Ghost Button -->
-    <a href="#privacy-section" class="btn btn-ghost btn-sm text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 border border-amber-400/30 rounded-2xl" data-section="advanced">
-      <!-- Lucide Settings icon -->
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-        <circle cx="12" cy="12" r="3"/>
-      </svg>
-      Advanced
-    </a>
   </div>
 </div>
 
@@ -1186,30 +1177,51 @@
       <div class="p-4 space-y-3">
         <!-- Tools Content -->
         
-        <!-- Information Notice -->
-        <div class="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-          <div class="flex items-start space-x-2">
-            <svg class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        <!-- Email Integration -->
+        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
             </svg>
-            <div class="text-xs text-blue-600">
-              <span class="font-medium">Note:</span> Tools have different Request and Response format as compared to Functions. Check our <span class="underline cursor-pointer">tools guide</span> for more details
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">Email Integration</h3>
+                <p class="text-xs text-base-content/60 text-left">Enable email sending capabilities for your assistant</p>
+              </div>
+              <input 
+                type="checkbox" 
+                class="toggle toggle-primary config-toggle" 
+                data-config-section="predefined_functions"
+                data-config-key="email_integration"
+                {% if assistant_config.predefined_functions.email_integration %}checked{% endif %}
+              >
             </div>
           </div>
         </div>
 
-        <!-- Select Tools Section -->
-        <div class="space-y-3">
-          <h3 class="text-sm font-medium text-base-content">Select Tools</h3>
-          
-          <!-- Tools Dropdown/Selection -->
-          <div class="relative">
-            <button class="btn btn-outline w-full justify-between text-left bg-base-100 border-base-content/20 hover:bg-base-200/50">
-              <span class="text-base-content/60">Select tools to add...</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
+        <!-- SMS Integration -->
+        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">SMS Integration</h3>
+                <p class="text-xs text-base-content/60 text-left">Enable SMS sending capabilities for your assistant</p>
+              </div>
+              <input 
+                type="checkbox" 
+                class="toggle toggle-primary config-toggle" 
+                data-config-section="predefined_functions"
+                data-config-key="sms_integration"
+                {% if assistant_config.predefined_functions.sms_integration %}checked{% endif %}
+              >
+            </div>
           </div>
         </div>
 
@@ -1273,75 +1285,22 @@
             <div class="flex items-center justify-between">
               <div>
                 <h3 class="text-sm font-medium text-base-content">Enable End Call Function</h3>
-                <p class="text-xs text-base-content/60 text-left">This will allow the assistant to end the call from its side. (Best for gpt-4 and bigger models) <span class="text-blue-400 cursor-pointer hover:underline">Read More</span></p>
+                <p class="text-xs text-base-content/60 text-left">This will allow the assistant to end the call from its side.</p>
               </div>
-              <input type="checkbox" class="toggle toggle-primary" checked>
+              <input 
+                type="checkbox" 
+                class="toggle toggle-primary config-toggle" 
+                data-config-section="predefined_functions"
+                data-config-key="enable_end_call"
+                {% if assistant_config.predefined_functions.enable_end_call %}checked{% endif %}
+              >
             </div>
           </div>
         </div>
 
-        <!-- Dial Keypad -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 3v6h4l1 1h4V3H7zM3 21h18v-6H3v6z"></path>
-              <circle cx="7" cy="6" r="1"></circle>
-              <circle cx="10" cy="6" r="1"></circle>
-              <circle cx="13" cy="6" r="1"></circle>
-              <circle cx="7" cy="9" r="1"></circle>
-              <circle cx="10" cy="9" r="1"></circle>
-              <circle cx="13" cy="9" r="1"></circle>
-              <circle cx="7" cy="12" r="1"></circle>
-              <circle cx="10" cy="12" r="1"></circle>
-              <circle cx="13" cy="12" r="1"></circle>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Dial Keypad</h3>
-                <p class="text-xs text-base-content/60 text-left">This sets whether the assistant can dial digits on the keypad. <span class="text-blue-400 cursor-pointer hover:underline">Read More</span></p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary" checked>
-            </div>
-          </div>
-        </div>
 
-        <!-- Forwarding Phone Number -->
-        <div class="space-y-3">
-          <div class="flex items-center space-x-2">
-            <h3 class="text-sm font-medium text-base-content">Forwarding Phone Number</h3>
-            <svg class="w-4 h-4 text-base-content/50 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-          </div>
-          
-          <div class="flex space-x-2">
-            <!-- Country Code Dropdown -->
-            <div class="relative">
-              <select class="select select-bordered bg-base-100 w-20">
-                <option value="us" selected>🇺🇸</option>
-                <option value="ca">🇨🇦</option>
-                <option value="uk">🇬🇧</option>
-                <option value="au">🇦🇺</option>
-                <option value="de">🇩🇪</option>
-                <option value="fr">🇫🇷</option>
-                <option value="sa">🇸🇦</option>
-                <option value="ae">🇦🇪</option>
-              </select>
-            </div>
-            
-            <!-- Phone Number Input -->
-            <input 
-              type="tel" 
-              class="input input-bordered flex-1 bg-base-100" 
-              placeholder="4257623355"
-              value="4257623355"
-            />
-          </div>
-        </div>
+
+
 
       </div>
     </div>
@@ -1482,40 +1441,13 @@
         <div class="space-y-2">
           <h3 class="text-sm font-medium text-base-content">Prompt</h3>
           <textarea 
+            id="summary-prompt"
             class="textarea textarea-bordered w-full bg-base-100 min-h-[120px] resize-none" 
             placeholder="Enter summary prompt..."
-          >You are an expert note-taker. You will be given a transcript of a call. Summarize the call in 2-3 sentences, if applicable.</textarea>
+          >{% if assistant_config.analytics.summary_prompt %}{{ assistant_config.analytics.summary_prompt }}{% else %}You are an expert note-taker. You will be given a transcript of a call. Summarize the call in 2-3 sentences, if applicable.{% endif %}</textarea>
         </div>
 
-        <!-- Summary request timeout -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <label class="text-sm font-medium text-base-content">Summary request timeout in seconds.</label>
-            <span class="text-sm font-medium text-base-content">10</span>
-          </div>
-          <div class="relative">
-            <input type="range" min="1" max="60" step="1" value="10" class="range range-primary w-full">
-            <div class="flex justify-between text-xs text-base-content/60 mt-1">
-              <span>1 (sec)</span>
-              <span class="text-right">60 (sec)</span>
-            </div>
-          </div>
-        </div>
 
-        <!-- Minimum number of messages -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <label class="text-sm font-medium text-base-content">Minimum number of messages to trigger analysis.</label>
-            <span class="text-sm font-medium text-base-content">2</span>
-          </div>
-          <div class="relative">
-            <input type="range" min="0" max="10" step="1" value="2" class="range range-primary w-full">
-            <div class="flex justify-between text-xs text-base-content/60 mt-1">
-              <span>0</span>
-              <span class="text-right">10</span>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>
@@ -1565,49 +1497,18 @@
       <div class="p-4 space-y-3">
         <!-- Success Evaluation Content -->
         
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Evaluate if your call was successful. You can use Rubric standalone or in combination with Success Evaluation Prompt. If both are provided, they are concatenated into appropriate instructions.</p>
-
         <!-- Prompt Section -->
         <div class="space-y-2">
           <label class="text-sm font-medium text-base-content">Prompt</label>
           <p class="text-xs text-amber-500">This is the prompt that's used to evaluate if the call was successful.</p>
           <textarea 
+            id="success-prompt"
             class="textarea textarea-bordered w-full bg-base-100 min-h-[120px] resize-none" 
             placeholder="Enter success evaluation prompt..."
-          >You are an expert call evaluator. You will be given a transcript of a call and the system prompt of the AI participant. Determine if the call was successful based on the objectives inferred from the system prompt.</textarea>
+          >{% if assistant_config.analytics.success_prompt %}{{ assistant_config.analytics.success_prompt }}{% else %}You are an expert call evaluator. You will be given a transcript of a call and the system prompt of the AI participant. Determine if the call was successful based on the objectives inferred from the system prompt.{% endif %}</textarea>
         </div>
 
-        <!-- Success Evaluation Rubric -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-base-content">Success Evaluation Rubric</label>
-          <p class="text-xs text-amber-500">This enforces the rubric of the evaluation upon the Success Evaluation.</p>
-          
-          <div class="relative">
-            <select class="select select-bordered w-full bg-base-100">
-              <option value="numeric" selected>NumericScale</option>
-              <option value="binary">Binary</option>
-              <option value="percentage">Percentage</option>
-              <option value="custom">Custom</option>
-            </select>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">A scale of 1 to 10.</p>
-        </div>
 
-        <!-- Success evaluation request timeout -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <label class="text-sm font-medium text-base-content">Success evaluation request timeout in seconds.</label>
-            <span class="text-sm font-medium text-base-content">11</span>
-          </div>
-          <div class="relative">
-            <input type="range" min="1" max="60" step="1" value="11" class="range range-primary w-full">
-            <div class="flex justify-between text-xs text-base-content/60 mt-1">
-              <span>1 (sec)</span>
-              <span class="text-right">60 (sec)</span>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>
@@ -1657,33 +1558,18 @@
       <div class="p-4 space-y-3">
         <!-- Structured Data Content -->
         
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Extract structured data from call conversation. You can use Data Schema standalone or in combination with Structured Data Prompt. If both are provided, they are concatenated into appropriate instructions.</p>
-
         <!-- Prompt Section -->
         <div class="space-y-2">
           <label class="text-sm font-medium text-base-content">Prompt</label>
           <p class="text-xs text-amber-500">This is the prompt that's used to extract structured data from the call.</p>
           <textarea 
+            id="structured-prompt"
             class="textarea textarea-bordered w-full bg-base-100 min-h-[120px] resize-none" 
             placeholder="Enter structured data prompt..."
-          >You will be given a transcript of a call and the system prompt of the AI participant. Extract...</textarea>
+          >{% if assistant_config.analytics.structured_prompt %}{{ assistant_config.analytics.structured_prompt }}{% else %}You will be given a transcript of a call and the system prompt of the AI participant. Extract structured data according to the schema below.{% endif %}</textarea>
         </div>
 
-        <!-- Structured data request timeout -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <label class="text-sm font-medium text-base-content">Structured data request timeout in seconds.</label>
-            <span class="text-sm font-medium text-base-content">10</span>
-          </div>
-          <div class="relative">
-            <input type="range" min="1" max="60" step="1" value="10" class="range range-primary w-full">
-            <div class="flex justify-between text-xs text-base-content/60 mt-1">
-              <span>1 (sec)</span>
-              <span class="text-right">60 (sec)</span>
-            </div>
-          </div>
-        </div>
+
 
         <!-- Add Property Button -->
         <div class="pt-2">
@@ -1800,6 +1686,16 @@ async function saveAssistantConfig(btn) {
                 turn_detection_prefix_padding_ms: document.getElementById('turn-detection-prefix-padding')?.value || '',
                 turn_detection_create_response: document.getElementById('turn-detection-create-response')?.checked || false,
                 turn_detection_interrupt_response: document.getElementById('turn-detection-interrupt-response')?.checked || false
+            },
+            predefined_functions: {
+                enable_end_call: document.querySelector('input[data-config-key="enable_end_call"]')?.checked || false,
+                email_integration: document.querySelector('input[data-config-key="email_integration"]')?.checked || false,
+                sms_integration: document.querySelector('input[data-config-key="sms_integration"]')?.checked || false
+            },
+            analytics: {
+                summary_prompt: document.getElementById('summary-prompt')?.value || '',
+                success_prompt: document.getElementById('success-prompt')?.value || '',
+                structured_prompt: document.getElementById('structured-prompt')?.value || ''
             }
         };
         
@@ -2019,6 +1915,28 @@ function handleVoiceProviderChange() {
         const selectedProvider = this.value;
         console.log('Voice provider changed to:', selectedProvider);
         updateVoiceSelection(selectedProvider);
+    });
+}
+
+// Handle config toggle auto-save functionality
+function handleConfigToggleAutoSave() {
+    // Add event listeners to all config-toggle elements
+    const configToggles = document.querySelectorAll('.config-toggle');
+    console.log('Found config toggles:', configToggles.length);
+    
+    configToggles.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            console.log('Config toggle changed:', this.dataset.configKey, 'to:', this.checked);
+            
+            // Auto-save the configuration with a small delay to avoid rapid firing
+            clearTimeout(window.configSaveTimeout);
+            window.configSaveTimeout = setTimeout(() => {
+                // Create a temporary save button element for the save function
+                const tempBtn = document.createElement('button');
+                tempBtn.innerHTML = 'Auto-saving...';
+                saveAssistantConfig(tempBtn);
+            }, 500); // 500ms delay
+        });
     });
 }
 
@@ -2587,6 +2505,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize audio configuration toggles
     handleAudioConfigurationToggles();
+    
+    // Initialize config toggle auto-save functionality
+    handleConfigToggleAutoSave();
     
     // Update accordion height on page load if any audio settings are enabled
     setTimeout(() => {

@@ -278,15 +278,12 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
                 },
                 'predefined_functions': {
                     'enable_end_call': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.enable_end_call or False,
-                    'enable_dial_keypad': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.enable_dial_keypad or False,
-                    'forwarding_country': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.forwarding_country or 'us',
-                    'forwarding_number': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.forwarding_number or '',
+                    'email_integration': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.email_integration or False,
+                    'sms_integration': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.sms_integration or False,
                 },
                 'analytics': {
-                    'summary_timeout_sec': analytics.summary_timeout_sec if analytics else 10,
-                    'min_messages_for_summary': analytics.min_messages_for_summary if analytics else 2,
-                    'success_rubric': analytics.success_rubric if analytics else 'numeric',
-                    'success_timeout_sec': analytics.success_timeout_sec if analytics else 11,
+                    'summary_prompt': analytics.summary_prompt if analytics else 'You are an expert note-taker. You will be given a transcript of a call. Summarize the call in 2-3 sentences, if applicable.',
+                    'success_prompt': analytics.success_prompt if analytics else 'You are an expert call evaluator. You will be given a transcript of a call and the system prompt of the AI participant. Determine if the call was successful based on the objectives inferred from the system prompt.',
                     'structured_prompt': analytics.structured_prompt if analytics else '',
                     'structured_schema': analytics.structured_schema if analytics else [],
                 },
@@ -390,13 +387,11 @@ Keep your responses concise, helpful, and maintain a professional tone."""
             # Configure predefined functions
             pf = assistant.predefined_functions
             pf.enable_end_call = True
-            pf.enable_dial_keypad = True
-            pf.forwarding_country = "bh"  # Bahrain
-            pf.forwarding_number = "+97317123456"
             pf.save()
 
             # Configure analytics
             an = assistant.analytics
+            an.summary_prompt = "You are an expert note-taker. You will be given a transcript of a call. Summarize the call in 2-3 sentences, if applicable."
             an.structured_prompt = "Extract customer intent, issue type, and any specific requests from the conversation."
             an.structured_schema = [
                 {"name": "customer_intent", "type": "string", "required": True},
@@ -545,7 +540,7 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                     vc.ambient_sound_enabled = voice_data['ambient_sound_enabled']
                 if 'ambient_sound_type' in voice_data:
                     vc.ambient_sound_type = voice_data['ambient_sound_type']
-                if 'ambient_sound_volume' in voice_data:
+                if 'ambient_sound_volume' in voice_data and voice_data['ambient_sound_volume']:
                     vc.ambient_sound_volume = float(voice_data['ambient_sound_volume'])
                 if 'ambient_sound_url' in voice_data:
                     vc.ambient_sound_url = voice_data['ambient_sound_url']
@@ -555,11 +550,11 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                     vc.thinking_sound_enabled = voice_data['thinking_sound_enabled']
                 if 'thinking_sound_primary' in voice_data:
                     vc.thinking_sound_primary = voice_data['thinking_sound_primary']
-                if 'thinking_sound_primary_volume' in voice_data:
+                if 'thinking_sound_primary_volume' in voice_data and voice_data['thinking_sound_primary_volume']:
                     vc.thinking_sound_primary_volume = float(voice_data['thinking_sound_primary_volume'])
                 if 'thinking_sound_secondary' in voice_data:
                     vc.thinking_sound_secondary = voice_data['thinking_sound_secondary']
-                if 'thinking_sound_secondary_volume' in voice_data:
+                if 'thinking_sound_secondary_volume' in voice_data and voice_data['thinking_sound_secondary_volume']:
                     vc.thinking_sound_secondary_volume = float(voice_data['thinking_sound_secondary_volume'])
                 
                 # Legacy background sound support
@@ -581,7 +576,7 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                     stt.language = stt_data['language']
                 if 'model_name' in stt_data:
                     stt.model_name = stt_data['model_name']
-                if 'confidence_threshold' in stt_data:
+                if 'confidence_threshold' in stt_data and stt_data['confidence_threshold']:
                     stt.confidence_threshold = float(stt_data['confidence_threshold'])
                 if 'keyterms' in stt_data:
                     stt.keyterms = stt_data['keyterms']
@@ -603,11 +598,11 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                 advanced_data = config_data['advanced']
                 ac = assistant.advanced_config
                 
-                if 'turn_detection_threshold' in advanced_data:
+                if 'turn_detection_threshold' in advanced_data and advanced_data['turn_detection_threshold']:
                     ac.turn_detection_threshold = float(advanced_data['turn_detection_threshold'])
-                if 'turn_detection_silence_duration_ms' in advanced_data:
+                if 'turn_detection_silence_duration_ms' in advanced_data and advanced_data['turn_detection_silence_duration_ms']:
                     ac.turn_detection_silence_duration_ms = int(advanced_data['turn_detection_silence_duration_ms'])
-                if 'turn_detection_prefix_padding_ms' in advanced_data:
+                if 'turn_detection_prefix_padding_ms' in advanced_data and advanced_data['turn_detection_prefix_padding_ms']:
                     ac.turn_detection_prefix_padding_ms = int(advanced_data['turn_detection_prefix_padding_ms'])
                 if 'turn_detection_create_response' in advanced_data:
                     ac.turn_detection_create_response = bool(advanced_data['turn_detection_create_response'])
@@ -616,6 +611,34 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
 
                 
                 ac.save()
+            
+            # Update predefined functions configuration
+            if 'predefined_functions' in config_data:
+                pf_data = config_data['predefined_functions']
+                pf = assistant.predefined_functions
+                
+                if 'enable_end_call' in pf_data:
+                    pf.enable_end_call = bool(pf_data['enable_end_call'])
+                if 'email_integration' in pf_data:
+                    pf.email_integration = bool(pf_data['email_integration'])
+                if 'sms_integration' in pf_data:
+                    pf.sms_integration = bool(pf_data['sms_integration'])
+                
+                pf.save()
+            
+            # Update analytics configuration
+            if 'analytics' in config_data:
+                analytics_data = config_data['analytics']
+                an = assistant.analytics
+                
+                if 'summary_prompt' in analytics_data:
+                    an.summary_prompt = analytics_data['summary_prompt']
+                if 'success_prompt' in analytics_data:
+                    an.success_prompt = analytics_data['success_prompt']
+                if 'structured_prompt' in analytics_data:
+                    an.structured_prompt = analytics_data['structured_prompt']
+                
+                an.save()
             
             return JsonResponse({
                 'success': True,
