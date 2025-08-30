@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0008_remove_obsolete_voiceconfig_fields'),
+        ('dashboard', '0008_remove_unused_fields'),
     ]
 
     operations = [

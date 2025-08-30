@@ -15,7 +15,9 @@ import uuid
 
 from .models import (
     Assistant, PredefinedFunctions, CustomFunction,
-    AssistantVersion, AssistantKPI
+    AssistantVersion, AssistantKPI, ModelProvider, 
+    TranscriberProvider, VoiceProvider, BackgroundSound,
+    FirstMessageMode, SuccessRubric
 )
 from .tools_models import (
     FileAsset, AssistantFile, WebsiteScraping

@@ -154,26 +154,10 @@
           <polyline points="17,21 17,13 7,13 7,21"/>
           <polyline points="7,3 7,8 15,8"/>
         </svg>
-        Save Configuration
+        Save
       </button>
       {% endif %}
       
-      <!-- Primary CTA -->
-      <button class="btn btn-primary bg-cyan-500 hover:bg-cyan-600 text-white border-0 rounded-2xl shadow-lg">
-        <!-- Lucide Phone icon -->
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-        </svg>
-        Talk to Assistant
-      </button>
-      
-      <!-- Search -->
-      <div class="relative">
-        <input type="text" placeholder="Search" class="input input-sm bg-white/10 border-white/20 text-white placeholder-neutral-content/60 w-48 pr-12 text-sm focus:bg-white/20 focus:border-white/40 rounded-2xl">
-        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-          <kbd class="kbd kbd-xs bg-white/20 text-neutral-content/80 border-white/30 rounded-xl">⌘ K</kbd>
-        </div>
-      </div>
     </div>
   </div>
   
@@ -191,6 +175,15 @@
         <span>Model</span>
         <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400 shadow-sm shadow-cyan-400/50"></div>
       </a>
+      <a href="#knowledge-base-section" class="relative flex items-center space-x-2 text-neutral-content/70 hover:text-white pb-2 text-sm transition-colors" data-section="transcriber">
+        <!-- Lucide Type icon -->
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <polyline points="4,7 4,4 20,4 20,7"/>
+          <line x1="9" y1="20" x2="15" y2="20"/>
+          <line x1="12" y1="4" x2="12" y2="20"/>
+        </svg>
+        <span>Knowledge Base</span>
+      </a>
       <a href="#voice-section" class="relative flex items-center space-x-2 text-neutral-content/70 hover:text-white pb-2 text-sm transition-colors" data-section="voice">
         <!-- Lucide Mic icon -->
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -201,15 +194,17 @@
         </svg>
         <span>Voice & Persona</span>
       </a>
-      <a href="#transcriber-section" class="relative flex items-center space-x-2 text-neutral-content/70 hover:text-white pb-2 text-sm transition-colors" data-section="transcriber">
-        <!-- Lucide Type icon -->
+      <a href="#privacy-section" class="relative flex items-center space-x-2 text-neutral-content/70 hover:text-white pb-2 text-sm transition-colors" data-section="voice">
+        <!-- Lucide Mic icon -->
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <polyline points="4,7 4,4 20,4 20,7"/>
-          <line x1="9" y1="20" x2="15" y2="20"/>
-          <line x1="12" y1="4" x2="12" y2="20"/>
+          <path d="m12 1 0 6 m-3 7c0 3 2.755 5.7 5.5 6-.35.5-.5 1-.5 1.5a2 2 0 0 1-4 0c0-.5-.15-1-.5-1.5 2.745-.3 5.5-3 5.5-6z"/>
+          <path d="m19 10c0 1.5-2 5.5-7 5.5s-7-4-7-5.5"/>
+          <path d="m12 16v4"/>
+          <path d="m8 20l8 0"/>
         </svg>
-        <span>Speech-to-Text</span>
+        <span>Privacy</span>
       </a>
+      
       <a href="#tools-section" class="relative flex items-center space-x-2 text-neutral-content/70 hover:text-white pb-2 text-sm transition-colors" data-section="tools">
         <!-- Lucide Wrench icon -->
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -1703,90 +1698,6 @@
       </div>
     </div>
   </section>
-
-  <!-- ADVANCED SETTINGS Section Divider -->
-  <div id="advanced-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
-    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-      <circle cx="12" cy="12" r="3"/>
-    </svg>
-    <span class="text-base-content/80">ADVANCED SETTINGS</span>
-  </div>
-
-  <!-- Privacy subsection -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
-    <!-- Header button -->
-    <button
-      type="button"
-      aria-controls="collapsible-advanced-privacy-tab-content"
-      aria-expanded="false"
-      data-state="closed"
-      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
-    >
-      <div class="flex flex-row items-start gap-3">
-        <!-- Section icon -->
-        <svg class="w-4 h-4 text-amber-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-        </svg>
-
-        <!-- Title + helper -->
-        <div class="flex flex-col items-start">
-          <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-privacy-header">Privacy & Security</h2>
-            <!-- Hover-only helper icon (appears on hover like Vapi) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
-                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
-              <path fill="currentColor"
-                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
-            </svg>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">Configure privacy and security settings for your assistant</p>
-        </div>
-      </div>
-
-      <!-- Right chevron: rotates when expanded -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
-           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
-        <path fill="currentColor"
-          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
-      </svg>
-    </button>
-
-    <!-- Collapsible content -->
-    <div id="collapsible-advanced-privacy-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-4 space-y-3">
-        <!-- Privacy Content -->
-        
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Configure privacy and security settings for your assistant</p>
-
-        <!-- Audio Recording -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Audio Recording</h3>
-                <p class="text-xs text-base-content/60 text-left">Enable or disable audio recording of conversations</p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary" checked>
-            </div>
-          </div>
-        </div>
-
-
-
-      </div>
-    </div>
-  </section>
-
-
-
-
 
 {% else %}
   <!-- Empty State - No Assistant Selected -->
