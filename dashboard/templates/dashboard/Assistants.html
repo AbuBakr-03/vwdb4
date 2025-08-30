@@ -233,19 +233,10 @@
         </svg>
         <span>Analytics</span>
       </a>
-      <a href="#widget-section" class="relative flex items-center space-x-2 text-neutral-content/70 hover:text-white pb-2 text-sm transition-colors" data-section="widget">
-        <!-- Lucide Layout icon -->
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-          <line x1="3" y1="9" x2="21" y2="9"/>
-          <line x1="9" y1="21" x2="9" y2="9"/>
-        </svg>
-        <span>Widget</span>
-      </a>
     </div>
     
     <!-- Advanced as Ghost Button -->
-    <a href="#advanced-section" class="btn btn-ghost btn-sm text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 border border-amber-400/30 rounded-2xl" data-section="advanced">
+    <a href="#privacy-section" class="btn btn-ghost btn-sm text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 border border-amber-400/30 rounded-2xl" data-section="advanced">
       <!-- Lucide Settings icon -->
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
@@ -861,7 +852,8 @@
     </div>
   </section>
 
-  {% comment %} <!-- TRANSCRIBER Section Divider -->
+  {% comment %}
+  <!-- TRANSCRIBER Section Divider -->
   <div id="transcriber-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
     <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
@@ -1076,13 +1068,88 @@
 
       </div>
     </div>
-  </section> {% endcomment %}
+  </section>
+
+  {% endcomment %}
+
+  <!-- PRIVACY Section Divider -->
+  <div id="privacy-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
+    <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+    </svg>
+    <span class="text-base-content/80">PRIVACY SETTINGS</span>
+  </div>
+
+  <!-- PRIVACY (Vapi-style collapsible) -->
+  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
+    <!-- Header button -->
+    <button
+      type="button"
+      aria-controls="collapsible-privacy-tab-content"
+      aria-expanded="false"
+      data-state="closed"
+      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
+    >
+      <div class="flex flex-row items-start gap-3">
+        <!-- Section icon -->
+        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+        </svg>
+
+        <!-- Title + helper -->
+        <div class="flex flex-col items-start">
+          <div class="flex flex-row items-center">
+            <h2 class="text-lg font-medium text-base-content" data-testid="privacy-header">Privacy</h2>
+            <!-- Hover-only helper icon (appears on hover like Vapi) -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
+                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
+              <path fill="currentColor"
+                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,1,109,185.66Z"/>
+            </svg>
+          </div>
+          <p class="text-xs text-base-content/60 text-left">Configure audio recording settings for the assistant.</p>
+        </div>
+      </div>
+
+      <!-- Right chevron: rotates when expanded -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
+           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
+        <path fill="currentColor"
+          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
+      </svg>
+    </button>
+
+    <!-- Collapsible content -->
+    <div id="collapsible-privacy-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
+      <div class="p-4 space-y-3">
+        
+        <!-- Audio Recording -->
+        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
+          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
+            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-medium text-base-content">Audio Recording</h3>
+                <p class="text-xs text-base-content/60 text-left">Record the conversation with the assistant.</p>
+              </div>
+              <input type="checkbox" id="audio-recording" class="toggle toggle-primary" {% if assistant_config.privacy.audio_recording %}checked{% endif %}>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
   <!-- TOOLS Section Divider -->
   <div id="tools-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
     <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
     </svg>
     <span class="text-base-content/80">CONNECTED TOOLS</span>
   </div>
@@ -1645,10 +1712,11 @@
     </div>
   </section>
 
-  <!-- ADVANCED Section Divider -->
+  <!-- ADVANCED SETTINGS Section Divider -->
   <div id="advanced-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
-    <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+      <circle cx="12" cy="12" r="3"/>
     </svg>
     <span class="text-base-content/80">ADVANCED SETTINGS</span>
   </div>
@@ -1665,14 +1733,14 @@
     >
       <div class="flex flex-row items-start gap-3">
         <!-- Section icon -->
-        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 text-amber-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
         </svg>
 
         <!-- Title + helper -->
         <div class="flex flex-col items-start">
           <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-privacy-header">Privacy</h2>
+            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-privacy-header">Privacy & Security</h2>
             <!-- Hover-only helper icon (appears on hover like Vapi) -->
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
                  class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
@@ -1680,7 +1748,7 @@
                 d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
             </svg>
           </div>
-          <p class="text-xs text-base-content/60 text-left">This section allows you to configure the privacy settings for the assistant.</p>
+          <p class="text-xs text-base-content/60 text-left">Configure privacy and security settings for your assistant</p>
         </div>
       </div>
 
@@ -1698,43 +1766,7 @@
         <!-- Privacy Content -->
         
         <!-- Description -->
-        <p class="text-sm text-base-content/70">This section allows you to configure the privacy settings for the assistant.</p>
-
-        <!-- HIPAA Compliance -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">HIPAA Compliance</h3>
-                <p class="text-xs text-base-content/60 text-left">When this is enabled, no logs, recordings, or transcriptions will be stored.</p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary" checked>
-            </div>
-          </div>
-        </div>
-
-        <!-- PCI Compliance -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">PCI Compliance</h3>
-                <p class="text-xs text-base-content/60 text-left">When enabled, only PCI-compliant providers can be selected.</p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary">
-            </div>
-          </div>
-        </div>
+        <p class="text-sm text-base-content/70">Configure privacy and security settings for your assistant</p>
 
         <!-- Audio Recording -->
         <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
@@ -1747,1042 +1779,22 @@
             <div class="flex items-center justify-between">
               <div>
                 <h3 class="text-sm font-medium text-base-content">Audio Recording</h3>
-                <p class="text-xs text-base-content/60 text-left">Record the conversation with the assistant.</p>
+                <p class="text-xs text-base-content/60 text-left">Enable or disable audio recording of conversations</p>
               </div>
               <input type="checkbox" class="toggle toggle-primary" checked>
             </div>
           </div>
         </div>
 
-        <!-- Audio Recording Format -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Audio Recording Format</h3>
-                <p class="text-xs text-base-content/60 text-left">Choose the format for call recordings.</p>
-              </div>
-              <div class="relative">
-                <select class="select select-bordered select-sm bg-base-100 min-w-20">
-                  <option value="wav" selected>WAV</option>
-                  <option value="mp3">MP3</option>
-                  <option value="flac">FLAC</option>
-                  <option value="ogg">OGG</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Video Recording -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Video Recording</h3>
-                <p class="text-xs text-base-content/60 text-left">Enable or disable video recording during a web call. This will record the video of your user.</p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary">
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>
   </section>
 
-  <!-- Turn Detection subsection -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
-    <!-- Header button -->
-    <button
-      type="button"
-      aria-controls="collapsible-advanced-turn-detection-tab-content"
-      aria-expanded="false"
-      data-state="closed"
-      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
-    >
-      <div class="flex flex-row items-start gap-3">
-        <!-- Section icon -->
-        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-        </svg>
 
-        <!-- Title + helper -->
-        <div class="flex flex-col items-start">
-          <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-turn-detection-header">Turn Detection</h2>
-            <!-- Hover-only helper icon (appears on hover like Vapi) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
-                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
-              <path fill="currentColor"
-                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
-            </svg>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">Voice Activity Detection (VAD) configuration for turn-taking between user and assistant.</p>
-        </div>
-      </div>
 
-      <!-- Right chevron: rotates when expanded -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
-           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
-        <path fill="currentColor"
-          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
-      </svg>
-    </button>
 
-    <!-- Collapsible content -->
-    <div id="collapsible-advanced-turn-detection-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-4 space-y-3">
-        <!-- Turn Detection Content -->
-        
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Configure Voice Activity Detection (VAD) settings for turn-taking between user and assistant.</p>
-
-        <!-- Threshold -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Threshold</h3>
-                <p class="text-xs text-base-content/60 text-left">Activation threshold for VAD (0.0 to 1.0). Higher threshold requires louder audio and may perform better in noisy environments.</p>
-              </div>
-              <span id="turn-detection-threshold-value" class="text-sm font-medium text-base-content">{% if assistant_config.advanced.turn_detection_threshold %}{{ assistant_config.advanced.turn_detection_threshold }}{% else %}0.89{% endif %}</span>
-            </div>
-            <div class="relative">
-              <input 
-                id="turn-detection-threshold" 
-                type="range" 
-                min="0" 
-                max="1" 
-                step="0.01" 
-                value="{% if assistant_config.advanced.turn_detection_threshold %}{{ assistant_config.advanced.turn_detection_threshold }}{% else %}0.89{% endif %}" 
-                class="range range-primary w-full"
-                oninput="document.getElementById('turn-detection-threshold-value').textContent = this.value"
-              >
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0.0</span>
-                <span class="text-right">1.0</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Silence Duration -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Silence Duration (ms)</h3>
-                <p class="text-xs text-base-content/60 text-left">Duration of silence to detect speech stop (in milliseconds). With shorter values the model will respond more quickly, but may jump in on short pauses.</p>
-              </div>
-              <span id="turn-detection-silence-duration-value" class="text-sm font-medium text-base-content">{% if assistant_config.advanced.turn_detection_silence_duration_ms %}{{ assistant_config.advanced.turn_detection_silence_duration_ms }}{% else %}1500{% endif %}</span>
-            </div>
-            <div class="relative">
-              <input 
-                id="turn-detection-silence-duration" 
-                type="range" 
-                min="200" 
-                max="3000" 
-                step="50" 
-                value="{% if assistant_config.advanced.turn_detection_silence_duration_ms %}{{ assistant_config.advanced.turn_detection_silence_duration_ms }}{% else %}1500{% endif %}" 
-                class="range range-primary w-full"
-                oninput="document.getElementById('turn-detection-silence-duration-value').textContent = this.value"
-              >
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>200ms</span>
-                <span class="text-right">3000ms</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Prefix Padding -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Prefix Padding (ms)</h3>
-                <p class="text-xs text-base-content/60 text-left">Amount of audio to include before VAD detected speech (in milliseconds). Defaults to 300ms.</p>
-              </div>
-              <span id="turn-detection-prefix-padding-value" class="text-sm font-medium text-base-content">{% if assistant_config.advanced.turn_detection_prefix_padding_ms %}{{ assistant_config.advanced.turn_detection_prefix_padding_ms }}{% else %}250{% endif %}</span>
-            </div>
-            <div class="relative">
-              <input 
-                id="turn-detection-prefix-padding" 
-                type="range" 
-                min="0" 
-                max="1000" 
-                step="50" 
-                value="{% if assistant_config.advanced.turn_detection_prefix_padding_ms %}{{ assistant_config.advanced.turn_detection_prefix_padding_ms }}{% else %}250{% endif %}" 
-                class="range range-primary w-full"
-                oninput="document.getElementById('turn-detection-prefix-padding-value').textContent = this.value"
-              >
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0ms</span>
-                <span class="text-right">1000ms</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Create Response -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Create Response</h3>
-                <p class="text-xs text-base-content/60 text-left">Whether to automatically generate a response when a VAD stop event occurs.</p>
-              </div>
-              <div class="relative">
-                <input 
-                  id="turn-detection-create-response" 
-                  type="checkbox" 
-                  class="toggle toggle-primary" 
-                  {% if assistant_config.advanced.turn_detection_create_response %}checked{% endif %}
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Interrupt Response -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Interrupt Response</h3>
-                <p class="text-xs text-base-content/60 text-left">Whether to automatically interrupt any ongoing response when a VAD start event occurs.</p>
-              </div>
-              <div class="relative">
-                <input 
-                  id="turn-detection-interrupt-response" 
-                  type="checkbox" 
-                  class="toggle toggle-primary" 
-                  {% if assistant_config.advanced.turn_detection_interrupt_response %}checked{% endif %}
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Voicemail Detection subsection -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
-    <!-- Header button -->
-    <button
-      type="button"
-      aria-controls="collapsible-advanced-voicemail-tab-content"
-      aria-expanded="false"
-      data-state="closed"
-      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
-    >
-      <div class="flex flex-row items-start gap-3">
-        <!-- Section icon -->
-        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-        </svg>
-
-        <!-- Title + helper -->
-        <div class="flex flex-col items-start">
-          <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-voicemail-header">Voicemail Detection</h2>
-            <!-- Hover-only helper icon (appears on hover like Vapi) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
-                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
-              <path fill="currentColor"
-                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
-            </svg>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">Configure how the assistant detects and handles voicemail.</p>
-        </div>
-      </div>
-
-      <!-- Right chevron: rotates when expanded -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
-           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
-        <path fill="currentColor"
-          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
-      </svg>
-    </button>
-
-    <!-- Collapsible content -->
-    <div id="collapsible-advanced-voicemail-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-4 space-y-3">
-        <!-- Voicemail Detection Content -->
-        
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Configure how the assistant detects and handles voicemail.</p>
-
-        <!-- Voicemail Detection Provider -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Voicemail Detection Provider</h3>
-                <p class="text-xs text-amber-500">Vapi uses advanced AI for detection. Google/OpenAI use simpler models. Twilio uses traditional AMD.</p>
-              </div>
-              <div class="relative">
-                <select class="select select-bordered select-sm bg-base-100 min-w-16">
-                  <option value="off" selected>Off</option>
-                  <option value="vapi">Vapi</option>
-                  <option value="google">Google</option>
-                  <option value="openai">OpenAI</option>
-                  <option value="twilio">Twilio</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Stop Speaking Plan subsection -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
-    <!-- Header button -->
-    <button
-      type="button"
-      aria-controls="collapsible-advanced-stop-tab-content"
-      aria-expanded="false"
-      data-state="closed"
-      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
-    >
-      <div class="flex flex-row items-start gap-3">
-        <!-- Section icon -->
-        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
-        </svg>
-
-        <!-- Title + helper -->
-        <div class="flex flex-col items-start">
-          <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-stop-header">Stop Speaking Plan</h2>
-            <!-- Hover-only helper icon (appears on hover like Vapi) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
-                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
-              <path fill="currentColor"
-                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
-            </svg>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">This is the plan for when the assistant should stop talking.</p>
-        </div>
-      </div>
-
-      <!-- Right chevron: rotates when expanded -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
-           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
-        <path fill="currentColor"
-          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
-      </svg>
-    </button>
-
-    <!-- Collapsible content -->
-    <div id="collapsible-advanced-stop-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-4 space-y-3">
-        <!-- Stop Speaking Plan Content -->
-        
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">This is the plan for when the assistant should stop talking.</p>
-
-        <!-- Number of words -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 0l4 16M6 9l12 6m-12-6l12 6"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Number of words</h3>
-                <p class="text-xs text-base-content/60 text-left">This is the number of words that the customer has to say before the assistant will stop talking.</p>
-              </div>
-              <span class="text-sm font-medium text-base-content">10</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="0" max="20" step="1" value="10" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0</span>
-                <span class="text-right">20</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Voice seconds -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Voice seconds</h3>
-                <p class="text-xs text-base-content/60 text-left">This is the seconds customer has to speak before the assistant stops talking.</p>
-              </div>
-              <span class="text-sm font-medium text-base-content">0.2</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="0" max="0.5" step="0.1" value="0.2" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0 (sec)</span>
-                <span class="text-right">0.5 (sec)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Back off seconds -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Back off seconds</h3>
-                <p class="text-xs text-base-content/60 text-left">This is the seconds to wait before the assistant will start talking again after being interrupted.</p>
-              </div>
-              <span class="text-sm font-medium text-base-content">1</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="0" max="10" step="1" value="1" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0 (sec)</span>
-                <span class="text-right">10 (sec)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Call Timeout Settings subsection -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
-    <!-- Header button -->
-    <button
-      type="button"
-      aria-controls="collapsible-advanced-timeout-tab-content"
-      aria-expanded="false"
-      data-state="closed"
-      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
-    >
-      <div class="flex flex-row items-start gap-3">
-        <!-- Section icon -->
-        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-
-        <!-- Title + helper -->
-        <div class="flex flex-col items-start">
-          <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-timeout-header">Call Timeout Settings</h2>
-            <!-- Hover-only helper icon (appears on hover like Vapi) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
-                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
-              <path fill="currentColor"
-                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
-            </svg>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">Configure when the assistant should end a call based on silence or duration.</p>
-        </div>
-      </div>
-
-      <!-- Right chevron: rotates when expanded -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
-           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
-        <path fill="currentColor"
-          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
-      </svg>
-    </button>
-
-    <!-- Collapsible content -->
-    <div id="collapsible-advanced-timeout-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-4 space-y-3">
-        <!-- Call Timeout Settings Content -->
-        
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Configure when the assistant should end a call based on silence or duration.</p>
-
-        <!-- Silence Timeout -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Silence Timeout</h3>
-                <p class="text-xs text-base-content/60 text-left">How long to wait before a call is automatically ended due to inactivity.</p>
-              </div>
-              <span class="text-sm font-medium text-base-content">30</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="10" max="3600" step="10" value="30" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>10 (sec)</span>
-                <span class="text-right">3600 (sec)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Maximum Duration -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Maximum Duration</h3>
-                <p class="text-xs text-base-content/60 text-left">The maximum number of seconds a call will last.</p>
-              </div>
-              <span class="text-sm font-medium text-base-content">600</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="10" max="43200" step="10" value="600" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>10 (sec)</span>
-                <span class="text-right">43200 (sec)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Keypad Input Settings subsection -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
-    <!-- Header button -->
-    <button
-      type="button"
-      aria-controls="collapsible-advanced-keypad-tab-content"
-      aria-expanded="false"
-      data-state="closed"
-      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
-    >
-      <div class="flex flex-row items-start gap-3">
-        <!-- Section icon -->
-        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-        </svg>
-
-        <!-- Title + helper -->
-        <div class="flex flex-col items-start">
-          <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-keypad-header">Keypad Input Settings</h2>
-            <!-- Hover-only helper icon (appears on hover like Vapi) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
-                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
-              <path fill="currentColor"
-                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
-            </svg>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">Configure whether a user can input digits via the keypad, and when to process the input.</p>
-        </div>
-      </div>
-
-      <!-- Right chevron: rotates when expanded -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
-           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
-        <path fill="currentColor"
-          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
-      </svg>
-    </button>
-
-    <!-- Collapsible content -->
-    <div id="collapsible-advanced-keypad-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-4 space-y-3">
-        <!-- Keypad Input Settings Content -->
-        
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Configure whether a user can input digits via the keypad, and when to process the input.</p>
-
-        <!-- Enable Keypad Input -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Enable Keypad Input</h3>
-                <p class="text-xs text-base-content/60 text-left">Accept user input via the keypad</p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary" checked>
-            </div>
-          </div>
-        </div>
-
-        <!-- Timeout -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Timeout</h3>
-                <p class="text-xs text-base-content/60 text-left">The number of seconds to wait before processing the user's keypad input.</p>
-                <p class="text-xs text-base-content/60 text-left">Set to 0 to only wait for a delimiter.</p>
-              </div>
-              <span class="text-sm font-medium text-base-content">2</span>
-            </div>
-            <div class="relative">
-              <input type="range" min="0" max="10" step="1" value="2" class="range range-primary w-full">
-              <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                <span>0 (sec)</span>
-                <span class="text-right">10 (sec)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Delimiter -->
-        <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-          <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-            <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 0l4 16M6 9l12 6m-12-6l12 6"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-base-content">Delimiter</h3>
-                <p class="text-xs text-base-content/60 text-left">A character that will be used to determine when to process the user's keypad input.</p>
-                <p class="text-xs text-base-content/60 text-left">If both delimiter and timeout are set, the first to be reached will cause the input to be processed.</p>
-              </div>
-              <div class="flex space-x-2">
-                <div class="flex items-center justify-center w-8 h-8 bg-base-300 border border-base-content/20 rounded text-sm font-mono">#</div>
-                <div class="flex items-center justify-center w-8 h-8 bg-base-300 border border-base-content/20 rounded text-sm font-mono">*</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Messaging subsection -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
-    <!-- Header button -->
-    <button
-      type="button"
-      aria-controls="collapsible-advanced-messaging-tab-content"
-      aria-expanded="false"
-      data-state="closed"
-      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
-    >
-      <div class="flex flex-row items-start gap-3">
-        <!-- Section icon -->
-        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-        </svg>
-
-        <!-- Title + helper -->
-        <div class="flex flex-col items-start">
-          <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="advanced-messaging-header">Messaging</h2>
-            <!-- Hover-only helper icon (appears on hover like Vapi) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
-                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
-              <path fill="currentColor"
-                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
-            </svg>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">Message configuration for messages that are sent to and from the assistant.</p>
-        </div>
-      </div>
-
-      <!-- Right chevron: rotates when expanded -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
-           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
-        <path fill="currentColor"
-          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
-      </svg>
-    </button>
-
-    <!-- Collapsible content -->
-    <div id="collapsible-advanced-messaging-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-4 space-y-6">
-        <!-- Messaging Content -->
-        
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Message configuration for messages that are sent to and from the assistant.</p>
-
-        <!-- Server Settings -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">Server Settings</h3>
-          
-          <!-- Server URL -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-base-content">Server URL</label>
-            <input type="url" class="input input-bordered w-full bg-base-100" placeholder="https://api.example.com/function" value="https://api.example.com/function">
-          </div>
-
-          <!-- Secret Token and Timeout -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-base-content">Secret Token</label>
-              <input type="password" class="input input-bordered w-full bg-base-100" value="••••••••••••••••••••••••••••••">
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-base-content">Timeout (seconds)</label>
-              <input type="number" class="input input-bordered w-full bg-base-100" value="20">
-            </div>
-          </div>
-        </div>
-
-        <!-- HTTP Headers -->
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-base-content">HTTP Headers</h3>
-            <button class="btn btn-sm btn-outline border-dashed border-2 border-base-content/30 text-base-content/50 hover:border-primary hover:text-primary">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              Add Header
-            </button>
-          </div>
-          <p class="text-sm text-cyan-400">Custom HTTP headers to include in API requests to your server</p>
-          
-          <!-- Empty state -->
-          <div class="border-2 border-dashed border-base-content/20 rounded-lg p-6 text-center">
-            <p class="text-sm text-base-content/60">No headers configured. Click "Add Header" to add your first header.</p>
-          </div>
-        </div>
-
-        <!-- Client Messages -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">Client Messages</h3>
-          <p class="text-sm text-cyan-400 italic">These are the messages that will be sent to the Client SDKs</p>
-          
-          <div class="flex flex-wrap gap-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              conversation-update
-              <button class="ml-2 text-cyan-300 hover:text-cyan-100">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              function-call
-              <button class="ml-2 text-cyan-300 hover:text-cyan-100">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              hang
-              <button class="ml-2 text-cyan-300 hover:text-cyan-100">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-base-content/10 text-base-content/60 border border-base-content/20">
-              + 9 more
-              <button class="ml-2 text-base-content/50 hover:text-base-content/80">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
-                </svg>
-              </button>
-            </span>
-          </div>
-        </div>
-
-        <!-- Server Messages -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">Server Messages</h3>
-          <p class="text-sm text-cyan-400 italic">These are the messages that will be sent to the Server URL configured.</p>
-          
-          <div class="flex flex-wrap gap-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              conversation-update
-              <button class="ml-2 text-cyan-300 hover:text-cyan-100">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              end-of-call-report
-              <button class="ml-2 text-cyan-300 hover:text-cyan-100">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              function-call
-              <button class="ml-2 text-cyan-300 hover:text-cyan-100">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-base-content/10 text-base-content/60 border border-base-content/20">
-              + 7 more
-              <button class="ml-2 text-base-content/50 hover:text-base-content/80">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
-                </svg>
-              </button>
-            </span>
-          </div>
-          
-          <div class="text-red-400 text-sm">undefined</div>
-        </div>
-
-        <!-- Voicemail Message -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">Voicemail Message</h3>
-          <p class="text-sm text-cyan-400">This is the message that the assistant will say if the call is forwarded to voicemail.</p>
-          
-          <textarea class="textarea textarea-bordered w-full bg-base-100 min-h-[80px] resize-none" placeholder="Enter voicemail message...">Hello, this is Riley from Wellness Partners. I'm calling about your appointment. Please call us back at your earliest convenience so we can confirm your scheduling details.</textarea>
-        </div>
-
-        <!-- End Call Message -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">End Call Message</h3>
-          <p class="text-sm text-cyan-400">This is the message that the assistant will say if the call is ended.</p>
-          
-          <textarea class="textarea textarea-bordered w-full bg-base-100 min-h-[80px] resize-none" placeholder="Enter end call message...">Thank you for scheduling with Wellness Partners. Your appointment is confirmed, and we look forward to seeing you soon. Have a wonderful day!</textarea>
-        </div>
-
-        <!-- Idle Messages -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">Idle Messages</h3>
-          <p class="text-sm text-cyan-400">Messages that the assistant will speak when the user hasn't responded.</p>
-          
-          <!-- Select Idle Messages -->
-          <div class="space-y-2">
-            <select class="select select-bordered w-full bg-base-100">
-              <option selected>Select idle messages</option>
-              <option>Default idle messages</option>
-              <option>Custom idle messages</option>
-            </select>
-          </div>
-
-          <!-- Max Idle Messages -->
-          <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-            <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-              <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <div class="flex items-center justify-between mb-2">
-                <div>
-                  <h3 class="text-sm font-medium text-base-content">Max Idle Messages</h3>
-                  <p class="text-xs text-base-content/60 text-left">Maximum number of times idle messages can be spoken during the call.</p>
-                </div>
-                <span class="text-sm font-medium text-base-content">3</span>
-              </div>
-              <div class="relative">
-                <input type="range" min="1" max="10" step="1" value="3" class="range range-primary w-full">
-                <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                  <span>1</span>
-                  <span class="text-right">10</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Idle Timeout -->
-          <div class="flex items-start space-x-3 p-3 bg-base-200/30 rounded-lg border border-base-content/10">
-            <div class="flex items-center justify-center w-8 h-8 bg-base-300 rounded-lg">
-              <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <div class="flex items-center justify-between mb-2">
-                <div>
-                  <h3 class="text-sm font-medium text-base-content">Idle Timeout</h3>
-                  <p class="text-xs text-base-content/60 text-left">Timeout in seconds before an idle message is spoken.</p>
-                </div>
-                <span class="text-sm font-medium text-base-content">7.5</span>
-              </div>
-              <div class="relative">
-                <input type="range" min="5" max="60" step="0.5" value="7.5" class="range range-primary w-full">
-                <div class="flex justify-between text-xs text-base-content/60 mt-1">
-                  <span>5 (sec)</span>
-                  <span class="text-right">60 (sec)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- WIDGET Section Divider -->
-  <div id="widget-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
-    <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
-    </svg>
-    <span class="text-base-content/80">UI COMPONENTS</span>
-  </div>
-
-  <!-- WIDGET (Vapi-style collapsible) -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
-    <!-- Header button -->
-    <button
-      type="button"
-      aria-controls="collapsible-widget-tab-content"
-      aria-expanded="false"
-      data-state="closed"
-      class="group flex w-full flex-row items-center justify-between bg-base-200/40 p-4"
-    >
-      <div class="flex flex-row items-start gap-3">
-        <!-- Section icon -->
-        <svg class="w-4 h-4 text-primary mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
-        </svg>
-
-        <!-- Title + helper -->
-        <div class="flex flex-col items-start">
-          <div class="flex flex-row items-center">
-            <h2 class="text-lg font-medium text-base-content" data-testid="widget-header">Widget</h2>
-            <!-- Hover-only helper icon (appears on hover like Vapi) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"
-                 class="ml-2 cursor-pointer text-base-content/50 opacity-0 transition-opacity group-hover:opacity-100">
-              <path fill="currentColor"
-                d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>
-            </svg>
-          </div>
-          <p class="text-xs text-base-content/60 text-left">Add this conversational widget to your website. Visitors can talk or chat with your AI assistant directly from any page.</p>
-        </div>
-      </div>
-
-      <!-- Right chevron: rotates when expanded -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true"
-           class="h-6 w-6 transform transition-transform duration-200 group-aria-expanded:rotate-180">
-        <path fill="currentColor"
-          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/>
-      </svg>
-    </button>
-
-    <!-- Collapsible content -->
-    <div id="collapsible-widget-tab-content" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-collapsed="true">
-      <div class="p-4 space-y-4">
-        <!-- Widget Content -->
-        
-        <!-- Description -->
-        <p class="text-sm text-base-content/70">Add this conversational widget to your website. Visitors can talk or chat with your AI assistant directly from any page.</p>
-
-        <!-- Embed Code Section -->
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-base-content">Embed Code</h3>
-            <div class="flex space-x-2">
-              <button class="btn btn-sm btn-outline text-amber-400 border-amber-400/30 hover:bg-amber-400/10">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
-                </svg>
-                Customize
-              </button>
-              <button class="btn btn-sm btn-ghost text-base-content/60">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-                Copy
-              </button>
-            </div>
-          </div>
-          
-          <!-- Code Display Area -->
-          <div class="relative">
-            <div class="bg-slate-900 rounded-lg border border-slate-700 overflow-hidden">
-              <div class="p-4 overflow-auto max-h-64">
-                <pre class="text-sm text-slate-300 font-mono whitespace-pre-wrap"><code>&lt;vapi-widget assistant-id="dc8d68a4-3d4c-48b8-b0f5-2eb8a1a1c1529" public-key="cc1b4278-74b9-4184-ace8-229341363dc2"&gt;&lt;/vapi-widget&gt;
-
-&lt;script
-  src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js"
-  async
-  type="text/javascript"
-&gt;&lt;/script&gt;</code></pre>
-              </div>
-              
-              <!-- Scroll indicator -->
-              <div class="absolute right-2 top-2 bottom-2 w-2 bg-slate-800 rounded-full opacity-50">
-                <div class="w-full h-6 bg-slate-600 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
 
 {% else %}
   <!-- Empty State - No Assistant Selected -->
@@ -2875,6 +1887,9 @@ async function saveAssistantConfig(btn) {
                 thinking_sound_primary_volume: document.getElementById('thinking-sound-primary-volume')?.value || '',
                 thinking_sound_secondary: document.getElementById('thinking-sound-secondary')?.value || '',
                 thinking_sound_secondary_volume: document.getElementById('thinking-sound-secondary-volume')?.value || ''
+            },
+            privacy: {
+                audio_recording: document.getElementById('audio-recording')?.checked || false
             },
             advanced: {
                 turn_detection_threshold: document.getElementById('turn-detection-threshold')?.value || '',

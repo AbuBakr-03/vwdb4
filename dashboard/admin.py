@@ -6,15 +6,14 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from .models import (
-    Assistant, ModelConfig, VoiceConfig, TranscriberConfig,
-    AnalyticsConfig, PrivacyConfig, AdvancedConfig, MessagingConfig,
+    Assistant, FileAsset, ToolLibrary, AssistantTool,
     PredefinedFunctions, CustomFunction, AssistantVersion, AssistantKPI
 )
-from .config_models import Voice
-from .tools_models import (
-    FileAsset, AssistantFile, ToolLibrary, AssistantTool,
-    WebsiteScraping
+from .config_models import (
+    Voice, VoiceConfig, TranscriberConfig, AnalyticsConfig,
+    PrivacyConfig, AdvancedConfig, ModelConfig
 )
+from .tools_models import WebsiteScraping
 
 
 # ============================================================================
@@ -93,20 +92,14 @@ class AnalyticsConfigAdmin(admin.ModelAdmin):
 
 @admin.register(PrivacyConfig)
 class PrivacyConfigAdmin(admin.ModelAdmin):
-    list_display = ('assistant', 'hipaa_enabled', 'pci_enabled', 'audio_recording')
-    list_filter = ('hipaa_enabled', 'pci_enabled')
+    list_display = ('assistant', 'audio_recording')
+    list_filter = ('audio_recording',)
 
 
 @admin.register(AdvancedConfig)
 class AdvancedConfigAdmin(admin.ModelAdmin):
-    list_display = ('assistant', 'turn_detection_threshold', 'keypad_input_enabled')
-    list_filter = ('turn_detection_create_response', 'turn_detection_interrupt_response', 'keypad_input_enabled')
-
-
-@admin.register(MessagingConfig)
-class MessagingConfigAdmin(admin.ModelAdmin):
-    list_display = ('assistant', 'server_url', 'timeout_seconds')
-    list_filter = ('timeout_seconds',)
+    list_display = ('assistant', 'turn_detection_threshold')
+    list_filter = ('turn_detection_create_response', 'turn_detection_interrupt_response')
 
 
 @admin.register(FileAsset)

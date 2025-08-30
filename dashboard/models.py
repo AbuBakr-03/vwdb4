@@ -72,12 +72,7 @@ class SuccessRubric(models.TextChoices):
     CUSTOM = 'custom', 'Custom'
 
 
-class AudioFormat(models.TextChoices):
-    """Audio recording format options."""
-    WAV = 'wav', 'WAV'
-    MP3 = 'mp3', 'MP3'
-    FLAC = 'flac', 'FLAC'
-    OGG = 'ogg', 'OGG'
+
 
 
 class AmbientSoundType(models.TextChoices):
@@ -234,7 +229,7 @@ class Assistant(TenantScopedModel):
 # Import all configuration models
 from .config_models import (
     ModelConfig, VoiceConfig, TranscriberConfig, AnalyticsConfig,
-    PrivacyConfig, AdvancedConfig, MessagingConfig
+    PrivacyConfig, AdvancedConfig
 )
 
 # Import tools and file models
@@ -290,12 +285,6 @@ def create_assistant_configs(sender, instance: Assistant, created: bool, **kwarg
         )
         
         AdvancedConfig.objects.get_or_create(
-            assistant=instance,
-            client_id=instance.client_id,
-            defaults={}
-        )
-        
-        MessagingConfig.objects.get_or_create(
             assistant=instance,
             client_id=instance.client_id,
             defaults={}

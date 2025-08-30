@@ -11,7 +11,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .models import (
     TenantScopedModel, Assistant, ModelProvider, FirstMessageMode,
     VoiceProvider, BackgroundSound, TranscriberProvider, SuccessRubric,
-    AudioFormat, AmbientSoundType, ThinkingSoundType
+    AmbientSoundType, ThinkingSoundType
 )
 
 
@@ -317,43 +317,22 @@ class AnalyticsConfig(TenantScopedModel):
 
 
 class PrivacyConfig(TenantScopedModel):
-    """Privacy and compliance settings for assistants."""
+    """Privacy settings for assistants."""
     assistant = models.OneToOneField(
         Assistant,
         on_delete=models.CASCADE,
         related_name='privacy'
     )
     
-    # Compliance flags
-    hipaa_enabled = models.BooleanField(
-        default=False,
-        help_text="HIPAA compliance mode - no logs/recordings stored"
-    )
-    pci_enabled = models.BooleanField(
-        default=False,
-        help_text="PCI compliance mode - restricted providers only"
-    )
-    
     # Recording settings
-    audio_recording = models.BooleanField(default=True)
-    video_recording = models.BooleanField(default=False)
-    audio_format = models.CharField(
-        max_length=10,
-        choices=AudioFormat.choices,
-        default=AudioFormat.WAV
+    audio_recording = models.BooleanField(
+        default=True,
+        help_text="Record the conversation with the assistant"
     )
-    
-    # Data retention
-    data_retention_days = models.PositiveIntegerField(
-        default=90,
-        help_text="Days to retain call data (0 = indefinite)"
-    )
-    auto_delete_recordings = models.BooleanField(default=False)
 
     class Meta:
         indexes = [
-            models.Index(fields=['client_id', 'hipaa_enabled']),
-            models.Index(fields=['client_id', 'pci_enabled']),
+            models.Index(fields=['client_id']),
         ]
 
     def __str__(self) -> str:
@@ -393,48 +372,7 @@ class AdvancedConfig(TenantScopedModel):
         help_text="Whether to automatically interrupt ongoing response when VAD start event occurs"
     )
     
-    # Interruption handling
-    stop_speaking_words = models.PositiveIntegerField(default=10)
-    stop_speaking_voice_seconds = models.DecimalField(
-        max_digits=3,
-        decimal_places=1,
-        default=Decimal('0.2')
-    )
-    stop_speaking_backoff_seconds = models.PositiveIntegerField(default=1)
-    
-    # Call timeout settings
-    silence_timeout_seconds = models.PositiveIntegerField(default=30)
-    max_duration_seconds = models.PositiveIntegerField(default=600)
-    
-    # Voicemail detection
-    voicemail_detection_provider = models.CharField(
-        max_length=20,
-        choices=[
-            ('off', 'Off'),
-            ('vapi', 'Vapi'),
-            ('google', 'Google'),
-            ('openai', 'OpenAI'),
-            ('twilio', 'Twilio'),
-        ],
-        default='off'
-    )
-    
-    # Keypad input
-    keypad_input_enabled = models.BooleanField(default=True)
-    keypad_timeout_seconds = models.PositiveIntegerField(default=2)
-    keypad_delimiter = models.CharField(
-        max_length=5,
-        default='#,*',
-        help_text="Comma-separated delimiters"
-    )
-    
-    # Idle messages
-    max_idle_messages = models.PositiveIntegerField(default=3)
-    idle_timeout_seconds = models.DecimalField(
-        max_digits=4,
-        decimal_places=1,
-        default=Decimal('7.5')
-    )
+
 
     class Meta:
         indexes = [
@@ -443,61 +381,5 @@ class AdvancedConfig(TenantScopedModel):
 
     def __str__(self) -> str:
         return f"{self.assistant.name} - Advanced Config"
-
-
-class MessagingConfig(TenantScopedModel):
-    """Message configuration for server and client communication."""
-    assistant = models.OneToOneField(
-        Assistant,
-        on_delete=models.CASCADE,
-        related_name='messaging'
-    )
-    
-    # Server settings
-    server_url = models.URLField(blank=True)
-    secret_token = models.CharField(max_length=255, blank=True)
-    timeout_seconds = models.PositiveIntegerField(default=20)
-    
-    # HTTP headers for server requests
-    http_headers = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="Custom HTTP headers for server requests"
-    )
-    
-    # Message types configuration
-    client_messages = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="Message types sent to client SDKs"
-    )
-    server_messages = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="Message types sent to server URL"
-    )
-    
-    # End-of-call messages
-    voicemail_message = models.TextField(
-        blank=True,
-        help_text="Message for voicemail scenarios"
-    )
-    end_call_message = models.TextField(
-        blank=True,
-        help_text="Message when call ends"
-    )
-    idle_messages = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="Messages for user inactivity"
-    )
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['client_id']),
-        ]
-
-    def __str__(self) -> str:
-        return f"{self.assistant.name} - Messaging Config"
 
 

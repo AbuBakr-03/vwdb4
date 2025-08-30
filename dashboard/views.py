@@ -14,15 +14,16 @@ import json
 import uuid
 
 from .models import (
-    Assistant, ModelConfig, VoiceConfig, TranscriberConfig,
-    AnalyticsConfig, PrivacyConfig, AdvancedConfig, MessagingConfig,
-    PredefinedFunctions, AssistantKPI, seed_example_assistant,
-    ModelProvider, VoiceProvider, TranscriberProvider
+    Assistant, PredefinedFunctions, CustomFunction,
+    AssistantVersion, AssistantKPI
 )
 from .tools_models import (
     FileAsset, AssistantFile, WebsiteScraping
 )
-from .config_models import Voice
+from .config_models import (
+    Voice, VoiceConfig, TranscriberConfig, AnalyticsConfig,
+    PrivacyConfig, AdvancedConfig
+)
 
 
 def home(request):
@@ -172,7 +173,7 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
             owner=self.request.user
         ).select_related(
             'model_config', 'voice_config', 'stt_config', 'analytics',
-            'privacy', 'advanced_config', 'messaging', 'predefined_functions'
+            'privacy', 'advanced_config', 'predefined_functions'
         ).order_by('-created_at')
         
         # Get selected assistant from URL parameter
@@ -223,8 +224,15 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
         stt_config = getattr(assistant, 'stt_config', None)
         analytics = getattr(assistant, 'analytics', None)
         privacy = getattr(assistant, 'privacy', None)
+        
+        # Get privacy configuration
+        privacy_config = {
+            'audio_recording': privacy.audio_recording if privacy else True,
+        } if privacy else {
+            'audio_recording': True,
+        }
+        
         advanced_config = getattr(assistant, 'advanced_config', None)
-        messaging = getattr(assistant, 'messaging', None)
         
         config = {
             'assistant_config': {
@@ -280,38 +288,14 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
                     'structured_prompt': analytics.structured_prompt if analytics else '',
                     'structured_schema': analytics.structured_schema if analytics else [],
                 },
-                'privacy': {
-                    'hipaa_enabled': privacy.hipaa_enabled if privacy else False,
-                    'pci_enabled': privacy.pci_enabled if privacy else False,
-                    'audio_recording': privacy.audio_recording if privacy else True,
-                    'video_recording': privacy.video_recording if privacy else False,
-                    'audio_format': privacy.audio_format if privacy else 'wav',
-                },
+                'privacy': privacy_config,
                 'advanced': {
                     'turn_detection_threshold': float(advanced_config.turn_detection_threshold) if advanced_config else 0.89,
                     'turn_detection_silence_duration_ms': advanced_config.turn_detection_silence_duration_ms if advanced_config else 1500,
                     'turn_detection_prefix_padding_ms': advanced_config.turn_detection_prefix_padding_ms if advanced_config else 250,
                     'turn_detection_create_response': advanced_config.turn_detection_create_response if advanced_config else True,
                     'turn_detection_interrupt_response': advanced_config.turn_detection_interrupt_response if advanced_config else True,
-                    'stop_speaking_words': advanced_config.stop_speaking_words if advanced_config else 10,
-                    'stop_speaking_voice_seconds': float(advanced_config.stop_speaking_voice_seconds) if advanced_config else 0.2,
-                    'stop_speaking_backoff_seconds': advanced_config.stop_speaking_backoff_seconds if advanced_config else 1,
-                    'silence_timeout_seconds': advanced_config.silence_timeout_seconds if advanced_config else 30,
-                    'max_duration_seconds': advanced_config.max_duration_seconds if advanced_config else 600,
-                    'voicemail_detection_provider': advanced_config.voicemail_detection_provider if advanced_config else 'off',
-                    'keypad_input_enabled': advanced_config.keypad_input_enabled if advanced_config else True,
-                    'keypad_timeout_seconds': advanced_config.keypad_timeout_seconds if advanced_config else 2,
-                    'keypad_delimiter': advanced_config.keypad_delimiter if advanced_config else '#,*',
-                    'max_idle_messages': advanced_config.max_idle_messages if advanced_config else 3,
-                    'idle_timeout_seconds': float(advanced_config.idle_timeout_seconds) if advanced_config else 7.5,
                 },
-                'messaging': {
-                    'server_url': messaging.server_url if messaging else '',
-                    'timeout_seconds': messaging.timeout_seconds if messaging else 20,
-                    'voicemail_message': messaging.voicemail_message if messaging else '',
-                    'end_call_message': messaging.end_call_message if messaging else '',
-                    'idle_messages': messaging.idle_messages if messaging else [],
-                }
             }
         }
         
@@ -450,7 +434,7 @@ class AssistantDetailView(LoginRequiredMixin, View):
             assistant = get_object_or_404(
                 Assistant.objects.select_related(
                     'model_config', 'voice_config', 'stt_config', 'analytics',
-                    'privacy', 'advanced_config', 'messaging', 'predefined_functions'
+                    'privacy', 'advanced_config', 'predefined_functions'
                 ),
                 id=assistant_id,
                 client_id=client_id,
@@ -509,7 +493,7 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
             assistant = get_object_or_404(
                 Assistant.objects.select_related(
                     'model_config', 'voice_config', 'stt_config', 'analytics',
-                    'privacy', 'advanced_config', 'messaging', 'predefined_functions'
+                    'privacy', 'advanced_config', 'predefined_functions'
                 ),
                 id=assistant_id,
                 client_id=client_id,
@@ -602,6 +586,16 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                 
                 stt.save()
             
+            # Update privacy configuration
+            if 'privacy' in config_data:
+                privacy_data = config_data['privacy']
+                pc = assistant.privacy
+                
+                if 'audio_recording' in privacy_data:
+                    pc.audio_recording = bool(privacy_data['audio_recording'])
+                
+                pc.save()
+            
             # Update advanced configuration
             if 'advanced' in config_data:
                 advanced_data = config_data['advanced']
@@ -617,22 +611,7 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                     ac.turn_detection_create_response = bool(advanced_data['turn_detection_create_response'])
                 if 'turn_detection_interrupt_response' in advanced_data:
                     ac.turn_detection_interrupt_response = bool(advanced_data['turn_detection_interrupt_response'])
-                if 'silence_timeout_seconds' in advanced_data:
-                    ac.silence_timeout_seconds = int(advanced_data['silence_timeout_seconds'])
-                if 'max_duration_seconds' in advanced_data:
-                    ac.max_duration_seconds = int(advanced_data['max_duration_seconds'])
-                if 'voicemail_detection_provider' in advanced_data:
-                    ac.voicemail_detection_provider = advanced_data['voicemail_detection_provider']
-                if 'keypad_input_enabled' in advanced_data:
-                    ac.keypad_input_enabled = bool(advanced_data['keypad_input_enabled'])
-                if 'keypad_timeout_seconds' in advanced_data:
-                    ac.keypad_timeout_seconds = int(advanced_data['keypad_timeout_seconds'])
-                if 'keypad_delimiter' in advanced_data:
-                    ac.keypad_delimiter = advanced_data['keypad_delimiter']
-                if 'max_idle_messages' in advanced_data:
-                    ac.max_idle_messages = int(advanced_data['max_idle_messages'])
-                if 'idle_timeout_seconds' in advanced_data:
-                    ac.idle_timeout_seconds = float(advanced_data['idle_timeout_seconds'])
+
                 
                 ac.save()
             
