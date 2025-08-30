@@ -347,8 +347,6 @@
           <select id="model-name" class="select select-bordered w-full bg-base-200/50">
             <option value="gpt-4o-realtime" {% if assistant_config.model.model_name == 'gpt-4o-realtime' or not assistant_config.model.model_name %}selected{% endif %}>gpt-4o-realtime</option>
             <option value="gpt-4o-mini-realtime" {% if assistant_config.model.model_name == 'gpt-4o-mini-realtime' %}selected{% endif %}>gpt-4o-mini-realtime</option>
-            <option value="gpt-4" {% if assistant_config.model.model_name == 'gpt-4' %}selected{% endif %}>gpt-4</option>
-            <option value="gpt-3.5-turbo" {% if assistant_config.model.model_name == 'gpt-3.5-turbo' %}selected{% endif %}>gpt-3.5-turbo</option>
           </select>
         </div>
       </div>

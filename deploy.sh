@@ -3,6 +3,7 @@
 # Deployment Script for Watchtower V2
 # Usage: ./deploy.sh [environment] [action]
 
+
 set -e
 
 # Configuration

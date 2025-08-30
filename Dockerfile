@@ -30,13 +30,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files
 COPY . .
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Don't collect static files in development - will be handled by volume mount
+# RUN python manage.py collectstatic --noinput
 
-# Change ownership to app user
+# Change ownership to appuser
 RUN chown -R appuser:appuser /app
 
-# Switch to app user
+# Switch to appuser
 USER appuser
 
 # Expose port
@@ -46,10 +46,12 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health/ || exit 1
 
-# Development stage
+# Development stage - use Django dev server for hot reload
 FROM base AS development
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--worker-class", "sync", "--timeout", "120", "--reload", "backend.wsgi:application"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # Production stage
 FROM base AS production
+# Collect static files for production
+RUN python manage.py collectstatic --noinput
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "sync", "--timeout", "120", "backend.wsgi:application"] 
