@@ -378,18 +378,22 @@
       .__sidebar-init-collapsed #expandBtn { 
         display: inline-flex;
       }
+      .__sidebar-init-collapsed #collapseBtn { 
+        display: none;
+      }
     </style>
 
     {% block extra_css %}{% endblock %}
     
     <script>
-      // Apply collapsed state ASAP to avoid FOUC
+      // Apply collapsed state ASAP to avoid FOUC - only collapse if user explicitly requested it
       (function () {
         try {
           var collapsed = localStorage.getItem('sidebarCollapsed');
-          if (collapsed !== 'false') {
+          if (collapsed === 'true') {
             document.documentElement.classList.add('__sidebar-init-collapsed');
           }
+          // Default behavior: sidebar remains open/expanded
         } catch (e) {}
       })();
     </script>
@@ -479,6 +483,13 @@
           <button id="expandBtn" onclick="toggleSidebar()" class="sidebar-expand-btn hidden">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+          
+          <!-- Collapse Button (visible when expanded) -->
+          <button id="collapseBtn" onclick="toggleSidebar()" class="sidebar-expand-btn">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
           </button>
 
@@ -713,9 +724,9 @@
           localStorage.setItem("theme", newTheme);
         });
 
-        // Initialize sidebar state - default to collapsed
+        // Initialize sidebar state - always default to open (expanded)
         const savedSidebarState = localStorage.getItem("sidebarCollapsed");
-        const shouldBeCollapsed = savedSidebarState !== "false"; // Default to collapsed unless explicitly set to false
+        const shouldBeCollapsed = savedSidebarState === "true"; // Only collapse if user explicitly collapsed it before
         
         const sidebar = document.getElementById("sidebar");
         const expandBtn = document.getElementById("expandBtn");

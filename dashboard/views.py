@@ -194,7 +194,7 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
             context['assistants'].append({
                 'id': assistant.id,
                 'name': assistant.name,
-                'description': assistant.description or assistant.voice_config.voice,
+                'description': assistant.description or (getattr(assistant, 'voice_config', None) and getattr(assistant.voice_config, 'voice', None) and assistant.voice_config.voice.name) or 'No description',
                 'is_active': assistant.status == 'published',
                 'selected': is_selected,
                 'status': assistant.status,
@@ -217,91 +217,100 @@ class AssistantsView(LoginRequiredMixin, TemplateView):
     
     def _get_assistant_config(self, assistant):
         """Extract assistant configuration for template."""
+        # Safely get configuration objects
+        model_config = getattr(assistant, 'model_config', None)
+        voice_config = getattr(assistant, 'voice_config', None)
+        stt_config = getattr(assistant, 'stt_config', None)
+        analytics = getattr(assistant, 'analytics', None)
+        privacy = getattr(assistant, 'privacy', None)
+        advanced_config = getattr(assistant, 'advanced_config', None)
+        messaging = getattr(assistant, 'messaging', None)
+        
         config = {
             'assistant_config': {
                 'name': assistant.name,
                 'status': assistant.status,
                 'external_id': assistant.external_id[:20] + '...',
                 'model': {
-                    'provider': assistant.model_config.provider,
-                    'model_name': assistant.model_config.model_name,
-                    'first_message_mode': assistant.model_config.first_message_mode,
-                    'first_message': assistant.model_config.first_message,
-                    'system_prompt': assistant.model_config.system_prompt,
+                    'provider': model_config.provider if model_config else 'azure_openai',
+                    'model_name': model_config.model_name if model_config else 'gpt-4o-realtime',
+                    'first_message_mode': model_config.first_message_mode if model_config else 'assistant_first',
+                    'first_message': model_config.first_message if model_config else '',
+                    'system_prompt': model_config.system_prompt if model_config else '',
                 },
                 'voice': {
-                    'provider': assistant.voice_config.voice.provider if assistant.voice_config.voice else None,
-                    'voice': assistant.voice_config.voice.name if assistant.voice_config.voice else None,
-                    'voice_id': assistant.voice_config.voice.voice_id if assistant.voice_config.voice else None,
-                    'background_sound': assistant.voice_config.background_sound,
-                    'background_sound_url': assistant.voice_config.background_sound_url,
+                    'provider': voice_config.voice.provider if (voice_config and voice_config.voice) else None,
+                    'voice': voice_config.voice.name if (voice_config and voice_config.voice) else None,
+                    'voice_id': voice_config.voice.voice_id if (voice_config and voice_config.voice) else None,
+                    'background_sound': voice_config.background_sound if voice_config else 'default',
+                    'background_sound_url': voice_config.background_sound_url if voice_config else '',
                     
                     # Ambient sound configuration
-                    'ambient_sound_enabled': assistant.voice_config.ambient_sound_enabled,
-                    'ambient_sound_type': assistant.voice_config.ambient_sound_type,
-                    'ambient_sound_volume': float(assistant.voice_config.ambient_sound_volume),
-                    'ambient_sound_url': assistant.voice_config.ambient_sound_url,
+                    'ambient_sound_enabled': voice_config.ambient_sound_enabled if voice_config else False,
+                    'ambient_sound_type': voice_config.ambient_sound_type if voice_config else 'office_ambience',
+                    'ambient_sound_volume': float(voice_config.ambient_sound_volume) if voice_config else 10.0,
+                    'ambient_sound_url': voice_config.ambient_sound_url if voice_config else '',
                     # Thinking sound configuration
-                    'thinking_sound_enabled': assistant.voice_config.thinking_sound_enabled,
-                    'thinking_sound_primary': assistant.voice_config.thinking_sound_primary,
-                    'thinking_sound_primary_volume': float(assistant.voice_config.thinking_sound_primary_volume),
-                    'thinking_sound_secondary': assistant.voice_config.thinking_sound_secondary,
-                    'thinking_sound_secondary_volume': float(assistant.voice_config.thinking_sound_secondary_volume),
+                    'thinking_sound_enabled': voice_config.thinking_sound_enabled if voice_config else False,
+                    'thinking_sound_primary': voice_config.thinking_sound_primary if voice_config else 'keyboard_typing',
+                    'thinking_sound_primary_volume': float(voice_config.thinking_sound_primary_volume) if voice_config else 0.8,
+                    'thinking_sound_secondary': voice_config.thinking_sound_secondary if voice_config else 'keyboard_typing2',
+                    'thinking_sound_secondary_volume': float(voice_config.thinking_sound_secondary_volume) if voice_config else 0.7,
                 },
                 'stt': {
-                    'provider': assistant.stt_config.provider,
-                    'language': assistant.stt_config.language,
-                    'model_name': assistant.stt_config.model_name,
-                    'background_denoising': assistant.stt_config.background_denoising,
-                    'confidence_threshold': float(assistant.stt_config.confidence_threshold),
-                    'use_numerals': assistant.stt_config.use_numerals,
-                    'keyterms': assistant.stt_config.keyterms,
+                    'provider': stt_config.provider if stt_config else 'deepgram',
+                    'language': stt_config.language if stt_config else 'en',
+                    'model_name': stt_config.model_name if stt_config else 'nova-3',
+                    'background_denoising': stt_config.background_denoising if stt_config else True,
+                    'confidence_threshold': float(stt_config.confidence_threshold) if stt_config else 0.40,
+                    'use_numerals': stt_config.use_numerals if stt_config else True,
+                    'keyterms': stt_config.keyterms if stt_config else [],
                 },
                 'predefined_functions': {
-                    'enable_end_call': assistant.predefined_functions.enable_end_call,
-                    'enable_dial_keypad': assistant.predefined_functions.enable_dial_keypad,
-                    'forwarding_country': assistant.predefined_functions.forwarding_country,
-                    'forwarding_number': assistant.predefined_functions.forwarding_number,
+                    'enable_end_call': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.enable_end_call or False,
+                    'enable_dial_keypad': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.enable_dial_keypad or False,
+                    'forwarding_country': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.forwarding_country or 'us',
+                    'forwarding_number': getattr(assistant, 'predefined_functions', None) and assistant.predefined_functions.forwarding_number or '',
                 },
                 'analytics': {
-                    'summary_timeout_sec': assistant.analytics.summary_timeout_sec,
-                    'min_messages_for_summary': assistant.analytics.min_messages_for_summary,
-                    'success_rubric': assistant.analytics.success_rubric,
-                    'success_timeout_sec': assistant.analytics.success_timeout_sec,
-                    'structured_prompt': assistant.analytics.structured_prompt,
-                    'structured_schema': assistant.analytics.structured_schema,
+                    'summary_timeout_sec': analytics.summary_timeout_sec if analytics else 10,
+                    'min_messages_for_summary': analytics.min_messages_for_summary if analytics else 2,
+                    'success_rubric': analytics.success_rubric if analytics else 'numeric',
+                    'success_timeout_sec': analytics.success_timeout_sec if analytics else 11,
+                    'structured_prompt': analytics.structured_prompt if analytics else '',
+                    'structured_schema': analytics.structured_schema if analytics else [],
                 },
                 'privacy': {
-                    'hipaa_enabled': assistant.privacy.hipaa_enabled,
-                    'pci_enabled': assistant.privacy.pci_enabled,
-                    'audio_recording': assistant.privacy.audio_recording,
-                    'video_recording': assistant.privacy.video_recording,
-                    'audio_format': assistant.privacy.audio_format,
+                    'hipaa_enabled': privacy.hipaa_enabled if privacy else False,
+                    'pci_enabled': privacy.pci_enabled if privacy else False,
+                    'audio_recording': privacy.audio_recording if privacy else True,
+                    'video_recording': privacy.video_recording if privacy else False,
+                    'audio_format': privacy.audio_format if privacy else 'wav',
                 },
                 'advanced': {
-                    'turn_detection_threshold': float(assistant.advanced_config.turn_detection_threshold),
-                    'turn_detection_silence_duration_ms': assistant.advanced_config.turn_detection_silence_duration_ms,
-                    'turn_detection_prefix_padding_ms': assistant.advanced_config.turn_detection_prefix_padding_ms,
-                    'turn_detection_create_response': assistant.advanced_config.turn_detection_create_response,
-                    'turn_detection_interrupt_response': assistant.advanced_config.turn_detection_interrupt_response,
-                    'stop_speaking_words': assistant.advanced_config.stop_speaking_words,
-                    'stop_speaking_voice_seconds': float(assistant.advanced_config.stop_speaking_voice_seconds),
-                    'stop_speaking_backoff_seconds': assistant.advanced_config.stop_speaking_backoff_seconds,
-                    'silence_timeout_seconds': assistant.advanced_config.silence_timeout_seconds,
-                    'max_duration_seconds': assistant.advanced_config.max_duration_seconds,
-                    'voicemail_detection_provider': assistant.advanced_config.voicemail_detection_provider,
-                    'keypad_input_enabled': assistant.advanced_config.keypad_input_enabled,
-                    'keypad_timeout_seconds': assistant.advanced_config.keypad_timeout_seconds,
-                    'keypad_delimiter': assistant.advanced_config.keypad_delimiter,
-                    'max_idle_messages': assistant.advanced_config.max_idle_messages,
-                    'idle_timeout_seconds': float(assistant.advanced_config.idle_timeout_seconds),
+                    'turn_detection_threshold': float(advanced_config.turn_detection_threshold) if advanced_config else 0.89,
+                    'turn_detection_silence_duration_ms': advanced_config.turn_detection_silence_duration_ms if advanced_config else 1500,
+                    'turn_detection_prefix_padding_ms': advanced_config.turn_detection_prefix_padding_ms if advanced_config else 250,
+                    'turn_detection_create_response': advanced_config.turn_detection_create_response if advanced_config else True,
+                    'turn_detection_interrupt_response': advanced_config.turn_detection_interrupt_response if advanced_config else True,
+                    'stop_speaking_words': advanced_config.stop_speaking_words if advanced_config else 10,
+                    'stop_speaking_voice_seconds': float(advanced_config.stop_speaking_voice_seconds) if advanced_config else 0.2,
+                    'stop_speaking_backoff_seconds': advanced_config.stop_speaking_backoff_seconds if advanced_config else 1,
+                    'silence_timeout_seconds': advanced_config.silence_timeout_seconds if advanced_config else 30,
+                    'max_duration_seconds': advanced_config.max_duration_seconds if advanced_config else 600,
+                    'voicemail_detection_provider': advanced_config.voicemail_detection_provider if advanced_config else 'off',
+                    'keypad_input_enabled': advanced_config.keypad_input_enabled if advanced_config else True,
+                    'keypad_timeout_seconds': advanced_config.keypad_timeout_seconds if advanced_config else 2,
+                    'keypad_delimiter': advanced_config.keypad_delimiter if advanced_config else '#,*',
+                    'max_idle_messages': advanced_config.max_idle_messages if advanced_config else 3,
+                    'idle_timeout_seconds': float(advanced_config.idle_timeout_seconds) if advanced_config else 7.5,
                 },
                 'messaging': {
-                    'server_url': assistant.messaging.server_url,
-                    'timeout_seconds': assistant.messaging.timeout_seconds,
-                    'voicemail_message': assistant.messaging.voicemail_message,
-                    'end_call_message': assistant.messaging.end_call_message,
-                    'idle_messages': assistant.messaging.idle_messages,
+                    'server_url': messaging.server_url if messaging else '',
+                    'timeout_seconds': messaging.timeout_seconds if messaging else 20,
+                    'voicemail_message': messaging.voicemail_message if messaging else '',
+                    'end_call_message': messaging.end_call_message if messaging else '',
+                    'idle_messages': messaging.idle_messages if messaging else [],
                 }
             }
         }
@@ -448,30 +457,35 @@ class AssistantDetailView(LoginRequiredMixin, View):
                 owner=request.user
             )
             
+            # Safely get configuration objects
+            model_config = getattr(assistant, 'model_config', None)
+            voice_config = getattr(assistant, 'voice_config', None)
+            stt_config = getattr(assistant, 'stt_config', None)
+            
             # Return assistant configuration as JSON
             config = {
                 'name': assistant.name,
                 'status': assistant.status,
                 'external_id': assistant.external_id,
                 'model': {
-                    'provider': assistant.model_config.provider,
-                    'model_name': assistant.model_config.model_name,
-                    'first_message': assistant.model_config.first_message,
-                    'system_prompt': assistant.model_config.system_prompt,
+                    'provider': model_config.provider if model_config else 'azure_openai',
+                    'model_name': model_config.model_name if model_config else 'gpt-4o-realtime',
+                    'first_message': model_config.first_message if model_config else '',
+                    'system_prompt': model_config.system_prompt if model_config else '',
                 },
                 'voice': {
-                    'provider': assistant.voice_config.voice.provider if assistant.voice_config.voice else None,
-                    'voice': assistant.voice_config.voice.name if assistant.voice_config.voice else None,
-                    'voice_id': assistant.voice_config.voice.voice_id if assistant.voice_config.voice else None,
-                    'background_sound': assistant.voice_config.background_sound,
-                    'background_sound_url': assistant.voice_config.background_sound_url,
+                    'provider': voice_config.voice.provider if (voice_config and voice_config.voice) else None,
+                    'voice': voice_config.voice.name if (voice_config and voice_config.voice) else None,
+                    'voice_id': voice_config.voice.voice_id if (voice_config and voice_config.voice) else None,
+                    'background_sound': voice_config.background_sound if voice_config else 'default',
+                    'background_sound_url': voice_config.background_sound_url if voice_config else '',
                 },
                 'stt': {
-                    'provider': assistant.stt_config.provider,
-                    'language': assistant.stt_config.language,
-                    'model_name': assistant.stt_config.model_name,
-                    'confidence_threshold': float(assistant.stt_config.confidence_threshold),
-                    'keyterms': assistant.stt_config.keyterms,
+                    'provider': stt_config.provider if stt_config else 'deepgram',
+                    'language': stt_config.language if stt_config else 'en',
+                    'model_name': stt_config.model_name if stt_config else 'nova-3',
+                    'confidence_threshold': float(stt_config.confidence_threshold) if stt_config else 0.40,
+                    'keyterms': stt_config.keyterms if stt_config else [],
                 }
             }
             
