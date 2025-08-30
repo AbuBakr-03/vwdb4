@@ -1,0 +1,556 @@
+{% extends 'base.html' %}
+{% block title %}Metrics - Watchtower{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-base-content">Metrics</h1>
+      <p class="text-base-content/70 mt-1">Call Analysis & Performance Metrics</p>
+    </div>
+    
+    <!-- Header Controls -->
+    <div class="flex items-center space-x-4">
+      <!-- Date Range Picker -->
+      <div class="flex items-center space-x-2">
+        <input type="date" class="input input-sm input-bordered" value="2025-07-30">
+        <span class="text-base-content/70">-</span>
+        <input type="date" class="input input-sm input-bordered" value="2025-08-30">
+      </div>
+      
+      <!-- Grouped By Dropdown -->
+      <select class="select select-sm select-bordered">
+        <option>Days</option>
+        <option>Weeks</option>
+        <option>Months</option>
+      </select>
+      
+      <!-- Assistants Dropdown -->
+      <select class="select select-sm select-bordered">
+        <option>All Assistants</option>
+        <option>Riley</option>
+        <option>Alex</option>
+        <option>Sam</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Metrics Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Call Minutes -->
+    <div class="card bg-base-100 shadow-lg">
+      <div class="card-body">
+        <h3 class="card-title text-base-content/70 text-sm">Total Call Minutes</h3>
+        <div class="text-3xl font-bold text-base-content mb-4">0.20</div>
+        <div class="h-32">
+          <canvas id="callMinutesChart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Number of Calls -->
+    <div class="card bg-base-100 shadow-lg">
+      <div class="card-body">
+        <h3 class="card-title text-base-content/70 text-sm">Number of Calls</h3>
+        <div class="text-3xl font-bold text-base-content mb-4">1</div>
+        <div class="h-32">
+          <canvas id="callsChart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Spent -->
+    <div class="card bg-base-100 shadow-lg">
+      <div class="card-body">
+        <h3 class="card-title text-base-content/70 text-sm">Total Spent</h3>
+        <div class="text-3xl font-bold text-base-content mb-4">$0.01</div>
+        <div class="h-32">
+          <canvas id="spentChart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Average Cost per Call -->
+    <div class="card bg-base-100 shadow-lg">
+      <div class="card-body">
+        <h3 class="card-title text-base-content/70 text-sm">Average Cost per Call</h3>
+        <div class="text-3xl font-bold text-base-content mb-4">$0.01</div>
+        <div class="h-32">
+          <canvas id="avgCostChart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call Analysis Section -->
+  <div class="space-y-6">
+    <h2 class="text-2xl font-bold text-base-content">Call Analysis</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Reason Call Ended -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-base-content/70 text-sm">Reason Call Ended</h3>
+          <div class="h-64">
+            <canvas id="callEndedChart" class="w-full h-full"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Average Call Duration by Assistant -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-base-content/70 text-sm">Average Call Duration by Assistant</h3>
+          <div class="h-64">
+            <canvas id="durationChart" class="w-full h-full"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost Breakdown -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-base-content/70 text-sm">Cost Breakdown</h3>
+          <div class="h-64">
+            <canvas id="costBreakdownChart" class="w-full h-full"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Metrics Section -->
+  <div class="space-y-6">
+    <h2 class="text-2xl font-bold text-base-content">Additional Metrics</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Success Evaluation -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-base-content/70 text-sm">Success Evaluation</h3>
+          <div class="h-64">
+            <canvas id="successEvaluationChart" class="w-full h-full"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unsuccessful calls -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h3 class="card-title text-base-content/70 text-sm">Unsuccessful calls</h3>
+          <div class="h-64 flex items-center justify-center">
+            <div class="text-center text-base-content/50">
+              <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <p class="text-sm">There are no unsuccessful calls in the selected time period.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Number of Concurrent Calls -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="card-title text-base-content/70 text-sm">Number of Concurrent Calls</h3>
+            <select class="select select-xs select-bordered">
+              <option>Day</option>
+              <option>Week</option>
+              <option>Month</option>
+            </select>
+          </div>
+          <div class="h-64">
+            <canvas id="concurrentCallsChart" class="w-full h-full"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ask AI Button -->
+<div class="fixed bottom-6 right-6">
+  <button class="btn btn-circle btn-primary shadow-lg">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+    </svg>
+  </button>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Chart configuration
+  const chartConfig = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
+    scales: {
+      x: {
+        display: true,
+        grid: {
+          display: false
+        },
+        ticks: {
+          color: '#9ca3af'
+        }
+      },
+      y: {
+        display: true,
+        grid: {
+          color: '#374151'
+        },
+        ticks: {
+          color: '#9ca3af'
+        }
+      }
+    }
+  };
+
+  // Generate date labels for last 30 days
+  const dates = [];
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+  }
+
+  // Call Minutes Chart
+  const callMinutesCtx = document.getElementById('callMinutesChart').getContext('2d');
+  new Chart(callMinutesCtx, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [{
+        data: Array(29).fill(0).concat([0.2]),
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      ...chartConfig,
+      scales: {
+        ...chartConfig.scales,
+        y: {
+          ...chartConfig.scales.y,
+          max: 0.2
+        }
+      }
+    }
+  });
+
+  // Calls Chart
+  const callsCtx = document.getElementById('callsChart').getContext('2d');
+  new Chart(callsCtx, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [{
+        data: Array(29).fill(0).concat([1]),
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      ...chartConfig,
+      scales: {
+        ...chartConfig.scales,
+        y: {
+          ...chartConfig.scales.y,
+          max: 1
+        }
+      }
+    }
+  });
+
+  // Spent Chart
+  const spentCtx = document.getElementById('spentChart').getContext('2d');
+  new Chart(spentCtx, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: [{ x: 29, y: 0.013 }],
+        backgroundColor: '#8b5cf6',
+        pointRadius: 6
+      }]
+    },
+    options: {
+      ...chartConfig,
+      scales: {
+        x: {
+          ...chartConfig.scales.x,
+          min: 0,
+          max: 30
+        },
+        y: {
+          ...chartConfig.scales.y,
+          max: 0.016
+        }
+      }
+    }
+  });
+
+  // Average Cost Chart
+  const avgCostCtx = document.getElementById('avgCostChart').getContext('2d');
+  new Chart(avgCostCtx, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [{
+        data: Array(29).fill(0).concat([0.013]),
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      ...chartConfig,
+      scales: {
+        ...chartConfig.scales,
+        y: {
+          ...chartConfig.scales.y,
+          max: 0.016
+        }
+      }
+    }
+  });
+
+  // Call Ended Chart
+  const callEndedCtx = document.getElementById('callEndedChart').getContext('2d');
+  new Chart(callEndedCtx, {
+    type: 'bar',
+    data: {
+      labels: dates,
+      datasets: [{
+        data: Array(29).fill(0).concat([1]),
+        backgroundColor: '#8b5cf6'
+      }]
+    },
+    options: {
+      ...chartConfig,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: '#9ca3af',
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        }
+      },
+      scales: {
+        ...chartConfig.scales,
+        y: {
+          ...chartConfig.scales.y,
+          max: 4,
+          title: {
+            display: true,
+            text: 'Count',
+            color: '#9ca3af'
+          }
+        }
+      }
+    }
+  });
+
+  // Duration Chart
+  const durationCtx = document.getElementById('durationChart').getContext('2d');
+  new Chart(durationCtx, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: [{ x: 29, y: 0.5 }],
+        backgroundColor: '#8b5cf6',
+        pointRadius: 6,
+        label: 'Riley'
+      }]
+    },
+    options: {
+      ...chartConfig,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: '#9ca3af',
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        }
+      },
+      scales: {
+        x: {
+          ...chartConfig.scales.x,
+          min: 0,
+          max: 30
+        },
+        y: {
+          ...chartConfig.scales.y,
+          max: 4,
+          title: {
+            display: true,
+            text: 'Avg Call Duration (min)',
+            color: '#9ca3af'
+          }
+        }
+      }
+    }
+  });
+
+  // Cost Breakdown Chart
+  const costBreakdownCtx = document.getElementById('costBreakdownChart').getContext('2d');
+  new Chart(costBreakdownCtx, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'LLM',
+          data: Array(30).fill(0),
+          borderColor: '#8b5cf6',
+          backgroundColor: 'transparent',
+          tension: 0.4
+        },
+        {
+          label: 'STT',
+          data: Array(30).fill(0),
+          borderColor: '#10b981',
+          backgroundColor: 'transparent',
+          tension: 0.4
+        },
+        {
+          label: 'TTS',
+          data: Array(30).fill(0),
+          borderColor: '#f97316',
+          backgroundColor: 'transparent',
+          tension: 0.4
+        },
+        {
+          label: 'VAPI',
+          data: Array(30).fill(0),
+          borderColor: '#eab308',
+          backgroundColor: 'transparent',
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      ...chartConfig,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: '#9ca3af',
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        }
+      },
+      scales: {
+        ...chartConfig.scales,
+        y: {
+          ...chartConfig.scales.y,
+          max: 4,
+          title: {
+            display: true,
+            text: 'Cost ($)',
+            color: '#9ca3af'
+          }
+        }
+      }
+    }
+  });
+
+  // Success Evaluation Chart
+  const successEvaluationCtx = document.getElementById('successEvaluationChart').getContext('2d');
+  new Chart(successEvaluationCtx, {
+    type: 'bar',
+    data: {
+      labels: dates,
+      datasets: [{
+        label: 'False',
+        data: Array(29).fill(0).concat([1]),
+        backgroundColor: '#8b5cf6'
+      }]
+    },
+    options: {
+      ...chartConfig,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: '#9ca3af',
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        }
+      },
+      scales: {
+        ...chartConfig.scales,
+        y: {
+          ...chartConfig.scales.y,
+          max: 4,
+          title: {
+            display: true,
+            text: 'Number of Calls',
+            color: '#9ca3af'
+          }
+        }
+      }
+    }
+  });
+
+  // Concurrent Calls Chart
+  const concurrentCallsCtx = document.getElementById('concurrentCallsChart').getContext('2d');
+  new Chart(concurrentCallsCtx, {
+    type: 'line',
+    data: {
+      labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+      datasets: [{
+        label: 'Concurrent Calls',
+        data: [0, 0.25, 0.5, 0.75, 1, 0.75, 0.5, 0.25],
+        borderColor: '#06b6d4',
+        backgroundColor: 'rgba(6, 182, 212, 0.3)',
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      ...chartConfig,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        ...chartConfig.scales,
+        y: {
+          ...chartConfig.scales.y,
+          max: 1,
+          title: {
+            display: true,
+            text: 'Concurrent Calls',
+            color: '#9ca3af'
+          }
+        }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

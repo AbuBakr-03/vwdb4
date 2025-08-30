@@ -1223,3 +1223,35 @@ def get_knowledge_base(request, assistant_id):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def metrics(request):
+    """Metrics dashboard view with call analysis and performance data."""
+    context = {}
+    
+    # Add tenant info if available
+    if hasattr(request, 'tenant_flags'):
+        context['tenant_info'] = get_tenant_info(request)
+    
+    # Mock metrics data - replace with real data from your models
+    context['metrics'] = {
+        'total_call_minutes': 0.20,
+        'number_of_calls': 1,
+        'total_spent': 0.01,
+        'average_cost_per_call': 0.01,
+        'call_end_reasons': {
+            'customer_ended_call': 1
+        },
+        'assistant_durations': {
+            'Riley': 0.5
+        },
+        'cost_breakdown': {
+            'LLM': 0.0,
+            'STT': 0.0,
+            'TTS': 0.0,
+            'VAPI': 0.0
+        }
+    }
+    
+    return render(request, "dashboard/metrics.html", context)

@@ -22,4 +22,7 @@ urlpatterns = [
     path("assistants/<uuid:assistant_id>/add-website/", views.add_website, name="add_website"),
     path("assistants/<uuid:assistant_id>/delete-website/<int:website_id>/", views.delete_website, name="delete_website"),
     path("assistants/<uuid:assistant_id>/knowledge-base/", views.get_knowledge_base, name="get_knowledge_base"),
+    
+    # Metrics URL
+    path("metrics/", views.metrics, name="metrics"),
 ]
