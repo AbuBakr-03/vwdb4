@@ -2448,11 +2448,89 @@ function showAlert(message, type = 'info') {
     }, 5000);
 }
 
+/**
+ * Initialize navigation tabs with proper active state management
+ */
+function initializeNavigationTabs() {
+    const tabs = document.querySelectorAll('a[data-section]');
+    
+    // Set initial active tab (default to first tab)
+    if (tabs.length > 0) {
+        updateActiveTab(tabs[0]);
+    }
+    
+    // Add click handlers
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateActiveTab(tab);
+            
+            // Scroll to section with proper offset
+            const targetId = tab.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                const headerHeight = 120; // Fixed header height
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+                
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+}
+
+/**
+ * Update active tab styling
+ */
+function updateActiveTab(activeTab) {
+    const tabs = document.querySelectorAll('a[data-section]');
+    
+    // Remove active styling from all tabs
+    tabs.forEach(tab => {
+        tab.classList.remove('text-white', 'border-b-2', 'border-white', 'font-medium');
+        tab.classList.add('text-neutral-content/70');
+    });
+    
+    // Add active styling to current tab
+    activeTab.classList.remove('text-neutral-content/70');
+    activeTab.classList.add('text-white', 'border-b-2', 'border-white', 'font-medium');
+}
+
+/**
+ * Update active tab based on scroll position
+ */
+function updateActiveTabFromScroll() {
+    const tabs = document.querySelectorAll('a[data-section]');
+    const sections = Array.from(document.querySelectorAll('[id$="-section"]'));
+    const scrollPosition = window.scrollY + 150; // Offset for header
+    
+    sections.forEach((section, index) => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const sectionBottom = sectionTop + sectionHeight;
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            if (tabs[index]) {
+                updateActiveTab(tabs[index]);
+            }
+        }
+    });
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');
     
-
+    // Initialize navigation tabs
+    initializeNavigationTabs();
+    
+    // Add scroll listener for navigation tabs
+    window.addEventListener('scroll', () => {
+        updateActiveTabFromScroll();
+    });
     
     // Quick create button under search
     const quickCreateBtn = document.getElementById('quick-create-assistant');
