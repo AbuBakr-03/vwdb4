@@ -13,13 +13,13 @@
         <p class="text-base-content/70 mt-1">Manage your API keys for integrating with external services</p>
       </div>
       <div class="md:justify-self-end flex flex-wrap gap-2">
-        <button type="submit" form="api-keys-form" class="btn btn-primary h-9 min-h-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+        <button type="submit" form="api-keys-form" class="btn h-9 min-h-9 bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 shadow-lg hover:shadow-xl transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#20D5F9]">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
           </svg>
           Save Changes
         </button>
-        <button type="button" onclick="resetForm()" class="btn btn-outline btn-ghost h-9 min-h-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+        <button type="button" onclick="resetForm()" class="btn btn-outline h-9 min-h-9 border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#20D5F9] transition-all duration-300">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
@@ -30,7 +30,7 @@
 
     <!-- API Keys Form -->
     <div class="card bg-base-200/50 border border-base-content/10">
-      <div class="card-body p-6 lg:p-8">
+      <div class="card-body p-4 lg:p-6">
         <form id="api-keys-form" method="POST" action="{% url 'dashboard:save_api_keys' %}" class="space-y-8">
           {% csrf_token %}
           
@@ -62,7 +62,7 @@
                     name="azure_openai_realtime_endpoint" 
                     value="{{ api_keys.azure_openai_realtime_endpoint|default:'' }}"
                     placeholder="https://your-resource.openai.azure.com/"
-                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-primary focus:ring-1 focus:ring-primary"
+                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-[#20D5F9] focus:ring-1 focus:ring-[#20D5F9]"
                     required
                   >
                   <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -87,7 +87,7 @@
                     name="azure_openai_realtime_key" 
                     value="{{ api_keys.azure_openai_realtime_key|default:'' }}"
                     placeholder="••••••••••••••••••••••••••••••••"
-                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-primary focus:ring-1 focus:ring-primary"
+                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-[#20D5F9] focus:ring-1 focus:ring-[#20D5F9]"
                     required
                   >
                   <button type="button" onclick="togglePasswordVisibility('azure_openai_realtime_key')" class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -130,7 +130,7 @@
                     name="azure_gpt5_mini_endpoint" 
                     value="{{ api_keys.azure_gpt5_mini_endpoint|default:'' }}"
                     placeholder="https://your-resource.openai.azure.com/"
-                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-primary focus:ring-1 focus:ring-primary"
+                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-[#20D5F9] focus:ring-1 focus:ring-[#20D5F9]"
                     required
                   >
                   <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -155,7 +155,7 @@
                     name="azure_gpt5_mini_key" 
                     value="{{ api_keys.azure_gpt5_mini_key|default:'' }}"
                     placeholder="••••••••••••••••••••••••••••••••"
-                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-primary focus:ring-1 focus:ring-primary"
+                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-[#20D5F9] focus:ring-1 focus:ring-[#20D5F9]"
                     required
                   >
                   <button type="button" onclick="togglePasswordVisibility('azure_gpt5_mini_key')" class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -198,7 +198,7 @@
                     name="elevenlabs_key" 
                     value="{{ api_keys.elevenlabs_key|default:'' }}"
                     placeholder="••••••••••••••••••••••••••••••••"
-                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-primary focus:ring-1 focus:ring-primary"
+                    class="input input-bordered w-full bg-base-100 border-base-content/20 pr-10 focus:border-[#20D5F9] focus:ring-1 focus:ring-[#20D5F9]"
                     required
                   >
                   <button type="button" onclick="togglePasswordVisibility('elevenlabs_key')" class="absolute inset-y-0 right-0 pr-3 flex items-center">
