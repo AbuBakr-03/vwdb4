@@ -1361,7 +1361,7 @@
   </section>
 
   <!-- Custom Functions subsection -->
-  <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
+  {% comment %} <section class="rounded-lg border border-base-content/10 bg-base-100 overflow-hidden">
     <!-- Header button -->
     <button
       type="button"
@@ -1434,7 +1434,7 @@
 
       </div>
     </div>
-  </section>
+  </section> {% endcomment %}
 
   <!-- ANALYSIS Section Divider -->
   <div id="analysis-section" class="flex items-center space-x-3 text-sm text-base-content/60 uppercase tracking-wider font-semibold">
@@ -2128,6 +2128,8 @@ function handleAudioConfigurationToggles() {
     if (ambientSoundToggle && ambientSoundSettings) {
         ambientSoundToggle.addEventListener('change', function() {
             ambientSoundSettings.style.display = this.checked ? 'block' : 'none';
+            // Update accordion height after showing/hiding settings
+            updateAccordionHeight('collapsible-voice-additional-tab-content');
         });
     }
     
@@ -2138,6 +2140,8 @@ function handleAudioConfigurationToggles() {
     if (thinkingSoundToggle && thinkingSoundSettings) {
         thinkingSoundToggle.addEventListener('change', function() {
             thinkingSoundSettings.style.display = this.checked ? 'block' : 'none';
+            // Update accordion height after showing/hiding settings
+            updateAccordionHeight('collapsible-voice-additional-tab-content');
         });
     }
     
@@ -2148,8 +2152,58 @@ function handleAudioConfigurationToggles() {
     if (ambientSoundType && ambientSoundUrlContainer) {
         ambientSoundType.addEventListener('change', function() {
             ambientSoundUrlContainer.style.display = this.value === 'custom' ? 'block' : 'none';
+            // Update accordion height after showing/hiding custom URL container
+            updateAccordionHeight('collapsible-voice-additional-tab-content');
         });
     }
+    
+    // Add event listeners for any other dynamic content changes that might affect height
+    const allAudioToggles = document.querySelectorAll('input[type="checkbox"], select');
+    allAudioToggles.forEach(toggle => {
+        if (toggle.closest('#collapsible-voice-additional-tab-content')) {
+            toggle.addEventListener('change', function() {
+                // Small delay to ensure DOM updates are complete
+                setTimeout(() => {
+                    updateAccordionHeight('collapsible-voice-additional-tab-content');
+                }, 50);
+            });
+        }
+    });
+}
+
+// Function to update accordion height when content changes
+function updateAccordionHeight(accordionId) {
+    const accordionContent = document.getElementById(accordionId);
+    if (!accordionContent) return;
+    
+    // Only update height if the accordion is currently expanded
+    if (accordionContent.dataset.collapsed === 'false') {
+        // Use a small delay to ensure DOM updates are complete
+        setTimeout(() => {
+            // Force recalculation by temporarily removing maxHeight
+            accordionContent.style.maxHeight = 'none';
+            
+            // Get the new scroll height
+            const newHeight = accordionContent.scrollHeight;
+            
+            // Set the new max height with smooth transition
+            accordionContent.style.maxHeight = newHeight + 'px';
+            
+            // Log for debugging
+            console.log(`Updated accordion ${accordionId} height to:`, newHeight);
+        }, 10);
+    }
+}
+
+// Function to force update all expanded accordions (useful for dynamic content changes)
+function updateAllExpandedAccordions() {
+    const expandedSections = document.querySelectorAll('[data-collapsed="false"]');
+    expandedSections.forEach(section => {
+        // Temporarily remove maxHeight to force recalculation
+        section.style.maxHeight = 'none';
+        const newHeight = section.scrollHeight;
+        section.style.maxHeight = newHeight + 'px';
+    });
 }
 
 // Copy to clipboard function
@@ -2641,6 +2695,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize audio configuration toggles
     handleAudioConfigurationToggles();
     
+    // Update accordion height on page load if any audio settings are enabled
+    setTimeout(() => {
+        updateAccordionHeight('collapsible-voice-additional-tab-content');
+    }, 100);
+    
+    // Also update after a longer delay to ensure all dynamic content is rendered
+    setTimeout(() => {
+        updateAccordionHeight('collapsible-voice-additional-tab-content');
+    }, 500);
+    
     // Initialize voice selection based on current configuration
     const voiceProviderSelect = document.getElementById('voice-provider');
     const voiceSelectionSelect = document.getElementById('voice-selection');
@@ -2657,6 +2721,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize knowledge base functionality
     initializeKnowledgeBase();
+    
+    // Add window resize listener to update accordion heights
+    window.addEventListener('resize', () => {
+        updateAllExpandedAccordions();
+    });
     
     // Reload knowledge base data when assistant changes
     const currentUrl = new URL(window.location);
