@@ -92,224 +92,6 @@
             </div>
         </div>
 
-
-
-
-
-        <!-- Audience & Contacts -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    Audience & Contacts
-                </h3>
-                
-                <!-- File Upload Section -->
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Upload Contact List</span>
-                    </label>
-                    <div class="border-2 border-dashed border-base-300 rounded-lg p-6 text-center">
-                        <svg class="w-12 h-12 mx-auto text-base-content/40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                        </svg>
-                        <div class="space-y-2">
-                            <p class="text-base-content/70">Drop your CSV/Excel file here or click to browse</p>
-                            <p class="text-xs text-base-content/50">Supported formats: CSV, XLSX, XLS (Max 10MB)</p>
-                            <input type="file" name="contact_file" accept=".csv,.xlsx,.xls" 
-                                   class="file-input file-input-bordered w-full max-w-xs" />
-                        </div>
-                    </div>
-                    <label class="label">
-                        <span class="label-text-alt text-base-content/70">File should contain columns: phone, first_name, last_name, email (optional)</span>
-                    </label>
-                </div>
-                
-                                 <!-- Address Book Section -->
-                 <div class="form-control">
-                     <label class="label">
-                         <span class="label-text font-medium">Add from Address Book</span>
-                     </label>
-                     <div class="space-y-3">
-                         <button type="button" id="open-address-book-btn" class="btn bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                             </svg>
-                             Browse Address Book
-                         </button>
-                         
-                         <!-- Address Book Modal -->
-                         <div id="address-book-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-                             <div class="modal-backdrop"></div>
-                             <div class="modal-box w-11/12 max-w-4xl relative z-10 bg-base-100 shadow-xl rounded-lg p-6 mx-auto mt-20">
-                                 <h3 class="font-bold text-lg mb-4">Select Contacts from Address Book</h3>
-                                 
-                                 <!-- Search and Filters -->
-                                 <div class="flex gap-4 mb-4">
-                                     <div class="form-control flex-1">
-                                         <input type="text" id="address-book-search" placeholder="Search contacts..." 
-                                                class="input input-bordered w-full" />
-                                     </div>
-                                     <div class="form-control">
-                                         <select id="address-book-filter" class="select select-bordered">
-                                             <option value="">All Types</option>
-                                             <option value="person">Person</option>
-                                             <option value="company">Company</option>
-                                         </select>
-                                     </div>
-                                     <div class="form-control">
-                                         <select id="address-book-segment-filter" class="select select-bordered">
-                                             <option value="">All Segments</option>
-                                             <option value="prefers_english">Prefers English</option>
-                                             <option value="prefers_arabic">Prefers Arabic</option>
-                                             <option value="vip_customer">VIP Customer</option>
-                                             <option value="new_lead">New Lead</option>
-                                             <option value="returning_customer">Returning Customer</option>
-                                             <option value="high_value">High Value</option>
-                                             <option value="technical_support">Technical Support</option>
-                                             <option value="sales_qualified">Sales Qualified</option>
-                                         </select>
-                                     </div>
-                                 </div>
-                                 
-                                 <!-- Contacts List -->
-                                 <div class="max-h-96 overflow-y-auto">
-                                     <div id="address-book-contacts" class="space-y-2">
-                                         <!-- Sample contacts will be populated here -->
-                                     </div>
-                                 </div>
-                                 
-                                 <!-- Selection Summary -->
-                                 <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                                     <div class="text-sm text-base-content/70">
-                                         <span id="selected-count">0</span> contacts selected
-                                     </div>
-                                     <div class="flex gap-2">
-                                         <button type="button" id="select-all-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
-                                             Select All
-                                         </button>
-                                         <button type="button" id="clear-selection-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
-                                             Clear Selection
-                                         </button>
-                                         <button type="button" id="add-selected-btn" class="btn btn-sm bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                             Add Selected to Campaign
-                                         </button>
-                                         <button type="button" id="close-address-book-btn" class="btn btn-ghost btn-sm hover:bg-[#20D5F9]/20 hover:text-[#20D5F9] transition-all duration-300">
-                                             Close
-                                         </button>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-                 
-                 <!-- Manual Input Section -->
-                 <div class="form-control">
-                     <label class="label">
-                         <span class="label-text font-medium">Manual Contact Entry</span>
-                     </label>
-                     <div class="space-y-3">
-                         <div class="flex gap-2">
-                             <input type="tel" name="manual_phone" placeholder="Phone number (E.164 format)" 
-                                    class="input input-bordered flex-1" />
-                             <input type="text" name="manual_first_name" placeholder="First name" 
-                                    class="input input-bordered flex-1" />
-                             <input type="text" name="manual_last_name" placeholder="Last name" 
-                                    class="input input-bordered flex-1" />
-                             <button type="button" id="add-contact-btn" class="btn bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                 </svg>
-                                 Add
-                             </button>
-                         </div>
-                        
-                        <!-- Contact List Display -->
-                        <div id="contact-list" class="bg-base-200 rounded-lg p-4 min-h-[100px]">
-                            <div class="text-center text-base-content/50 py-4">
-                                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                </svg>
-                                <p>No contacts added yet</p>
-                                <p class="text-sm">Add contacts manually or upload a file</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Contact Count & Actions -->
-                        <div class="flex justify-between items-center">
-                            <div class="text-sm text-base-content/70">
-                                <span id="contact-count">0</span> contacts added
-                            </div>
-                            <div class="flex gap-2">
-                                <button type="button" id="clear-contacts-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
-                                    Clear All
-                                </button>
-                                <button type="button" id="export-contacts-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
-                                    Export List
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                                 <!-- Hidden input for storing contact data -->
-                 <input type="hidden" name="contacts_data" id="contacts-data" value="[]" />
-                 
-                 <!-- CSV Processing Errors -->
-                 <div id="csv-errors" class="form-control" style="display: none;">
-                     <div class="bg-error/10 border border-error/20 rounded-lg p-4 relative">
-                         <button type="button" onclick="document.getElementById('csv-errors').style.display='none'" class="btn btn-ghost btn-xs text-white hover:bg-[#20D5F9]/20 hover:text-[#20D5F9] absolute top-2 right-2 transition-all duration-300">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                             </svg>
-                         </button>
-                         <div class="pr-8">
-                             <div class="flex justify-between items-start mb-3">
-                                 <label class="label">
-                                     <span class="label-text font-medium text-error">CSV Processing Errors</span>
-                                 </label>
-                             </div>
-                             <div class="text-sm text-error">
-                                 <div class="font-medium mb-2">The following rows had issues:</div>
-                                 <div id="error-details" class="space-y-1"></div>
-                             </div>
-                             <label class="label">
-                                 <span class="label-text-alt text-error/70">These contacts were not added. Please fix the data and try again.</span>
-                             </label>
-                         </div>
-                     </div>
-                 </div>
-                 
-                 <!-- Duplicate Validation Messages -->
-                 <div id="duplicate-errors" class="form-control" style="display: none;">
-                     <div class="bg-warning/10 border border-warning/20 rounded-lg p-4 relative">
-                         <button type="button" onclick="document.getElementById('duplicate-errors').style.display='none'" class="btn btn-ghost btn-xs text-white hover:bg-[#20D5F9]/20 hover:text-[#20D5F9] absolute top-2 right-2 transition-all duration-300">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                             </svg>
-                         </button>
-                         <div class="pr-8">
-                             <div class="flex justify-between items-start mb-3">
-                                 <label class="label">
-                                     <span class="label-text font-medium text-warning">Duplicate Contacts Detected</span>
-                                 </label>
-                             </div>
-                             <div class="text-sm text-warning">
-                                 <div class="font-medium mb-2">The following contacts were not added (already exist):</div>
-                                 <div id="duplicate-details" class="space-y-1"></div>
-                             </div>
-                             <label class="label">
-                                 <span class="label-text-alt text-warning/70">These contacts are already in your campaign list.</span>
-                             </label>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-
         <!-- Scheduling & Timing -->
         <div class="card bg-base-100 shadow">
             <div class="card-body">
@@ -495,7 +277,218 @@
             </div>
         </div>
 
-     
+        <!-- Audience & Contacts -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    Audience & Contacts
+                </h3>
+                
+                <!-- Contact Source Selection -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                         <!-- Upload File -->
+                     <div class="form-control">
+                         <label class="label">
+                             <span class="label-text font-medium">Upload CSV/Excel</span>
+                         </label>
+                         <div class="border-2 border-dashed border-base-300 rounded-lg p-3 text-center hover:border-[#20D5F9]/50 transition-colors">
+                             <svg class="w-8 h-8 mx-auto text-base-content/40 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                             </svg>
+                             <input type="file" id="contact-file-input" accept=".csv,.xlsx,.xls"
+                                    class="file-input file-input-bordered file-input-sm w-full" />
+                             <p class="text-xs text-base-content/50 mt-1">CSV, XLSX, XLS (Max 10MB)</p>
+                         </div>
+                     </div>
+                    
+                                         <!-- Address Book -->
+                     <div class="form-control">
+                         <label class="label">
+                             <span class="label-text font-medium">From Address Book</span>
+                         </label>
+                         <div class="space-y-2">
+                             <button type="button" id="open-address-book-btn" class="btn bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 h-20 w-full">
+                                 <div class="text-center">
+                                     <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                     </svg>
+                                     <span class="text-sm">Browse Contacts</span>
+                                 </div>
+                             </button>
+                             <button type="button" id="download-template-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black w-full">
+                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                 </svg>
+                                 Download CSV Template
+                             </button>
+                         </div>
+                     </div>
+                    
+                    <!-- Manual Entry -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Manual Entry</span>
+                        </label>
+                        <button type="button" id="show-manual-entry" class="btn btn-outline border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black h-20">
+                            <div class="text-center">
+                                <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <span class="text-sm">Add Manually</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Manual Entry Form (Hidden by default) -->
+                <div id="manual-entry-form" class="hidden mb-4">
+                    <div class="bg-base-200 rounded-lg p-4">
+                                                <div class="flex gap-2 mb-3">
+                            <input type="tel" name="manual_phone" placeholder="+1 555 123 4567"
+                                   class="input input-bordered input-sm flex-1" 
+                                   pattern="[\+]?[0-9\s\-\(\)]+"
+                                   title="Enter phone number with country code (e.g., +1 555 123 4567)" />
+                            <input type="text" name="manual_first_name" placeholder="First name"
+                                   class="input input-bordered input-sm flex-1" />
+                            <input type="text" name="manual_last_name" placeholder="Last name"
+                                   class="input input-bordered input-sm flex-1" />
+                            <button type="button" id="add-contact-btn" class="btn btn-sm bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add
+                            </button>
+                        </div>
+                        <div class="text-xs text-base-content/50 mb-2">
+                            <strong>Format:</strong> +[Country Code] [Number] (e.g., +1 555 123 4567, +44 20 7946 0958, +971 50 123 4567)
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact List & Summary -->
+                <div class="bg-base-200 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span class="font-medium">Selected Contacts</span>
+                            <span class="badge badge-primary badge-sm" id="contact-count">0</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" id="clear-contacts-btn" class="btn btn-outline btn-xs border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black">
+                                Clear All
+                            </button>
+                            <button type="button" id="export-contacts-btn" class="btn btn-outline btn-xs border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black">
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact List Display -->
+                    <div id="contact-list" class="min-h-[80px] max-h-[200px] overflow-y-auto">
+                        <div class="text-center text-base-content/50 py-6">
+                            <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <p class="text-sm">No contacts selected</p>
+                            <p class="text-xs">Choose a method above to add contacts</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden input for storing contact data -->
+                <input type="hidden" name="contacts_data" id="contacts-data" value="[]" />
+                
+                <!-- Address Book Modal -->
+                <div id="address-book-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+                    <div class="modal-backdrop"></div>
+                    <div class="modal-box w-11/12 max-w-4xl relative z-10 bg-base-100 shadow-xl rounded-lg p-6 mx-auto mt-20">
+                        <h3 class="font-bold text-lg mb-4">Select Contacts from Address Book</h3>
+                        
+                        <!-- Search and Filters -->
+                        <div class="flex gap-4 mb-4">
+                            <div class="form-control flex-1">
+                                <input type="text" id="address-book-search" placeholder="Search contacts..." 
+                                       class="input input-bordered w-full" />
+                            </div>
+                            <div class="form-control">
+                                <select id="address-book-filter" class="select select-bordered">
+                                    <option value="">All Types</option>
+                                    <option value="person">Person</option>
+                                    <option value="company">Company</option>
+                                </select>
+                            </div>
+                            <div class="form-control">
+                                <select id="address-book-segment-filter" class="select select-bordered">
+                                    <option value="">All Segments</option>
+                                    <option value="prefers_english">Prefers English</option>
+                                    <option value="prefers_arabic">Prefers Arabic</option>
+                                    <option value="vip_customer">VIP Customer</option>
+                                    <option value="new_lead">New Lead</option>
+                                    <option value="returning_customer">Returning Customer</option>
+                                    <option value="high_value">High Value</option>
+                                    <option value="technical_support">Technical Support</option>
+                                    <option value="sales_qualified">Sales Qualified</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Contacts List -->
+                        <div class="max-h-96 overflow-y-auto">
+                            <div id="address-book-contacts" class="space-y-2">
+                                <!-- Sample contacts will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Selection Summary -->
+                        <div class="flex justify-between items-center mt-4 pt-4 border-t">
+                            <div class="text-sm text-base-content/70">
+                                <span id="selected-count">0</span> contacts selected
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" id="select-all-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
+                                    Select All
+                                </button>
+                                <button type="button" id="clear-selection-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
+                                    Clear Selection
+                                </button>
+                                <button type="button" id="add-selected-btn" class="btn btn-sm bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                                    Add Selected to Campaign
+                                </button>
+                                <button type="button" id="close-address-book-btn" class="btn btn-ghost btn-sm hover:bg-[#20D5F9]/20 hover:text-[#20D5F9] transition-all duration-300">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Error Messages (Hidden by default) -->
+                <div id="csv-errors" class="alert alert-error mt-3" style="display: none;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <h3 class="font-bold">CSV Processing Errors</h3>
+                        <div class="text-xs" id="error-details"></div>
+                    </div>
+                </div>
+                
+                <div id="duplicate-errors" class="alert alert-warning mt-3" style="display: none;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <div>
+                        <h3 class="font-bold">Duplicate Contacts Detected</h3>
+                        <div class="text-xs" id="duplicate-details"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Form Actions -->
         <div class="flex justify-end gap-4 pt-6">
@@ -515,4 +508,828 @@
 
 {% block extra_js %}
 <script src="{% static 'campaigns/js/campaign_create.js' %}"></script>
+
+<script>
+// Audience & Contacts functionality
+document.addEventListener('DOMContentLoaded', function() {
+    let contacts = [];
+    const contactList = document.getElementById('contact-list');
+    const contactCount = document.getElementById('contact-count');
+    const contactsDataInput = document.getElementById('contacts-data');
+    const manualEntryForm = document.getElementById('manual-entry-form');
+    const showManualEntryBtn = document.getElementById('show-manual-entry');
+    const addContactBtn = document.getElementById('add-contact-btn');
+    const clearContactsBtn = document.getElementById('clear-contacts-btn');
+    const exportContactsBtn = document.getElementById('export-contacts-btn');
+    const openAddressBookBtn = document.getElementById('open-address-book-btn');
+    const downloadTemplateBtn = document.getElementById('download-template-btn');
+    const addressBookModal = document.getElementById('address-book-modal');
+    const closeAddressBookBtn = document.getElementById('close-address-book-btn');
+    const addressBookSearch = document.getElementById('address-book-search');
+    const addressBookFilter = document.getElementById('address-book-filter');
+    const addressBookSegmentFilter = document.getElementById('address-book-segment-filter');
+    const addressBookContacts = document.getElementById('address-book-contacts');
+    const selectAllBtn = document.getElementById('select-all-btn');
+    const clearSelectionBtn = document.getElementById('clear-selection-btn');
+    const addSelectedBtn = document.getElementById('add-selected-btn');
+    const selectedCount = document.getElementById('selected-count');
+    const csvErrors = document.getElementById('csv-errors');
+    const duplicateErrors = document.getElementById('duplicate-errors');
+    const errorDetails = document.getElementById('error-details');
+    const duplicateDetails = document.getElementById('duplicate-details');
+
+    // Manual entry toggle
+    showManualEntryBtn.addEventListener('click', function() {
+        manualEntryForm.classList.toggle('hidden');
+        if (manualEntryForm.classList.contains('hidden')) {
+            showManualEntryBtn.innerHTML = `
+                <div class="text-center">
+                    <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <span class="text-sm">Add Manually</span>
+                </div>
+            `;
+        } else {
+            showManualEntryBtn.innerHTML = `
+                <div class="text-center">
+                    <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    <span class="text-sm">Hide Manual Entry</span>
+                </div>
+            `;
+        }
+    });
+
+    // Add contact manually
+    addContactBtn.addEventListener('click', function() {
+        const phone = document.querySelector('input[name="manual_phone"]').value.trim();
+        const firstName = document.querySelector('input[name="manual_first_name"]').value.trim();
+        const lastName = document.querySelector('input[name="manual_last_name"]').value.trim();
+
+        if (!phone) {
+            showValidationError('Phone number is required');
+            return;
+        }
+
+        // Validate phone number
+        const validationResult = validatePhoneNumber(phone);
+        if (!validationResult.isValid) {
+            showValidationError(validationResult.error);
+            return;
+        }
+
+        // Check for duplicates
+        const isDuplicate = contacts.some(contact => contact.phone === validationResult.formatted);
+        if (isDuplicate) {
+            showValidationError('This phone number is already in the list');
+            return;
+        }
+
+        const contact = {
+            id: Date.now(),
+            phone: validationResult.formatted,
+            first_name: firstName,
+            last_name: lastName,
+            email: '',
+            company: '',
+            type: 'person',
+            country_code: validationResult.countryCode
+        };
+
+        contacts.push(contact);
+        updateContactDisplay();
+        updateContactsData();
+
+        // Clear form
+        document.querySelector('input[name="manual_phone"]').value = '';
+        document.querySelector('input[name="manual_first_name"]').value = '';
+        document.querySelector('input[name="manual_last_name"]').value = '';
+        
+        // Hide any existing validation error
+        hideValidationError();
+    });
+
+    // Clear all contacts
+    clearContactsBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear all contacts?')) {
+            contacts = [];
+            updateContactDisplay();
+            updateContactsData();
+        }
+    });
+
+    // Export contacts
+    exportContactsBtn.addEventListener('click', function() {
+        if (contacts.length === 0) {
+            alert('No contacts to export');
+            return;
+        }
+
+        const csvContent = generateCSV(contacts);
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'campaign_contacts.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+
+    // Address book modal
+    openAddressBookBtn.addEventListener('click', function() {
+        if (addressBookModal) {
+            addressBookModal.style.display = 'block';
+            loadAddressBookContacts();
+        } else {
+            alert('Address book modal not found. Please check the page structure.');
+        }
+    });
+
+    if (closeAddressBookBtn) {
+        closeAddressBookBtn.addEventListener('click', function() {
+            addressBookModal.style.display = 'none';
+        });
+    }
+
+    // Close modal when clicking outside
+    if (addressBookModal) {
+        addressBookModal.addEventListener('click', function(e) {
+            if (e.target === addressBookModal) {
+                addressBookModal.style.display = 'none';
+            }
+        });
+    }
+
+    // Address book search and filters
+    if (addressBookSearch) {
+        addressBookSearch.addEventListener('input', filterAddressBookContacts);
+    }
+    if (addressBookFilter) {
+        addressBookFilter.addEventListener('change', filterAddressBookContacts);
+    }
+    if (addressBookSegmentFilter) {
+        addressBookSegmentFilter.addEventListener('change', filterAddressBookContacts);
+    }
+
+    // Select all contacts
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            if (addressBookContacts) {
+                const checkboxes = addressBookContacts.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => checkbox.checked = true);
+                updateSelectedCount();
+            }
+        });
+    }
+
+    // Clear selection
+    if (clearSelectionBtn) {
+        clearSelectionBtn.addEventListener('click', function() {
+            if (addressBookContacts) {
+                const checkboxes = addressBookContacts.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => checkbox.checked = false);
+                updateSelectedCount();
+            }
+        });
+    }
+
+    // Add selected contacts
+    if (addSelectedBtn) {
+        addSelectedBtn.addEventListener('click', function() {
+            if (addressBookContacts) {
+                const checkboxes = addressBookContacts.querySelectorAll('input[type="checkbox"]:checked');
+                const selectedContacts = [];
+
+                checkboxes.forEach(checkbox => {
+                    const contactId = checkbox.value;
+                    const contact = getContactById(contactId);
+                    if (contact && !contacts.some(c => c.phone === contact.phone)) {
+                        selectedContacts.push(contact);
+                    }
+                });
+
+                if (selectedContacts.length > 0) {
+                    contacts.push(...selectedContacts);
+                    updateContactDisplay();
+                    updateContactsData();
+                    if (addressBookModal) {
+                        addressBookModal.style.display = 'none';
+                    }
+                    alert(`Added ${selectedContacts.length} contacts to campaign`);
+                } else {
+                    alert('No new contacts selected or all contacts already exist');
+                }
+            }
+        });
+    }
+
+    // File upload handling
+    const fileInput = document.getElementById('contact-file-input');
+    fileInput.addEventListener('change', handleFileUpload);
+
+    // Download CSV template
+    downloadTemplateBtn.addEventListener('click', function() {
+        const csvContent = generateCSVTemplate();
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'contact_upload_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+
+    // Real-time phone validation
+    const phoneInput = document.querySelector('input[name="manual_phone"]');
+    phoneInput.addEventListener('input', function() {
+        const phone = this.value.trim();
+        if (phone.length > 0) {
+            const validationResult = validatePhoneNumber(phone);
+            if (validationResult.isValid) {
+                this.classList.remove('input-error');
+                this.classList.add('input-success');
+                hideValidationError();
+            } else {
+                this.classList.remove('input-success');
+                this.classList.add('input-error');
+                showValidationError(validationResult.error);
+            }
+        } else {
+            this.classList.remove('input-error', 'input-success');
+            hideValidationError();
+        }
+    });
+
+    // Functions
+    function updateContactDisplay() {
+        if (contacts.length === 0) {
+            contactList.innerHTML = `
+                <div class="text-center text-base-content/50 py-6">
+                    <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <p class="text-sm">No contacts selected</p>
+                    <p class="text-xs">Choose a method above to add contacts</p>
+                </div>
+            `;
+        } else {
+            const contactsHtml = contacts.map(contact => `
+                <div class="flex items-center justify-between bg-base-100 p-2 rounded border border-base-300 mb-2" data-contact-id="${contact.id}">
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm truncate">${contact.first_name} ${contact.last_name}</div>
+                        <div class="text-xs text-base-content/70 font-mono">${contact.phone}</div>
+                    </div>
+                    <button type="button" class="btn btn-ghost btn-xs text-error hover:bg-error/10 ml-2" onclick="removeContact(${contact.id})">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+            
+            contactList.innerHTML = contactsHtml;
+        }
+        
+        contactCount.textContent = contacts.length;
+    }
+
+    function updateContactsData() {
+        contactsDataInput.value = JSON.stringify(contacts);
+    }
+
+    function removeContact(contactId) {
+        contacts = contacts.filter(contact => contact.id !== contactId);
+        updateContactDisplay();
+        updateContactsData();
+    }
+
+    function generateCSV(contacts) {
+        const headers = ['phone', 'first_name', 'last_name', 'email', 'company'];
+        const csvRows = [headers.join(',')];
+        
+        contacts.forEach(contact => {
+            const row = headers.map(header => {
+                const value = contact[header] || '';
+                return `"${value}"`;
+            });
+            csvRows.push(row.join(','));
+        });
+        
+        return csvRows.join('\n');
+    }
+
+    function generateCSVTemplate() {
+        const headers = ['phone', 'first_name', 'last_name', 'email', 'company'];
+        const examples = [
+            ['+1 555 123 4567', 'John', 'Doe', 'john.doe@example.com', 'Tech Corp'],
+            ['+44 20 7946 0958', 'Jane', 'Smith', 'jane.smith@example.com', 'Design Inc'],
+            ['+971 50 123 4567', 'Ahmed', 'Al-Rashid', 'ahmed@example.com', 'Dubai Corp'],
+            ['+966 50 987 6543', 'Sarah', 'Johnson', 'sarah@example.com', 'Saudi Tech'],
+            ['+49 30 12345678', 'Hans', 'Mueller', 'hans@example.com', 'German Solutions']
+        ];
+        
+        const csvRows = [headers.join(',')];
+        examples.forEach(example => {
+            const row = example.map(value => `"${value}"`);
+            csvRows.push(row.join(','));
+        });
+        
+        return csvRows.join('\n');
+    }
+
+    function loadAddressBookContacts() {
+        // Mock data - replace with actual API call
+        const mockContacts = [
+            { id: 1, first_name: 'John', last_name: 'Doe', phone: '+1234567890', email: 'john@example.com', company: 'Tech Corp', type: 'person' },
+            { id: 2, first_name: 'Jane', last_name: 'Smith', phone: '+1234567891', email: 'jane@example.com', company: 'Design Inc', type: 'person' },
+            { id: 3, name: 'Acme Corp', phone: '+1234567892', contact_person: 'Bob Wilson', company: 'Acme Corp', type: 'company' },
+            { id: 4, first_name: 'Alice', last_name: 'Johnson', phone: '+1234567893', email: 'alice@example.com', company: 'Marketing Pro', type: 'person' }
+        ];
+
+        renderAddressBookContacts(mockContacts);
+    }
+
+    function renderAddressBookContacts(contacts) {
+        if (!addressBookContacts) {
+            console.error('Address book contacts container not found');
+            return;
+        }
+        
+        const contactsHtml = contacts.map(contact => {
+            const displayName = contact.type === 'person' 
+                ? `${contact.first_name} ${contact.last_name}`
+                : contact.name;
+            const displayCompany = contact.type === 'person' 
+                ? contact.company 
+                : `Contact: ${contact.contact_person}`;
+            
+            return `
+                <div class="flex items-center justify-between bg-base-100 p-3 rounded-lg border border-base-300 hover:border-primary/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="checkbox checkbox-primary" value="${contact.id}" />
+                        <div class="flex-1">
+                            <div class="font-medium">${displayName}</div>
+                            <div class="text-sm text-base-content/70">${contact.phone}</div>
+                            <div class="text-xs text-base-content/50">${displayCompany}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        addressBookContacts.innerHTML = contactsHtml;
+        updateSelectedCount();
+    }
+
+    function filterAddressBookContacts() {
+        // Implement filtering logic here
+        loadAddressBookContacts(); // For now, just reload
+    }
+
+    function updateSelectedCount() {
+        if (addressBookContacts && selectedCount) {
+            const checkboxes = addressBookContacts.querySelectorAll('input[type="checkbox"]:checked');
+            selectedCount.textContent = checkboxes.length;
+        }
+    }
+
+    function getContactById(contactId) {
+        // Mock function - replace with actual data lookup
+        const mockContacts = [
+            { id: 1, first_name: 'John', last_name: 'Doe', phone: '+1234567890', email: 'john@example.com', company: 'Tech Corp', type: 'person' },
+            { id: 2, first_name: 'Jane', last_name: 'Smith', phone: '+1234567891', email: 'jane@example.com', company: 'Design Inc', type: 'person' },
+            { id: 3, name: 'Acme Corp', phone: '+1234567892', contact_person: 'Bob Wilson', company: 'Acme Corp', type: 'company' },
+            { id: 4, first_name: 'Alice', last_name: 'Johnson', phone: '+1234567893', email: 'alice@example.com', company: 'Marketing Pro', type: 'person' }
+        ];
+        return mockContacts.find(c => c.id == contactId);
+    }
+
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const csvContent = e.target.result;
+                const contacts = parseCSV(csvContent);
+                addContactsFromFile(contacts);
+            } catch (error) {
+                console.error('Error parsing file:', error);
+                alert('Error parsing file. Please check the format.');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function parseCSV(csvContent) {
+        const lines = csvContent.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        const contacts = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i].trim()) {
+                const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                const contact = {};
+                headers.forEach((header, index) => {
+                    contact[header] = values[index] || '';
+                });
+                contacts.push(contact);
+            }
+        }
+
+        return contacts;
+    }
+
+    function addContactsFromFile(fileContacts) {
+        const newContacts = [];
+        const duplicates = [];
+        const errors = [];
+
+        fileContacts.forEach((contact, index) => {
+            if (!contact.phone) {
+                errors.push(`Row ${index + 2}: Missing phone number`);
+                return;
+            }
+
+            // Validate phone number
+            const validationResult = validatePhoneNumber(contact.phone);
+            if (!validationResult.isValid) {
+                errors.push(`Row ${index + 2}: ${validationResult.error}`);
+                return;
+            }
+
+            // Check for duplicates
+            const isDuplicate = contacts.some(c => c.phone === validationResult.formatted);
+            if (isDuplicate) {
+                duplicates.push(`${contact.first_name || 'Unknown'} ${contact.last_name || ''} (${validationResult.formatted})`);
+                return;
+            }
+
+            const newContact = {
+                id: Date.now() + index,
+                phone: validationResult.formatted,
+                first_name: contact.first_name || '',
+                last_name: contact.last_name || '',
+                email: contact.email || '',
+                company: contact.company || '',
+                type: 'person',
+                country_code: validationResult.countryCode
+            };
+
+            newContacts.push(newContact);
+        });
+
+        // Add new contacts
+        if (newContacts.length > 0) {
+            contacts.push(...newContacts);
+            updateContactDisplay();
+            updateContactsData();
+        }
+
+        // Show errors
+        if (errors.length > 0) {
+            errorDetails.innerHTML = errors.map(error => `<div>${error}</div>`).join('');
+            csvErrors.style.display = 'block';
+        }
+
+        // Show duplicates
+        if (duplicates.length > 0) {
+            duplicateDetails.innerHTML = duplicates.map(dup => `<div>${dup}</div>`).join('');
+            duplicateErrors.style.display = 'block';
+        }
+
+        if (newContacts.length > 0) {
+            alert(`Successfully added ${newContacts.length} contacts`);
+        }
+    }
+
+    // Phone number validation functions
+    function validatePhoneNumber(phone) {
+        // Remove all non-digit characters except + and spaces
+        let cleaned = phone.replace(/[^\d+\s]/g, '');
+        
+        // Remove spaces
+        cleaned = cleaned.replace(/\s/g, '');
+        
+        // Check if it starts with +
+        if (!cleaned.startsWith('+')) {
+            return {
+                isValid: false,
+                error: 'Phone number must start with a country code (e.g., +1, +44, +971)',
+                formatted: null,
+                countryCode: null
+            };
+        }
+        
+        // Extract country code and number
+        const countryCodeMatch = cleaned.match(/^\+(\d{1,4})/);
+        if (!countryCodeMatch) {
+            return {
+                isValid: false,
+                error: 'Invalid country code format',
+                formatted: null,
+                countryCode: null
+            };
+        }
+        
+        const countryCode = '+' + countryCodeMatch[1];
+        const number = cleaned.substring(countryCodeMatch[0].length);
+        
+        // Validate country code length (1-4 digits)
+        if (countryCodeMatch[1].length < 1 || countryCodeMatch[1].length > 4) {
+            return {
+                isValid: false,
+                error: 'Country code must be 1-4 digits',
+                formatted: null,
+                countryCode: null
+            };
+        }
+        
+        // Validate number length (7-15 digits)
+        if (number.length < 7 || number.length > 15) {
+            return {
+                isValid: false,
+                error: `Phone number must be 7-15 digits (got ${number.length})`,
+                formatted: null,
+                countryCode: null
+            };
+        }
+        
+        // Common country code validations
+        const countryValidations = {
+            '+1': { minLength: 10, maxLength: 10, name: 'US/Canada' },
+            '+44': { minLength: 10, maxLength: 11, name: 'UK' },
+            '+971': { minLength: 9, maxLength: 9, name: 'UAE' },
+            '+966': { minLength: 9, maxLength: 9, name: 'Saudi Arabia' },
+            '+974': { minLength: 8, maxLength: 8, name: 'Qatar' },
+            '+973': { minLength: 8, maxLength: 8, name: 'Bahrain' },
+            '+965': { minLength: 8, maxLength: 8, name: 'Kuwait' },
+            '+968': { minLength: 8, maxLength: 8, name: 'Oman' },
+            '+973': { minLength: 8, maxLength: 8, name: 'Bahrain' },
+            '+20': { minLength: 10, maxLength: 10, name: 'Egypt' },
+            '+212': { minLength: 9, maxLength: 9, name: 'Morocco' },
+            '+216': { minLength: 8, maxLength: 8, name: 'Tunisia' },
+            '+213': { minLength: 9, maxLength: 9, name: 'Algeria' },
+            '+33': { minLength: 9, maxLength: 9, name: 'France' },
+            '+49': { minLength: 10, maxLength: 12, name: 'Germany' },
+            '+39': { minLength: 9, maxLength: 10, name: 'Italy' },
+            '+34': { minLength: 9, maxLength: 9, name: 'Spain' },
+            '+31': { minLength: 9, maxLength: 9, name: 'Netherlands' },
+            '+32': { minLength: 9, maxLength: 9, name: 'Belgium' },
+            '+41': { minLength: 9, maxLength: 9, name: 'Switzerland' },
+            '+43': { minLength: 10, maxLength: 13, name: 'Austria' },
+            '+46': { minLength: 9, maxLength: 9, name: 'Sweden' },
+            '+47': { minLength: 8, maxLength: 8, name: 'Norway' },
+            '+45': { minLength: 8, maxLength: 8, name: 'Denmark' },
+            '+358': { minLength: 9, maxLength: 9, name: 'Finland' },
+            '+48': { minLength: 9, maxLength: 9, name: 'Poland' },
+            '+420': { minLength: 9, maxLength: 9, name: 'Czech Republic' },
+            '+36': { minLength: 9, maxLength: 9, name: 'Hungary' },
+            '+30': { minLength: 10, maxLength: 10, name: 'Greece' },
+            '+351': { minLength: 9, maxLength: 9, name: 'Portugal' },
+            '+353': { minLength: 9, maxLength: 9, name: 'Ireland' },
+            '+61': { minLength: 9, maxLength: 9, name: 'Australia' },
+            '+64': { minLength: 8, maxLength: 10, name: 'New Zealand' },
+            '+81': { minLength: 10, maxLength: 10, name: 'Japan' },
+            '+82': { minLength: 9, maxLength: 10, name: 'South Korea' },
+            '+86': { minLength: 11, maxLength: 11, name: 'China' },
+            '+91': { minLength: 10, maxLength: 10, name: 'India' },
+            '+65': { minLength: 8, maxLength: 8, name: 'Singapore' },
+            '+60': { minLength: 9, maxLength: 10, name: 'Malaysia' },
+            '+66': { minLength: 9, maxLength: 9, name: 'Thailand' },
+            '+84': { minLength: 9, maxLength: 10, name: 'Vietnam' },
+            '+62': { minLength: 9, maxLength: 11, name: 'Indonesia' },
+            '+63': { minLength: 10, maxLength: 10, name: 'Philippines' },
+            '+852': { minLength: 8, maxLength: 8, name: 'Hong Kong' },
+            '+886': { minLength: 9, maxLength: 9, name: 'Taiwan' },
+            '+55': { minLength: 10, maxLength: 11, name: 'Brazil' },
+            '+54': { minLength: 10, maxLength: 11, name: 'Argentina' },
+            '+56': { minLength: 9, maxLength: 9, name: 'Chile' },
+            '+57': { minLength: 10, maxLength: 10, name: 'Colombia' },
+            '+58': { minLength: 10, maxLength: 10, name: 'Venezuela' },
+            '+51': { minLength: 9, maxLength: 9, name: 'Peru' },
+            '+52': { minLength: 10, maxLength: 10, name: 'Mexico' },
+            '+593': { minLength: 9, maxLength: 9, name: 'Ecuador' },
+            '+595': { minLength: 9, maxLength: 9, name: 'Paraguay' },
+            '+598': { minLength: 8, maxLength: 8, name: 'Uruguay' },
+            '+591': { minLength: 8, maxLength: 8, name: 'Bolivia' },
+            '+593': { minLength: 9, maxLength: 9, name: 'Ecuador' },
+            '+507': { minLength: 8, maxLength: 8, name: 'Panama' },
+            '+506': { minLength: 8, maxLength: 8, name: 'Costa Rica' },
+            '+502': { minLength: 8, maxLength: 8, name: 'Guatemala' },
+            '+503': { minLength: 8, maxLength: 8, name: 'El Salvador' },
+            '+504': { minLength: 8, maxLength: 8, name: 'Honduras' },
+            '+505': { minLength: 8, maxLength: 8, name: 'Nicaragua' },
+            '+27': { minLength: 9, maxLength: 9, name: 'South Africa' },
+            '+234': { minLength: 10, maxLength: 10, name: 'Nigeria' },
+            '+254': { minLength: 9, maxLength: 9, name: 'Kenya' },
+            '+256': { minLength: 9, maxLength: 9, name: 'Uganda' },
+            '+255': { minLength: 9, maxLength: 9, name: 'Tanzania' },
+            '+233': { minLength: 9, maxLength: 9, name: 'Ghana' },
+            '+251': { minLength: 9, maxLength: 9, name: 'Ethiopia' },
+            '+260': { minLength: 9, maxLength: 9, name: 'Zambia' },
+            '+263': { minLength: 9, maxLength: 9, name: 'Zimbabwe' },
+            '+265': { minLength: 9, maxLength: 9, name: 'Malawi' },
+            '+267': { minLength: 8, maxLength: 8, name: 'Botswana' },
+            '+268': { minLength: 8, maxLength: 8, name: 'Eswatini' },
+            '+269': { minLength: 7, maxLength: 7, name: 'Comoros' },
+            '+290': { minLength: 4, maxLength: 4, name: 'Saint Helena' },
+            '+291': { minLength: 7, maxLength: 7, name: 'Eritrea' },
+            '+297': { minLength: 7, maxLength: 7, name: 'Aruba' },
+            '+298': { minLength: 6, maxLength: 6, name: 'Faroe Islands' },
+            '+299': { minLength: 6, maxLength: 6, name: 'Greenland' },
+            '+350': { minLength: 8, maxLength: 8, name: 'Gibraltar' },
+            '+351': { minLength: 9, maxLength: 9, name: 'Portugal' },
+            '+352': { minLength: 9, maxLength: 9, name: 'Luxembourg' },
+            '+353': { minLength: 9, maxLength: 9, name: 'Ireland' },
+            '+354': { minLength: 7, maxLength: 7, name: 'Iceland' },
+            '+355': { minLength: 9, maxLength: 9, name: 'Albania' },
+            '+356': { minLength: 8, maxLength: 8, name: 'Malta' },
+            '+357': { minLength: 8, maxLength: 8, name: 'Cyprus' },
+            '+358': { minLength: 9, maxLength: 9, name: 'Finland' },
+            '+359': { minLength: 9, maxLength: 9, name: 'Bulgaria' },
+            '+370': { minLength: 8, maxLength: 8, name: 'Lithuania' },
+            '+371': { minLength: 8, maxLength: 8, name: 'Latvia' },
+            '+372': { minLength: 7, maxLength: 8, name: 'Estonia' },
+            '+373': { minLength: 8, maxLength: 8, name: 'Moldova' },
+            '+374': { minLength: 8, maxLength: 8, name: 'Armenia' },
+            '+375': { minLength: 9, maxLength: 9, name: 'Belarus' },
+            '+376': { minLength: 6, maxLength: 6, name: 'Andorra' },
+            '+377': { minLength: 8, maxLength: 8, name: 'Monaco' },
+            '+378': { minLength: 10, maxLength: 10, name: 'San Marino' },
+            '+379': { minLength: 10, maxLength: 10, name: 'Vatican City' },
+            '+380': { minLength: 9, maxLength: 9, name: 'Ukraine' },
+            '+381': { minLength: 9, maxLength: 9, name: 'Serbia' },
+            '+382': { minLength: 8, maxLength: 8, name: 'Montenegro' },
+            '+383': { minLength: 8, maxLength: 8, name: 'Kosovo' },
+            '+385': { minLength: 9, maxLength: 9, name: 'Croatia' },
+            '+386': { minLength: 8, maxLength: 8, name: 'Slovenia' },
+            '+387': { minLength: 8, maxLength: 8, name: 'Bosnia and Herzegovina' },
+            '+389': { minLength: 8, maxLength: 8, name: 'North Macedonia' },
+            '+390': { minLength: 10, maxLength: 10, name: 'Italy' },
+            '+420': { minLength: 9, maxLength: 9, name: 'Czech Republic' },
+            '+421': { minLength: 9, maxLength: 9, name: 'Slovakia' },
+            '+423': { minLength: 7, maxLength: 7, name: 'Liechtenstein' },
+            '+500': { minLength: 5, maxLength: 5, name: 'Falkland Islands' },
+            '+501': { minLength: 7, maxLength: 7, name: 'Belize' },
+            '+502': { minLength: 8, maxLength: 8, name: 'Guatemala' },
+            '+503': { minLength: 8, maxLength: 8, name: 'El Salvador' },
+            '+504': { minLength: 8, maxLength: 8, name: 'Honduras' },
+            '+505': { minLength: 8, maxLength: 8, name: 'Nicaragua' },
+            '+506': { minLength: 8, maxLength: 8, name: 'Costa Rica' },
+            '+507': { minLength: 8, maxLength: 8, name: 'Panama' },
+            '+508': { minLength: 6, maxLength: 6, name: 'Saint Pierre and Miquelon' },
+            '+509': { minLength: 8, maxLength: 8, name: 'Haiti' },
+            '+590': { minLength: 9, maxLength: 9, name: 'Guadeloupe' },
+            '+591': { minLength: 8, maxLength: 8, name: 'Bolivia' },
+            '+592': { minLength: 7, maxLength: 7, name: 'Guyana' },
+            '+593': { minLength: 9, maxLength: 9, name: 'Ecuador' },
+            '+594': { minLength: 9, maxLength: 9, name: 'French Guiana' },
+            '+595': { minLength: 9, maxLength: 9, name: 'Paraguay' },
+            '+596': { minLength: 9, maxLength: 9, name: 'Martinique' },
+            '+597': { minLength: 7, maxLength: 7, name: 'Suriname' },
+            '+598': { minLength: 8, maxLength: 8, name: 'Uruguay' },
+            '+599': { minLength: 7, maxLength: 7, name: 'Netherlands Antilles' },
+            '+670': { minLength: 7, maxLength: 7, name: 'East Timor' },
+            '+672': { minLength: 5, maxLength: 5, name: 'Australian External Territories' },
+            '+673': { minLength: 7, maxLength: 7, name: 'Brunei' },
+            '+674': { minLength: 7, maxLength: 7, name: 'Nauru' },
+            '+675': { minLength: 8, maxLength: 8, name: 'Papua New Guinea' },
+            '+676': { minLength: 5, maxLength: 5, name: 'Tonga' },
+            '+677': { minLength: 7, maxLength: 7, name: 'Solomon Islands' },
+            '+678': { minLength: 7, maxLength: 7, name: 'Vanuatu' },
+            '+679': { minLength: 7, maxLength: 7, name: 'Fiji' },
+            '+680': { minLength: 7, maxLength: 7, name: 'Palau' },
+            '+681': { minLength: 6, maxLength: 6, name: 'Wallis and Futuna' },
+            '+682': { minLength: 5, maxLength: 5, name: 'Cook Islands' },
+            '+683': { minLength: 4, maxLength: 4, name: 'Niue' },
+            '+685': { minLength: 5, maxLength: 5, name: 'Samoa' },
+            '+686': { minLength: 8, maxLength: 8, name: 'Kiribati' },
+            '+687': { minLength: 6, maxLength: 6, name: 'New Caledonia' },
+            '+688': { minLength: 5, maxLength: 5, name: 'Tuvalu' },
+            '+689': { minLength: 6, maxLength: 6, name: 'French Polynesia' },
+            '+690': { minLength: 4, maxLength: 4, name: 'Tokelau' },
+            '+691': { minLength: 7, maxLength: 7, name: 'Micronesia' },
+            '+692': { minLength: 7, maxLength: 7, name: 'Marshall Islands' },
+            '+850': { minLength: 9, maxLength: 9, name: 'North Korea' },
+            '+852': { minLength: 8, maxLength: 8, name: 'Hong Kong' },
+            '+853': { minLength: 8, maxLength: 8, name: 'Macau' },
+            '+855': { minLength: 9, maxLength: 9, name: 'Cambodia' },
+            '+856': { minLength: 10, maxLength: 10, name: 'Laos' },
+            '+880': { minLength: 10, maxLength: 10, name: 'Bangladesh' },
+            '+886': { minLength: 9, maxLength: 9, name: 'Taiwan' },
+            '+960': { minLength: 7, maxLength: 7, name: 'Maldives' },
+            '+961': { minLength: 8, maxLength: 8, name: 'Lebanon' },
+            '+962': { minLength: 9, maxLength: 9, name: 'Jordan' },
+            '+963': { minLength: 9, maxLength: 9, name: 'Syria' },
+            '+964': { minLength: 10, maxLength: 10, name: 'Iraq' },
+            '+965': { minLength: 8, maxLength: 8, name: 'Kuwait' },
+            '+966': { minLength: 9, maxLength: 9, name: 'Saudi Arabia' },
+            '+967': { minLength: 9, maxLength: 9, name: 'Yemen' },
+            '+968': { minLength: 8, maxLength: 8, name: 'Oman' },
+            '+970': { minLength: 9, maxLength: 9, name: 'Palestine' },
+            '+971': { minLength: 9, maxLength: 9, name: 'UAE' },
+            '+972': { minLength: 9, maxLength: 9, name: 'Israel' },
+            '+973': { minLength: 8, maxLength: 8, name: 'Bahrain' },
+            '+974': { minLength: 8, maxLength: 8, name: 'Qatar' },
+            '+975': { minLength: 8, maxLength: 8, name: 'Bhutan' },
+            '+976': { minLength: 8, maxLength: 8, name: 'Mongolia' },
+            '+977': { minLength: 10, maxLength: 10, name: 'Nepal' },
+            '+992': { minLength: 9, maxLength: 9, name: 'Tajikistan' },
+            '+993': { minLength: 8, maxLength: 8, name: 'Turkmenistan' },
+            '+994': { minLength: 9, maxLength: 9, name: 'Azerbaijan' },
+            '+995': { minLength: 9, maxLength: 9, name: 'Georgia' },
+            '+996': { minLength: 9, maxLength: 9, name: 'Kyrgyzstan' },
+            '+998': { minLength: 9, maxLength: 9, name: 'Uzbekistan' },
+            '+1242': { minLength: 7, maxLength: 7, name: 'Bahamas' },
+            '+1246': { minLength: 7, maxLength: 7, name: 'Barbados' },
+            '+1264': { minLength: 7, maxLength: 7, name: 'Anguilla' },
+            '+1268': { minLength: 7, maxLength: 7, name: 'Antigua and Barbuda' },
+            '+1284': { minLength: 7, maxLength: 7, name: 'British Virgin Islands' },
+            '+1340': { minLength: 7, maxLength: 7, name: 'U.S. Virgin Islands' },
+            '+1345': { minLength: 7, maxLength: 7, name: 'Cayman Islands' },
+            '+1441': { minLength: 7, maxLength: 7, name: 'Bermuda' },
+            '+1473': { minLength: 7, maxLength: 7, name: 'Grenada' },
+            '+1649': { minLength: 7, maxLength: 7, name: 'Turks and Caicos Islands' },
+            '+1664': { minLength: 7, maxLength: 7, name: 'Montserrat' },
+            '+1671': { minLength: 7, maxLength: 7, name: 'Guam' },
+            '+1684': { minLength: 7, maxLength: 7, name: 'American Samoa' },
+            '+1758': { minLength: 7, maxLength: 7, name: 'Saint Lucia' },
+            '+1767': { minLength: 7, maxLength: 7, name: 'Dominica' },
+            '+1784': { minLength: 7, maxLength: 7, name: 'Saint Vincent and the Grenadines' },
+            '+1787': { minLength: 7, maxLength: 7, name: 'Puerto Rico' },
+            '+1809': { minLength: 7, maxLength: 7, name: 'Dominican Republic' },
+            '+1868': { minLength: 7, maxLength: 7, name: 'Trinidad and Tobago' },
+            '+1869': { minLength: 7, maxLength: 7, name: 'Saint Kitts and Nevis' },
+            '+1876': { minLength: 7, maxLength: 7, name: 'Jamaica' },
+            '+1939': { minLength: 7, maxLength: 7, name: 'Puerto Rico' }
+        };
+        
+        // Check if we have specific validation for this country code
+        if (countryValidations[countryCode]) {
+            const validation = countryValidations[countryCode];
+            if (number.length < validation.minLength || number.length > validation.maxLength) {
+                return {
+                    isValid: false,
+                    error: `${validation.name} phone numbers must be ${validation.minLength}-${validation.maxLength} digits (got ${number.length})`,
+                    formatted: null,
+                    countryCode: null
+                };
+            }
+        }
+        
+        // Format the phone number
+        const formatted = countryCode + number;
+        
+        return {
+            isValid: true,
+            error: null,
+            formatted: formatted,
+            countryCode: countryCode
+        };
+    }
+    
+    function showValidationError(message) {
+        // Create or update validation error display
+        let errorDiv = document.getElementById('phone-validation-error');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'phone-validation-error';
+            errorDiv.className = 'alert alert-error mt-2';
+            errorDiv.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>${message}</span>
+            `;
+            
+            // Insert after the manual entry form
+            const manualEntryForm = document.getElementById('manual-entry-form');
+            if (manualEntryForm) {
+                manualEntryForm.parentNode.insertBefore(errorDiv, manualEntryForm.nextSibling);
+            }
+        } else {
+            errorDiv.querySelector('span').textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    }
+    
+    function hideValidationError() {
+        const errorDiv = document.getElementById('phone-validation-error');
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+        }
+    }
+
+    // Make removeContact globally available
+    window.removeContact = removeContact;
+
+    // Initialize
+    updateContactDisplay();
+    updateContactsData();
+});
+</script>
 {% endblock %}

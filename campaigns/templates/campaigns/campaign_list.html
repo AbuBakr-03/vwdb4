@@ -10,7 +10,7 @@
             <h1 class="text-3xl font-bold">Campaigns</h1>
             <p class="text-base-content/70">Manage your AI agent campaigns</p>
         </div>
-        <a href="{% url 'campaigns:campaign_create' %}" class="btn btn-primary">
+        <a href="{% url 'campaigns:campaign_create' %}" class="btn text-black bg-[#20D5F9] border-[#20D5F9] hover:bg-[#20D5F9]/90 hover:border-[#20D5F9]/90">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
@@ -66,7 +66,7 @@
                 </div>
                 
                 <div class="form-control">
-                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <button type="submit" class="btn text-black bg-[#20D5F9] border-[#20D5F9] hover:bg-[#20D5F9]/90 hover:border-[#20D5F9]/90">Filter</button>
                 </div>
                 
                 {% if search_query or status_filter %}
@@ -202,7 +202,7 @@
                     {% endif %}
                 </p>
                 {% if not search_query and not status_filter %}
-                <a href="{% url 'campaigns:campaign_create' %}" class="btn btn-primary">
+                <a href="{% url 'campaigns:campaign_create' %}" class="btn text-black bg-[#20D5F9] border-[#20D5F9] hover:bg-[#20D5F9]/90 hover:border-[#20D5F9]/90">
                     Create Campaign
                 </a>
                 {% endif %}

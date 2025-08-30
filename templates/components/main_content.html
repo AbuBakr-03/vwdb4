@@ -19,7 +19,7 @@ Parameters:
   <main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-10 pb-24 {{ class|default:'' }}" data-component="main-content-inner">
     
     <!-- Breadcrumb Navigation -->
-    {% if show_breadcrumb != False and breadcrumb_items %}
+    {% if show_breadcrumb == True and breadcrumb_items %}
       <div data-component="breadcrumb-container">
         {% include 'components/breadcrumb.html' with items=breadcrumb_items class="breadcrumb-enhanced" %}
       </div>
