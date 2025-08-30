@@ -635,6 +635,8 @@ class SaveAssistantConfigView(LoginRequiredMixin, View):
                     an.summary_prompt = analytics_data['summary_prompt']
                 if 'success_prompt' in analytics_data:
                     an.success_prompt = analytics_data['success_prompt']
+                if 'structured_prompt' in analytics_data:
+                    an.structured_prompt = analytics_data['structured_prompt']
                 
                 an.save()
             

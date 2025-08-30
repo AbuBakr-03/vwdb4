@@ -289,6 +289,7 @@ class AnalyticsConfig(TenantScopedModel):
     
     # Structured data extraction
     structured_prompt = models.TextField(
+        default="You will be given a transcript of a call and the system prompt of the AI participant. Extract structured data according to the schema below.",
         blank=True,
         help_text="Prompt for extracting structured data"
     )
@@ -297,7 +298,6 @@ class AnalyticsConfig(TenantScopedModel):
         blank=True,
         help_text="JSON schema for structured data extraction"
     )
-    structured_timeout_sec = models.PositiveIntegerField(default=10)
 
     class Meta:
         indexes = [

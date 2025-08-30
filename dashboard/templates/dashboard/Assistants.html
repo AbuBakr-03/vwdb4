@@ -1563,25 +1563,13 @@
           <label class="text-sm font-medium text-base-content">Prompt</label>
           <p class="text-xs text-amber-500">This is the prompt that's used to extract structured data from the call.</p>
           <textarea 
+            id="structured-prompt"
             class="textarea textarea-bordered w-full bg-base-100 min-h-[120px] resize-none" 
             placeholder="Enter structured data prompt..."
-          >You will be given a transcript of a call and the system prompt of the AI participant. Extract...</textarea>
+          >{% if assistant_config.analytics.structured_prompt %}{{ assistant_config.analytics.structured_prompt }}{% else %}You will be given a transcript of a call and the system prompt of the AI participant. Extract structured data according to the schema below.{% endif %}</textarea>
         </div>
 
-        <!-- Structured data request timeout -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <label class="text-sm font-medium text-base-content">Structured data request timeout in seconds.</label>
-            <span class="text-sm font-medium text-base-content">10</span>
-          </div>
-          <div class="relative">
-            <input type="range" min="1" max="60" step="1" value="10" class="range range-primary w-full">
-            <div class="flex justify-between text-xs text-base-content/60 mt-1">
-              <span>1 (sec)</span>
-              <span class="text-right">60 (sec)</span>
-            </div>
-          </div>
-        </div>
+
 
         <!-- Add Property Button -->
         <div class="pt-2">
@@ -1706,7 +1694,8 @@ async function saveAssistantConfig(btn) {
             },
             analytics: {
                 summary_prompt: document.getElementById('summary-prompt')?.value || '',
-                success_prompt: document.getElementById('success-prompt')?.value || ''
+                success_prompt: document.getElementById('success-prompt')?.value || '',
+                structured_prompt: document.getElementById('structured-prompt')?.value || ''
             }
         };
         
