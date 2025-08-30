@@ -400,8 +400,8 @@
                     </div>
                 </div>
                 
-                <!-- Hidden input for storing contact data -->
-                <input type="hidden" name="contacts_data" id="contacts-data" value="[]" />
+                    <!-- Hidden input for storing contact data -->
+    <input type="hidden" name="contacts_data" id="contacts-data" value="[]" />
                 
                 <!-- Address Book Modal -->
                 <div id="address-book-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
@@ -569,21 +569,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const lastName = document.querySelector('input[name="manual_last_name"]').value.trim();
 
         if (!phone) {
-            showValidationError('Phone number is required');
+            showToast('Phone number is required', 'error');
             return;
         }
 
         // Validate phone number
         const validationResult = validatePhoneNumber(phone);
         if (!validationResult.isValid) {
-            showValidationError(validationResult.error);
+            showToast(validationResult.error, 'error');
             return;
         }
 
         // Check for duplicates
         const isDuplicate = contacts.some(contact => contact.phone === validationResult.formatted);
         if (isDuplicate) {
-            showValidationError('This phone number is already in the list');
+            showToast('This phone number is already in the list', 'warning');
             return;
         }
 
@@ -609,6 +609,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Hide any existing validation error
         hideValidationError();
+        
+        // Show success message
+        showToast('Contact added successfully', 'success');
     });
 
     // Clear all contacts
@@ -617,13 +620,14 @@ document.addEventListener('DOMContentLoaded', function() {
             contacts = [];
             updateContactDisplay();
             updateContactsData();
+            showToast('All contacts cleared successfully', 'success');
         }
     });
 
     // Export contacts
     exportContactsBtn.addEventListener('click', function() {
         if (contacts.length === 0) {
-            alert('No contacts to export');
+            showToast('No contacts to export', 'warning');
             return;
         }
 
@@ -635,6 +639,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.download = 'campaign_contacts.csv';
         a.click();
         window.URL.revokeObjectURL(url);
+        showToast(`Exported ${contacts.length} contacts successfully`, 'success');
     });
 
     // Address book modal
@@ -643,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addressBookModal.style.display = 'block';
             loadAddressBookContacts();
         } else {
-            alert('Address book modal not found. Please check the page structure.');
+            showToast('Address book modal not found. Please check the page structure.', 'error');
         }
     });
 
@@ -717,9 +722,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (addressBookModal) {
                         addressBookModal.style.display = 'none';
                     }
-                    alert(`Added ${selectedContacts.length} contacts to campaign`);
+                    showToast(`Added ${selectedContacts.length} contacts to campaign`, 'success');
                 } else {
-                    alert('No new contacts selected or all contacts already exist');
+                    showToast('No new contacts selected or all contacts already exist', 'warning');
                 }
             }
         });
@@ -739,6 +744,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.download = 'contact_upload_template.csv';
         a.click();
         window.URL.revokeObjectURL(url);
+        showToast('CSV template downloaded successfully', 'success');
     });
 
     // Real-time phone validation
@@ -916,10 +922,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const csvContent = e.target.result;
                 const contacts = parseCSV(csvContent);
                 addContactsFromFile(contacts);
-            } catch (error) {
-                console.error('Error parsing file:', error);
-                alert('Error parsing file. Please check the format.');
-            }
+                    } catch (error) {
+            console.error('Error parsing file:', error);
+            showToast('Error parsing file. Please check the format.', 'error');
+        }
         };
         reader.readAsText(file);
     }
@@ -1002,7 +1008,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (newContacts.length > 0) {
-            alert(`Successfully added ${newContacts.length} contacts`);
+            showToast(`Successfully added ${newContacts.length} contacts`, 'success');
         }
     }
 
@@ -1323,6 +1329,9 @@ document.addEventListener('DOMContentLoaded', function() {
             errorDiv.style.display = 'none';
         }
     }
+
+    // Use global toast functions from base template
+    // These functions are already available: showToast, showSuccessToast, showErrorToast, showWarningToast, showInfoToast
 
     // Make removeContact globally available
     window.removeContact = removeContact;
