@@ -142,21 +142,12 @@ class PredefinedFunctions(TenantScopedModel):
     
     # Common predefined functions
     enable_end_call = models.BooleanField(default=False)
-    enable_dial_keypad = models.BooleanField(default=False)
     enable_transfer = models.BooleanField(default=False)
     enable_voicemail_detection = models.BooleanField(default=False)
     
-    # Forwarding configuration
-    forwarding_country = models.CharField(
-        max_length=2,
-        default='us',
-        help_text="ISO country code"
-    )
-    forwarding_number = models.CharField(
-        max_length=20,
-        blank=True,
-        help_text="Phone number for call forwarding"
-    )
+    # Integration tools
+    email_integration = models.BooleanField(default=False, help_text="Enable email sending capabilities")
+    sms_integration = models.BooleanField(default=False, help_text="Enable SMS sending capabilities")
 
     class Meta:
         indexes = [

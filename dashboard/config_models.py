@@ -280,20 +280,12 @@ class AnalyticsConfig(TenantScopedModel):
         default="You are an expert note-taker. You will be given a transcript of a call. Summarize the call in 2-3 sentences, if applicable.",
         help_text="Prompt for call summarization"
     )
-    summary_timeout_sec = models.PositiveIntegerField(default=10)
-    min_messages_for_summary = models.PositiveIntegerField(default=2)
     
     # Success evaluation
     success_prompt = models.TextField(
         default="You are an expert call evaluator. You will be given a transcript of a call and the system prompt of the AI participant. Determine if the call was successful based on the objectives inferred from the system prompt.",
         help_text="Prompt for success evaluation"
     )
-    success_rubric = models.CharField(
-        max_length=20,
-        choices=SuccessRubric.choices,
-        default=SuccessRubric.NUMERIC
-    )
-    success_timeout_sec = models.PositiveIntegerField(default=11)
     
     # Structured data extraction
     structured_prompt = models.TextField(

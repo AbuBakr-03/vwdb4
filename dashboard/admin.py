@@ -86,8 +86,8 @@ class TranscriberConfigAdmin(admin.ModelAdmin):
 
 @admin.register(AnalyticsConfig)
 class AnalyticsConfigAdmin(admin.ModelAdmin):
-    list_display = ('assistant', 'success_rubric', 'summary_timeout_sec')
-    list_filter = ('success_rubric',)
+    list_display = ('assistant',)
+    list_filter = ()
 
 
 @admin.register(PrivacyConfig)
@@ -122,8 +122,8 @@ class AssistantToolAdmin(admin.ModelAdmin):
 
 @admin.register(PredefinedFunctions)
 class PredefinedFunctionsAdmin(admin.ModelAdmin):
-    list_display = ('assistant', 'enable_end_call', 'enable_dial_keypad')
-    list_filter = ('enable_end_call', 'enable_dial_keypad')
+    list_display = ('assistant', 'enable_end_call', 'email_integration', 'sms_integration')
+    list_filter = ('enable_end_call', 'email_integration', 'sms_integration')
 
 
 @admin.register(CustomFunction)
