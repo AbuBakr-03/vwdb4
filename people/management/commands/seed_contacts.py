@@ -64,7 +64,7 @@ class Command(BaseCommand):
                     'first_name': 'John',
                     'last_name': 'Doe',
                     'email': 'john.doe@example.com',
-                    'phones': ['+1 555 123 4567'],
+                    'phone': '+1 555 123 4567',
                     'company': 'Tech Solutions Inc',
                     'segments': [segments[0].id, segments[1].id]  # VIP + New Lead
                 },
@@ -72,7 +72,7 @@ class Command(BaseCommand):
                     'first_name': 'Jane',
                     'last_name': 'Smith',
                     'email': 'jane.smith@example.com',
-                    'phones': ['+1 555 234 5678'],
+                    'phone': '+1 555 234 5678',
                     'company': 'Marketing Pro',
                     'segments': [segments[1].id]  # New Lead
                 },
@@ -80,7 +80,7 @@ class Command(BaseCommand):
                     'first_name': 'Ahmed',
                     'last_name': 'Al-Rashid',
                     'email': 'ahmed@dubai-corp.com',
-                    'phones': ['+971 50 123 4567'],
+                    'phone': '+971 50 123 4567',
                     'company': 'Dubai Corporation',
                     'segments': [segments[0].id, segments[2].id]  # VIP + Returning
                 },
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                     'first_name': 'Sarah',
                     'last_name': 'Johnson',
                     'email': 'sarah.j@saudi-tech.com',
-                    'phones': ['+966 50 987 6543'],
+                    'phone': '+966 50 987 6543',
                     'company': 'Saudi Tech Solutions',
                     'segments': [segments[2].id]  # Returning Customer
                 },
@@ -96,7 +96,7 @@ class Command(BaseCommand):
                     'first_name': 'Bob',
                     'last_name': 'Wilson',
                     'email': 'bob.wilson@acme.com',
-                    'phones': ['+1 555 345 6789'],
+                    'phone': '+1 555 345 6789',
                     'company': 'Acme Corporation',
                     'segments': [segments[3].id]  # Technical Support
                 },
@@ -104,7 +104,7 @@ class Command(BaseCommand):
                     'first_name': 'Alice',
                     'last_name': 'Brown',
                     'email': 'alice.brown@design.com',
-                    'phones': ['+44 20 7946 0958'],
+                    'phone': '+44 20 7946 0958',
                     'company': 'Design Studio UK',
                     'segments': [segments[1].id, segments[3].id]  # New Lead + Support
                 },
@@ -112,7 +112,7 @@ class Command(BaseCommand):
                     'first_name': 'Carlos',
                     'last_name': 'Rodriguez',
                     'email': 'carlos@spanish-tech.com',
-                    'phones': ['+34 91 123 4567'],
+                    'phone': '+34 91 123 4567',
                     'company': 'Spanish Tech Solutions',
                     'segments': [segments[2].id]  # Returning Customer
                 },
@@ -120,7 +120,7 @@ class Command(BaseCommand):
                     'first_name': 'Yuki',
                     'last_name': 'Tanaka',
                     'email': 'yuki.tanaka@japan-tech.com',
-                    'phones': ['+81 3 1234 5678'],
+                    'phone': '+81 3 1234 5678',
                     'company': 'Japan Technology Corp',
                     'segments': [segments[0].id]  # VIP Customer
                 }
@@ -134,7 +134,7 @@ class Command(BaseCommand):
                         'first_name': contact_data['first_name'],
                         'last_name': contact_data['last_name'],
                         'email': contact_data['email'],
-                        'phones': contact_data['phones'],
+                        'phone': contact_data['phone'],
                         'company': contact_data['company'],
                         'segments': contact_data['segments'],
                         'tenant_id': client_id,

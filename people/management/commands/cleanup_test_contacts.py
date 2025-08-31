@@ -26,7 +26,17 @@ class Command(BaseCommand):
             contacts = Contact.objects.filter(
                 external_id__startswith='TEST_'
             ) | Contact.objects.filter(
-                phones__contains=['+81', '+34', '+44', '+1', '+966', '+971']
+                phone__contains='+81'
+            ) | Contact.objects.filter(
+                phone__contains='+34'
+            ) | Contact.objects.filter(
+                phone__contains='+44'
+            ) | Contact.objects.filter(
+                phone__contains='+1'
+            ) | Contact.objects.filter(
+                phone__contains='+966'
+            ) | Contact.objects.filter(
+                phone__contains='+971'
             )
             action = 'delete test/international'
 

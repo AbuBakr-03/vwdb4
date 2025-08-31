@@ -26,6 +26,7 @@ class Contact(models.Model):
         indexes = [
             models.Index(fields=['tenant_id', 'external_id']),
             models.Index(fields=['tenant_id', 'email']),
+            models.Index(fields=['tenant_id', 'phone']),
         ]
         constraints = [
             # Ensure unique external_id per tenant
@@ -39,6 +40,12 @@ class Contact(models.Model):
                 fields=['tenant_id', 'email'],
                 name='unique_tenant_email',
                 condition=models.Q(email__isnull=False) & ~models.Q(email='')
+            ),
+            # Ensure unique phone per tenant
+            models.UniqueConstraint(
+                fields=['tenant_id', 'phone'],
+                name='unique_tenant_phone',
+                condition=models.Q(phone__isnull=False) & ~models.Q(phone='')
             ),
         ]
     

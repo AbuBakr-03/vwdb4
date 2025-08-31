@@ -3,6 +3,11 @@
 
 {% block title %}Create Campaign - Watchtower{% endblock %}
 
+{% block extra_head %}
+<!-- XLSX library for Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="space-y-6">
     <!-- Page header -->
@@ -292,14 +297,15 @@
                          <label class="label">
                              <span class="label-text font-medium">Upload CSV/Excel</span>
                          </label>
-                         <div class="border-2 border-dashed border-base-300 rounded-lg p-3 text-center hover:border-[#20D5F9]/50 transition-colors">
-                             <svg class="w-8 h-8 mx-auto text-base-content/40 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                             </svg>
-                             <input type="file" id="contact-file-input" accept=".csv,.xlsx,.xls"
-                                    class="file-input file-input-bordered file-input-sm w-full" />
-                             <p class="text-xs text-base-content/50 mt-1">CSV, XLSX, XLS (Max 10MB)</p>
-                         </div>
+                                                 <div class="border-2 border-dashed border-base-300 rounded-lg p-3 text-center hover:border-[#20D5F9]/50 transition-colors">
+                            <svg class="w-8 h-8 mx-auto text-base-content/40 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <input type="file" id="contact-file-input" accept=".csv,.xlsx,.xls"
+                                   class="file-input file-input-bordered file-input-sm w-full" />
+                            <p class="text-xs text-base-content/50 mt-1">CSV, XLSX, XLS (Max 10MB)</p>
+                            <p class="text-xs text-base-content/40 mt-1">Expected columns: phone_number, first_name, last_name, email, external_id</p>
+                        </div>
                      </div>
                     
                                          <!-- Address Book -->
@@ -345,24 +351,31 @@
                 <!-- Manual Entry Form (Hidden by default) -->
                 <div id="manual-entry-form" class="hidden mb-4">
                     <div class="bg-base-200 rounded-lg p-4">
-                                                <div class="flex gap-2 mb-3">
+                                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
                             <input type="tel" name="manual_phone" placeholder="30123456"
-                                   class="input input-bordered input-sm flex-1" 
+                                   class="input input-bordered input-sm" 
                                    pattern="[0-9]+"
                                    title="Enter 8-digit Bahraini phone number (e.g., 30123456, 66123456)" />
                             <input type="text" name="manual_first_name" placeholder="First name"
-                                   class="input input-bordered input-sm flex-1" />
+                                   class="input input-bordered input-sm" />
                             <input type="text" name="manual_last_name" placeholder="Last name"
-                                   class="input input-bordered input-sm flex-1" />
+                                   class="input input-bordered input-sm" />
+                            <input type="text" name="manual_external_id" placeholder="External ID (optional)"
+                                   class="input input-bordered input-sm" />
+                        </div>
+                        <div class="flex justify-center">
                             <button type="button" id="add-contact-btn" class="btn btn-sm bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
-                                Add
+                                Add Contact
                             </button>
                         </div>
                         <div class="text-xs text-base-content/50 mb-2">
                             <strong>Format:</strong> 8-digit Bahraini number starting with 3, 6, 7, or 9 (e.g., 30123456, 66123456, 77123456, 99123456)
+                        </div>
+                        <div class="text-xs text-base-content/40 mb-2">
+                            <strong>External ID:</strong> Optional identifier for your CRM system, customer database, or tracking purposes
                         </div>
                     </div>
                 </div>
@@ -402,6 +415,38 @@
                     <!-- Hidden input for storing contact data -->
     <input type="hidden" name="contacts_data" id="contacts-data" value="[]" />
                 
+                <!-- Export Options Modal -->
+                <div id="export-options-modal" class="modal">
+                    <div class="modal-box w-96 bg-base-100 shadow-xl rounded-lg p-6 mx-auto">
+                        <h3 class="font-bold text-lg mb-4">Export Contacts</h3>
+                        <p class="text-base-content/70 mb-4">
+                            Choose your preferred export format for <span class="font-semibold text-primary" id="export-contact-count">0</span> contacts:
+                        </p>
+                        
+                        <div class="space-y-3">
+                            <button type="button" id="export-csv-btn" class="btn btn-outline w-full border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Export as CSV
+                            </button>
+                            
+                            <button type="button" id="export-excel-btn" class="btn btn-outline w-full border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3 3m0 0l-3-3m3 3V9"></path>
+                                </svg>
+                                Export as Excel (.xlsx)
+                            </button>
+                        </div>
+                        
+                        <div class="modal-action">
+                            <button type="button" id="close-export-modal-btn" class="btn btn-ghost btn-sm hover:bg-[#20D5F9]/20 hover:text-[#20D5F9] transition-all duration-300">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Address Book Modal -->
                 <div id="address-book-modal" class="modal">
                     <div class="modal-box w-11/12 max-w-6xl bg-base-100 shadow-xl rounded-lg p-6 mx-auto">
@@ -533,6 +578,45 @@
     z-index: 9999 !important;
 }
 
+/* Export button disabled state */
+.btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Export modal specific styles */
+#export-options-modal .modal-box {
+    max-width: 24rem;
+}
+
+/* Input validation styles */
+.input-error {
+    border-color: hsl(var(--er)) !important;
+    box-shadow: 0 0 0 1px hsl(var(--er)) !important;
+}
+
+.input-success {
+    border-color: hsl(var(--su)) !important;
+    box-shadow: 0 0 0 1px hsl(var(--su)) !important;
+}
+
+.input-warning {
+    border-color: hsl(var(--wa)) !important;
+    box-shadow: 0 0 0 1px hsl(var(--wa)) !important;
+}
+
+/* Duplicate warning styles */
+#duplicate-warning {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+#duplicate-warning span {
+    line-height: 1.2;
+    max-width: 100%;
+}
 
 </style>
 
@@ -557,6 +641,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const addressBookModal = document.getElementById('address-book-modal');
     const closeAddressBookBtn = document.getElementById('close-address-book-btn');
     const addressBookSearch = document.getElementById('address-book-search');
+    
+    // Export modal elements
+    const exportOptionsModal = document.getElementById('export-options-modal');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    const exportExcelBtn = document.getElementById('export-excel-btn');
+    const closeExportModalBtn = document.getElementById('close-export-modal-btn');
     const addressBookSegmentFilter = document.getElementById('address-book-segment-filter');
     const addressBookContacts = document.getElementById('address-book-contacts');
     const selectAllBtn = document.getElementById('select-all-btn');
@@ -568,6 +658,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorDetails = document.getElementById('error-details');
     const duplicateDetails = document.getElementById('duplicate-details');
 
+    // Clean up any existing duplicates on page load
+    removeDuplicateContacts();
+    
     // Manual entry toggle
     showManualEntryBtn.addEventListener('click', function() {
         manualEntryForm.classList.toggle('hidden');
@@ -597,6 +690,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const phone = document.querySelector('input[name="manual_phone"]').value.trim();
         const firstName = document.querySelector('input[name="manual_first_name"]').value.trim();
         const lastName = document.querySelector('input[name="manual_last_name"]').value.trim();
+        const externalId = document.querySelector('input[name="manual_external_id"]').value.trim();
 
         if (!phone) {
             showToast('Phone number is required', 'error');
@@ -610,14 +704,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Check for duplicates - check both phone AND name combination
+        // Check for phone duplicates first (most important)
         const isDuplicate = contacts.some(contact => 
-            contact.phone === validationResult.formatted && 
-            contact.first_name === firstName && 
-            contact.last_name === lastName
+            contact.phone === validationResult.formatted
         );
         if (isDuplicate) {
-            showToast('This contact (same name and phone) is already in the list', 'warning');
+            showToast('A contact with this phone number is already in the list', 'warning');
             return;
         }
 
@@ -627,7 +719,8 @@ document.addEventListener('DOMContentLoaded', function() {
             first_name: firstName,
             last_name: lastName,
             email: '',
-            company: '',
+            external_id: externalId,
+            company: externalId, // Keep for backward compatibility
             type: 'person',
             country_code: validationResult.countryCode
         };
@@ -640,6 +733,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('input[name="manual_phone"]').value = '';
         document.querySelector('input[name="manual_first_name"]').value = '';
         document.querySelector('input[name="manual_last_name"]').value = '';
+        document.querySelector('input[name="manual_external_id"]').value = '';
         
         // Hide any existing validation error
         hideValidationError();
@@ -665,15 +759,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const csvContent = generateCSV(contacts);
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'campaign_contacts.csv';
-        a.click();
-        window.URL.revokeObjectURL(url);
-        showToast(`Exported ${contacts.length} contacts successfully`, 'success');
+        // Show export options
+        showExportOptions();
     });
 
     // Address book modal
@@ -729,6 +816,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Export modal event listeners
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', function() {
+            exportContactsAsCSV();
+            if (exportOptionsModal) {
+                exportOptionsModal.classList.remove('modal-open');
+            }
+        });
+    }
+    
+    if (exportExcelBtn) {
+        exportExcelBtn.addEventListener('click', function() {
+            exportContactsAsExcel();
+            if (exportOptionsModal) {
+                exportOptionsModal.classList.remove('modal-open');
+            }
+        });
+    }
+    
+    if (closeExportModalBtn) {
+        closeExportModalBtn.addEventListener('click', function() {
+            if (exportOptionsModal) {
+                exportOptionsModal.classList.remove('modal-open');
+            }
+        });
+    }
+    
+    // Close export modal when clicking outside
+    if (exportOptionsModal) {
+        exportOptionsModal.addEventListener('click', function(e) {
+            if (e.target === exportOptionsModal) {
+                exportOptionsModal.classList.remove('modal-open');
+            }
+        });
+    }
+
     // Address book search and filters
     if (addressBookSearch) {
         addressBookSearch.addEventListener('input', filterAddressBookContacts);
@@ -775,15 +898,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
-                    // Check for duplicates
-                    const isDuplicate = contacts.some(c => 
-                        c.phone === phone && 
-                        c.first_name === contactData.first_name && 
-                        c.last_name === contactData.last_name
-                    );
+                    // Check for phone duplicates first (most important)
+                    const isDuplicate = contacts.some(c => c.phone === phone);
 
                     if (isDuplicate) {
-                        showToast(`Contact ${contactData.display_name} is already in the campaign`, 'warning');
+                        showToast(`A contact with phone number ${phone} is already in the campaign`, 'warning');
                         return;
                     }
 
@@ -794,7 +913,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         first_name: contactData.first_name || '',
                         last_name: contactData.last_name || '',
                         email: contactData.email || '',
-                        company: contactData.company || '',
+                        external_id: contactData.external_id || contactData.company || '',
+                        company: contactData.external_id || contactData.company || '', // Keep for backward compatibility
                         type: 'person',
                         country_code: phone.startsWith('+') ? phone.split(' ')[0] : '+1',
                         source: 'address_book',
@@ -842,7 +962,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast('CSV template downloaded successfully', 'success');
     });
 
-    // Real-time phone validation
+    // Real-time phone validation and duplicate checking
     const phoneInput = document.querySelector('input[name="manual_phone"]');
     phoneInput.addEventListener('input', function() {
         const phone = this.value.trim();
@@ -852,19 +972,90 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.remove('input-error');
                 this.classList.add('input-success');
                 hideValidationError();
+                
+                // Check for duplicates in real-time
+                const isDuplicate = contacts.some(contact => contact.phone === validationResult.formatted);
+                if (isDuplicate) {
+                    // Add a subtle warning class
+                    this.classList.add('input-warning');
+                    // Show a small warning below the input
+                    showDuplicateWarning('This phone number is already in your contacts list');
+                } else {
+                    this.classList.remove('input-warning');
+                    hideDuplicateWarning();
+                }
             } else {
-                this.classList.remove('input-success');
+                this.classList.remove('input-success', 'input-warning');
                 this.classList.add('input-error');
                 showValidationError(validationResult.error);
+                hideDuplicateWarning();
             }
         } else {
-            this.classList.remove('input-error', 'input-success');
+            this.classList.remove('input-error', 'input-success', 'input-warning');
             hideValidationError();
+            hideDuplicateWarning();
         }
     });
 
     // Functions
+    function removeDuplicateContacts() {
+        // Remove duplicates based on phone number, keeping the first occurrence
+        const seenPhones = new Set();
+        const originalLength = contacts.length;
+        contacts = contacts.filter(contact => {
+            if (seenPhones.has(contact.phone)) {
+                return false; // Remove duplicate
+            }
+            seenPhones.add(contact.phone);
+            return true; // Keep first occurrence
+        });
+        
+        // If duplicates were removed, show a message
+        if (contacts.length < originalLength) {
+            const removedCount = originalLength - contacts.length;
+            showToast(`Removed ${removedCount} duplicate phone number(s)`, 'warning');
+        }
+    }
+    
+    function showDuplicateWarning(message) {
+        // Remove any existing duplicate warning
+        hideDuplicateWarning();
+        
+        // Create and show duplicate warning
+        const warningDiv = document.createElement('div');
+        warningDiv.id = 'duplicate-warning';
+        warningDiv.className = 'text-warning text-xs mt-1 flex items-start gap-1 break-words';
+        warningDiv.innerHTML = `
+            <svg class="w-3 h-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="break-words">${message}</span>
+        `;
+        
+        // Find the phone input field and insert warning in the row below it
+        const phoneInput = document.querySelector('input[name="manual_phone"]');
+        if (phoneInput) {
+            // Find the parent form group or row container
+            const formGroup = phoneInput.closest('.form-control') || phoneInput.closest('.form-group') || phoneInput.parentNode;
+            
+            // Insert the warning after the form group
+            if (formGroup && formGroup.parentNode) {
+                formGroup.parentNode.insertBefore(warningDiv, formGroup.nextSibling);
+            }
+        }
+    }
+    
+    function hideDuplicateWarning() {
+        const warningDiv = document.getElementById('duplicate-warning');
+        if (warningDiv) {
+            warningDiv.remove();
+        }
+    }
+    
     function updateContactDisplay() {
+        // Remove any existing duplicates before displaying
+        removeDuplicateContacts();
+        
         if (contacts.length === 0) {
             contactList.innerHTML = `
                 <div class="text-center text-base-content/50 py-6">
@@ -877,23 +1068,40 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         } else {
             const contactsHtml = contacts.map(contact => `
-                <div class="flex items-center justify-between bg-base-100 p-2 rounded border border-base-300 mb-2" data-contact-id="${contact.id}">
-                    <div class="flex-1 min-w-0">
-                        <div class="font-medium text-sm truncate">${contact.first_name} ${contact.last_name}</div>
-                        <div class="text-xs text-base-content/70 font-mono">${contact.phone}</div>
+                <div class="bg-base-100 p-3 rounded-lg border border-base-300 hover:border-primary/30 transition-colors relative" data-contact-id="${contact.id}">
+                    <div class="text-center">
+                        <div class="font-medium text-sm mb-1 truncate">${contact.first_name} ${contact.last_name}</div>
+                        <div class="text-xs text-base-content/70 font-mono mb-2">${contact.phone}</div>
+                        ${contact.external_id ? `<div class="text-xs text-base-content/50">ID: ${contact.external_id}</div>` : ''}
+                        <button type="button" class="btn btn-ghost btn-xs text-error hover:bg-error/10 absolute top-2 right-2" onclick="removeContact(${contact.id})">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
                     </div>
-                    <button type="button" class="btn btn-ghost btn-xs text-error hover:bg-error/10 ml-2" onclick="removeContact(${contact.id})">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                    </button>
                 </div>
             `).join('');
             
-            contactList.innerHTML = contactsHtml;
+            contactList.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">${contactsHtml}</div>`;
         }
         
         contactCount.textContent = contacts.length;
+        
+        // Update export button state
+        updateExportButtonState();
+    }
+
+    function updateExportButtonState() {
+        // Enable/disable export button based on whether there are contacts
+        if (exportContactsBtn) {
+            if (contacts.length === 0) {
+                exportContactsBtn.disabled = true;
+                exportContactsBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                exportContactsBtn.disabled = false;
+                exportContactsBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
     }
 
     function updateContactsData() {
@@ -908,13 +1116,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function generateCSV(contacts) {
-        const headers = ['phone', 'first_name', 'last_name', 'email', 'company'];
+        const headers = ['phone_number', 'first_name', 'last_name', 'email', 'external_id'];
         const csvRows = [headers.join(',')];
         
         contacts.forEach(contact => {
             const row = headers.map(header => {
-                const value = contact[header] || '';
-                return `"${value}"`;
+                let value = '';
+                if (header === 'phone_number') {
+                    // Handle both 'phone' and 'phone_number' fields for compatibility
+                    value = contact.phone || contact.phone_number || '';
+                } else if (header === 'external_id') {
+                    // Map external_id from company field for backward compatibility
+                    value = contact.external_id || contact.company || '';
+                } else {
+                    value = contact[header] || '';
+                }
+                // Escape quotes and wrap in quotes to handle commas and special characters
+                const escapedValue = String(value).replace(/"/g, '""');
+                return `"${escapedValue}"`;
             });
             csvRows.push(row.join(','));
         });
@@ -923,13 +1142,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function generateCSVTemplate() {
-        const headers = ['phone', 'first_name', 'last_name', 'email', 'company'];
+        const headers = ['phone_number', 'first_name', 'last_name', 'email', 'external_id'];
         const examples = [
-            ['30123456', 'Ahmed', 'Al-Rashid', 'ahmed@example.com', 'Tech Corp'],
-            ['66123456', 'Fatima', 'Al-Sayed', 'fatima@example.com', 'Design Inc'],
-            ['77123456', 'Omar', 'Al-Khalil', 'omar@example.com', 'Dubai Corp'],
-            ['99123456', 'Layla', 'Al-Mahmoud', 'layla@example.com', 'Saudi Tech'],
-            ['30123457', 'Hassan', 'Al-Nasser', 'hassan@example.com', 'Bahrain Solutions']
+            ['30123456', 'Ahmed', 'Al-Rashid', 'ahmed@example.com', 'CUST001'],
+            ['66123456', 'Fatima', 'Al-Sayed', 'fatima@example.com', 'CUST002'],
+            ['77123456', 'Omar', 'Al-Khalil', 'omar@example.com', 'CUST003'],
+            ['99123456', 'Layla', 'Al-Mahmoud', 'layla@example.com', 'CUST004'],
+            ['30123457', 'Hassan', 'Al-Nasser', 'hassan@example.com', 'CUST005']
         ];
         
         const csvRows = [headers.join(',')];
@@ -939,6 +1158,100 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         return csvRows.join('\n');
+    }
+
+    // Export functions
+    function showExportOptions() {
+        if (exportOptionsModal) {
+            // Update the contact count in the modal
+            const exportContactCount = document.getElementById('export-contact-count');
+            if (exportContactCount) {
+                exportContactCount.textContent = contacts.length;
+            }
+            
+            exportOptionsModal.classList.add('modal-open');
+        }
+    }
+
+    function exportContactsAsCSV() {
+        if (contacts.length === 0) {
+            showToast('No contacts to export', 'warning');
+            return;
+        }
+
+        // Ensure contacts are properly formatted for export
+        const formattedContacts = contacts.map(contact => ({
+            phone_number: contact.phone || contact.phone_number || '',
+            first_name: contact.first_name || '',
+            last_name: contact.last_name || '',
+            email: contact.email || '',
+            external_id: contact.external_id || contact.company || ''
+        }));
+
+        const csvContent = generateCSV(formattedContacts);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `campaign_contacts_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        showToast(`Exported ${contacts.length} contacts as CSV successfully`, 'success');
+    }
+
+    function exportContactsAsExcel() {
+        if (contacts.length === 0) {
+            showToast('No contacts to export', 'warning');
+            return;
+        }
+
+        // Check if XLSX library is available
+        if (typeof XLSX === 'undefined') {
+            showToast('Excel export library not loaded. Please try CSV export instead.', 'error');
+            return;
+        }
+
+        try {
+            // Ensure contacts are properly formatted for export
+            const formattedContacts = contacts.map(contact => ({
+                phone_number: contact.phone || contact.phone_number || '',
+                first_name: contact.first_name || '',
+                last_name: contact.last_name || '',
+                email: contact.email || '',
+                external_id: contact.external_id || contact.company || ''
+            }));
+
+            // Create workbook and worksheet
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.json_to_sheet(formattedContacts);
+
+            // Set column widths
+            const columnWidths = [
+                { wch: 15 }, // phone_number
+                { wch: 15 }, // first_name
+                { wch: 15 }, // last_name
+                { wch: 25 }, // email
+                { wch: 20 }  // external_id
+            ];
+            worksheet['!cols'] = columnWidths;
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Campaign Contacts');
+
+            // Generate Excel file
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `campaign_contacts_${new Date().toISOString().split('T')[0]}.xlsx`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showToast(`Exported ${contacts.length} contacts as Excel successfully`, 'success');
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+            showToast('Error exporting to Excel. Please try CSV export instead.', 'error');
+        }
     }
 
     function loadAddressBookContacts() {
@@ -1121,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 ${isDuplicate ? '<span class="badge badge-warning badge-xs ml-2">Duplicate</span>' : ''}
                             </div>
                             <div class="text-sm text-base-content/70">${phone}</div>
-                            <div class="text-xs text-base-content/50">${contact.company || ''}</div>
+                            <div class="text-xs text-base-content/50">${contact.external_id || contact.company || ''}</div>
                             <div class="text-xs text-base-content/40">${contact.email || ''}</div>
                         </div>
                     </div>
@@ -1250,13 +1563,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const errors = [];
 
         fileContacts.forEach((contact, index) => {
-            if (!contact.phone) {
+            // Handle both 'phone' and 'phone_number' columns (like in people module)
+            let phone = contact.phone || contact.phone_number || '';
+            
+            if (!phone) {
                 errors.push(`Row ${index + 2}: Missing phone number`);
                 return;
             }
 
             // Validate phone number
-            const validationResult = validatePhoneNumber(contact.phone);
+            const validationResult = validatePhoneNumber(phone);
             if (!validationResult.isValid) {
                 errors.push(`Row ${index + 2}: ${validationResult.error}`);
                 return;
@@ -1275,7 +1591,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 first_name: contact.first_name || '',
                 last_name: contact.last_name || '',
                 email: contact.email || '',
-                company: contact.company || '',
+                external_id: contact.external_id || contact.company || '',
+                company: contact.external_id || contact.company || '', // Keep for backward compatibility
                 type: 'person',
                 country_code: validationResult.countryCode
             };
@@ -1387,6 +1704,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize
     updateContactDisplay();
     updateContactsData();
+    updateExportButtonState();
+    
+    // Ensure export button is properly initialized
+    if (exportContactsBtn) {
+        exportContactsBtn.disabled = contacts.length === 0;
+    }
 
 
 

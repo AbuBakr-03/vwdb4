@@ -90,32 +90,60 @@ def contact_create(request):
             
             # Check for duplicates before creating
             tenant_id = data.get('tenant_id', 'zain_bh')
-            existing_duplicates = Contact.find_duplicates(
-                first_name=data.get('first_name', ''),
-                last_name=data.get('last_name', ''),
-                email=data.get('email', ''),
-                external_id=data.get('external_id', ''),
-                phone=data.get('phone'),
-                tenant_id=tenant_id
-            )
+            phone = data.get('phone', '').strip()
+            first_name = data.get('first_name', '').strip()
+            last_name = data.get('last_name', '').strip()
+            email = data.get('email', '').strip()
+            external_id = data.get('external_id', '').strip()
             
-            if existing_duplicates.exists():
-                duplicate = existing_duplicates.first()
-                duplicate_reasons = []
-                
-                if data.get('email') and duplicate.email == data.get('email'):
-                    duplicate_reasons.append(f"email '{data.get('email')}'")
-                if data.get('external_id') and duplicate.external_id == data.get('external_id'):
-                    duplicate_reasons.append(f"external ID '{data.get('external_id')}'")
-                if data.get('first_name') and data.get('last_name') and duplicate.first_name.lower() == data.get('first_name').lower() and duplicate.last_name.lower() == data.get('last_name').lower():
-                    duplicate_reasons.append(f"name '{data.get('first_name')} {data.get('last_name')}'")
-                if data.get('phone') and duplicate.phone == data.get('phone'):
-                    duplicate_reasons.append(f"phone '{data.get('phone')}'")
-                
-                return JsonResponse({
-                    'success': False,
-                    'message': f'Contact already exists with {", ".join(duplicate_reasons)}'
-                }, status=400)
+            # Check for phone duplicates first (most important)
+            if phone:
+                existing_phone = Contact.objects.filter(
+                    tenant_id=tenant_id,
+                    phone=phone
+                ).first()
+                if existing_phone:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Contact already exists with phone number "{phone}" ({existing_phone.display_name})'
+                    }, status=400)
+            
+            # Check for email duplicates
+            if email:
+                existing_email = Contact.objects.filter(
+                    tenant_id=tenant_id,
+                    email=email
+                ).first()
+                if existing_email:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Contact already exists with email "{email}" ({existing_email.display_name})'
+                    }, status=400)
+            
+            # Check for external_id duplicates
+            if external_id:
+                existing_external_id = Contact.objects.filter(
+                    tenant_id=tenant_id,
+                    external_id=external_id
+                ).first()
+                if existing_external_id:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Contact already exists with external ID "{external_id}" ({existing_external_id.display_name})'
+                    }, status=400)
+            
+            # Check for name duplicates (only if both first and last names are provided)
+            if first_name and last_name:
+                existing_name = Contact.objects.filter(
+                    tenant_id=tenant_id,
+                    first_name__iexact=first_name,
+                    last_name__iexact=last_name
+                ).first()
+                if existing_name:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Contact already exists with name "{first_name} {last_name}" ({existing_name.phone})'
+                    }, status=400)
             
             # Create contact
             contact = Contact.objects.create(
@@ -231,7 +259,7 @@ def contacts_api(request):
                 'company': '',  # Removed
                 'contact_person': '',  # Not used for person type
                 'party_type': 'person',  # All contacts are persons in current model
-                'phones': contact.phones or [],
+                'phones': [contact.phone] if contact.phone else [],
                 'external_id': contact.external_id or '',
                 'segments': [],  # Removed
                 'display_name': contact.display_name,
@@ -296,39 +324,52 @@ def contact_import_csv(request):
                         errors.append(f"Row {row_num}: Phone number is required")
                         continue
                     
-                    # Check for duplicates before creating using the model method
+                    # Check for duplicates before creating
                     first_name = row.get('first_name', '').strip()
                     last_name = row.get('last_name', '').strip()
                     email = row.get('email', '').strip()
                     external_id = row.get('external_id', '').strip()
                     tenant_id = row.get('tenant_id', 'zain_bh')
                     
-                    # Use the model's duplicate finding method
-                    existing_duplicates = Contact.find_duplicates(
-                        first_name=first_name,
-                        last_name=last_name,
-                        email=email,
-                        external_id=external_id,
-                        phone=phone,
-                        tenant_id=tenant_id
-                    )
+                    # Check for phone duplicates first (most important)
+                    if phone:
+                        existing_phone = Contact.objects.filter(
+                            tenant_id=tenant_id,
+                            phone=phone
+                        ).first()
+                        if existing_phone:
+                            errors.append(f"Row {row_num}: Contact already exists with phone number '{phone}' ({existing_phone.display_name})")
+                            continue
                     
-                    if existing_duplicates.exists():
-                        # Get the first duplicate to show details
-                        duplicate = existing_duplicates.first()
-                        duplicate_reasons = []
-                        
-                        if email and duplicate.email == email:
-                            duplicate_reasons.append(f"email '{email}'")
-                        if external_id and duplicate.external_id == external_id:
-                            duplicate_reasons.append(f"external ID '{external_id}'")
-                        if first_name and last_name and duplicate.first_name.lower() == first_name.lower() and duplicate.last_name.lower() == last_name.lower():
-                            duplicate_reasons.append(f"name '{first_name} {last_name}'")
-                        if phone and duplicate.phone == phone:
-                            duplicate_reasons.append(f"phone '{phone}'")
-                        
-                        if duplicate_reasons:
-                            errors.append(f"Row {row_num}: Contact already exists with {', '.join(duplicate_reasons)}")
+                    # Check for email duplicates
+                    if email:
+                        existing_email = Contact.objects.filter(
+                            tenant_id=tenant_id,
+                            email=email
+                        ).first()
+                        if existing_email:
+                            errors.append(f"Row {row_num}: Contact already exists with email '{email}' ({existing_email.display_name})")
+                            continue
+                    
+                    # Check for external_id duplicates
+                    if external_id:
+                        existing_external_id = Contact.objects.filter(
+                            tenant_id=tenant_id,
+                            external_id=external_id
+                        ).first()
+                        if existing_external_id:
+                            errors.append(f"Row {row_num}: Contact already exists with external ID '{external_id}' ({existing_external_id.display_name})")
+                            continue
+                    
+                    # Check for name duplicates (only if both first and last names are provided)
+                    if first_name and last_name:
+                        existing_name = Contact.objects.filter(
+                            tenant_id=tenant_id,
+                            first_name__iexact=first_name,
+                            last_name__iexact=last_name
+                        ).first()
+                        if existing_name:
+                            errors.append(f"Row {row_num}: Contact already exists with name '{first_name} {last_name}' ({existing_name.phone})")
                             continue
                     
                     # Create contact

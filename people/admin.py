@@ -28,7 +28,7 @@ class ContactAdmin(admin.ModelAdmin):
             'fields': ('external_id', 'email')
         }),
         ('Contact Details', {
-            'fields': ('first_name', 'last_name', 'phones')
+            'fields': ('first_name', 'last_name', 'phone')
         }),
         ('Metadata', {
             'fields': ('tenant_id', 'created_by')
