@@ -8,17 +8,15 @@ class ContactAdmin(admin.ModelAdmin):
     """Admin interface for Contact model."""
     
     list_display = [
-        'display_name', 'email', 'primary_phone_display', 
-        'company', 'segments_display', 'tenant_id', 'created_at'
+        'display_name', 'email', 'primary_phone_display', 'external_id', 'tenant_id', 'created_at'
     ]
     
     list_filter = [
-        'tenant_id', 'created_at', 'segments'
+        'tenant_id', 'created_at'
     ]
     
     search_fields = [
-        'first_name', 'last_name', 'email', 'external_id', 
-        'company', 'tenant_id'
+        'first_name', 'last_name', 'email', 'external_id', 'tenant_id'
     ]
     
     readonly_fields = [
@@ -27,13 +25,10 @@ class ContactAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('external_id', 'email', 'timezone')
+            'fields': ('external_id', 'email')
         }),
         ('Contact Details', {
-            'fields': ('first_name', 'last_name', 'company')
-        }),
-        ('Contact Information', {
-            'fields': ('phones', 'segments')
+            'fields': ('first_name', 'last_name', 'phones')
         }),
         ('Metadata', {
             'fields': ('tenant_id', 'created_by')
@@ -56,26 +51,6 @@ class ContactAdmin(admin.ModelAdmin):
             return format_html('<span class="font-mono">{}</span>', phone)
         return '-'
     primary_phone_display.short_description = 'Primary Phone'
-    
-
-    
-    def segments_display(self, obj):
-        """Display segments as colored badges."""
-        if not obj.segments:
-            return '-'
-        
-        segment_names = []
-        for segment_id in obj.segments:
-            try:
-                segment = Segment.objects.get(id=segment_id)
-                segment_names.append(
-                    f'<span class="badge {segment.color} badge-sm">{segment.name}</span>'
-                )
-            except Segment.DoesNotExist:
-                pass
-        
-        return format_html(' '.join(segment_names)) if segment_names else '-'
-    segments_display.short_description = 'Segments'
     
     def get_queryset(self, request):
         """Filter contacts by tenant if user has tenant restrictions."""

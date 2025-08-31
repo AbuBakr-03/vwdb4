@@ -64,8 +64,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================================
     
     function getCSRFToken() {
+        // Try to get CSRF token from form input first
         const token = document.querySelector('[name=csrfmiddlewaretoken]');
-        return token ? token.value : '';
+        if (token) {
+            console.log('CSRF token found in form input:', token.value ? 'Yes' : 'No');
+            return token.value;
+        }
+        
+        // Fallback to meta tag
+        const metaToken = document.querySelector('meta[name="csrf-token"]');
+        if (metaToken) {
+            console.log('CSRF token found in meta tag:', metaToken.getAttribute('content') ? 'Yes' : 'No');
+            return metaToken.getAttribute('content');
+        }
+        
+        console.warn('No CSRF token found!');
+        return '';
     }
     
     function showMessage(message, type = 'info') {

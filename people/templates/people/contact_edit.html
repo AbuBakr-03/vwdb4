@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Contact - Address Book{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-base-content mb-2">Edit Contact</h1>
+        <p class="text-base-content/70">Update contact information</p>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="space-y-6">
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Contact Information
+                </h3>
+                
+                <form id="contact-form" class="space-y-6">
+                    <!-- Contact Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">First Name</span>
+                            </label>
+                            <input type="text" name="first_name" value="{{ contact.first_name }}" 
+                                   placeholder="Enter first name" 
+                                   class="input input-bordered w-full" />
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Last Name</span>
+                            </label>
+                            <input type="text" name="last_name" value="{{ contact.last_name }}" 
+                                   placeholder="Enter last name" 
+                                   class="input input-bordered w-full" />
+                        </div>
+                    </div>
+
+                    <!-- Common Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">External ID</span>
+                            </label>
+                            <input type="text" name="external_id" value="{{ contact.external_id }}" 
+                                   placeholder="CRM/HRIS ID" 
+                                   class="input input-bordered w-full" />
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/70">Optional external identifier</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Email</span>
+                            </label>
+                            <input type="email" name="email" value="{{ contact.email }}" 
+                                   placeholder="Enter email address" 
+                                   class="input input-bordered w-full" />
+                        </div>
+                    </div>
+
+                    <!-- Phone Numbers -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Phone Numbers</span>
+                        </label>
+                        <div id="phone-numbers" class="space-y-2">
+                            {% if contact.phones %}
+                                {% for phone in contact.phones %}
+                                <div class="flex gap-2">
+                                    <input type="tel" name="phones[]" value="{{ phone }}" 
+                                           placeholder="+1234567890" 
+                                           class="input input-bordered flex-1" />
+                                    <button type="button" class="btn btn-square btn-outline btn-sm" onclick="removePhone(this)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="flex gap-2">
+                                    <input type="tel" name="phones[]" placeholder="+1234567890" 
+                                           class="input input-bordered flex-1" />
+                                    <button type="button" class="btn btn-square btn-outline btn-sm" onclick="removePhone(this)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm mt-2" onclick="addPhone()">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Add Phone Number
+                        </button>
+                    </div>
+
+                    <!-- Tenant ID (Read-only) -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Tenant ID</span>
+                        </label>
+                        <input type="text" name="tenant_id" value="{{ contact.tenant_id }}" 
+                               class="input input-bordered w-full" readonly />
+                        <label class="label">
+                            <span class="label-text-alt text-base-content/70">Tenant ID cannot be changed</span>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex gap-4 pt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Update Contact
+                        </button>
+                        
+                        <a href="{% url 'people:contact_list' %}" class="btn btn-outline">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+<div id="message-container" class="fixed top-4 right-4 z-50"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contact-form');
+    
+    // Phone number management functions
+    window.addPhone = function() {
+        const phoneContainer = document.getElementById('phone-numbers');
+        const phoneDiv = document.createElement('div');
+        phoneDiv.className = 'flex gap-2';
+        phoneDiv.innerHTML = `
+            <input type="tel" name="phones[]" placeholder="+1234567890" 
+                   class="input input-bordered flex-1" />
+            <button type="button" class="btn btn-square btn-outline btn-sm" onclick="removePhone(this)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        `;
+        phoneContainer.appendChild(phoneDiv);
+    };
+    
+    window.removePhone = function(button) {
+        const phoneContainer = document.getElementById('phone-numbers');
+        if (phoneContainer.children.length > 1) {
+            button.closest('.flex').remove();
+        }
+    };
+    
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Collect form data
+        const formData = new FormData(contactForm);
+        const data = {};
+        
+        // Handle regular fields
+        for (let [key, value] of formData.entries()) {
+            if (key === 'phones[]') {
+                if (!data.phones) data.phones = [];
+                if (value.trim()) data.phones.push(value.trim());
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        // Validate required fields
+        const errors = [];
+        if (!data.first_name && !data.last_name) {
+            errors.push('Contact must have first name or last name');
+        }
+        
+        if (data.phones && data.phones.length > 0) {
+            for (let phone of data.phones) {
+                if (!isValidPhoneNumber(phone)) {
+                    errors.push(`Invalid phone number: ${phone}`);
+                }
+            }
+        }
+        
+        if (errors.length > 0) {
+            showMessage(errors.join('<br>'), 'error');
+            return;
+        }
+        
+        // Submit form
+        submitContact(data);
+    });
+    
+    function submitContact(data) {
+        // Show loading state
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Updating...';
+        submitBtn.disabled = true;
+        
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showMessage(result.message, 'success');
+                // Redirect to contact list after a short delay
+                setTimeout(() => {
+                    window.location.href = '{% url "people:contact_list" %}';
+                }, 1500);
+            } else {
+                showMessage(result.message, 'error');
+            }
+        })
+        .catch(error => {
+            showMessage('Error updating contact. Please try again.', 'error');
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    }
+    
+    function getCSRFToken() {
+        const token = document.querySelector('[name=csrfmiddlewaretoken]');
+        return token ? token.value : '';
+    }
+    
+    function isValidPhoneNumber(phone) {
+        // Basic phone validation (E.164 format)
+        const phoneRegex = /^\+[1-9]\d{6,14}$/;
+        return phoneRegex.test(phone);
+    }
+    
+    function showMessage(message, type = 'info') {
+        const container = document.getElementById('message-container');
+        
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} mb-4 shadow-lg`;
+        alertDiv.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${getAlertIcon(type)}
+            </svg>
+            <span>${message}</span>
+            <button type="button" onclick="this.parentElement.remove()" class="btn btn-ghost btn-xs">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        `;
+        
+        container.appendChild(alertDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentElement) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    function getAlertIcon(type) {
+        switch (type) {
+            case 'success':
+                return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+            case 'error':
+                return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+            case 'warning':
+                return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>';
+            default:
+                return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+        }
+    }
+});
+</script>
+{% endblock %}

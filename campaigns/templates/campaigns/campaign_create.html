@@ -48,20 +48,18 @@
                     
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text font-medium">Use Case</span>
+                            <span class="label-text font-medium">AI Assistant *</span>
                         </label>
-                        <select name="use_case" class="select select-bordered w-full">
-                            <option value="">Select use case</option>
-                            <option value="hr_screening">HR Screening</option>
-                            <option value="collections">Collections</option>
-                            <option value="sales">Sales</option>
-                            <option value="customer_service">Customer Service</option>
-                            <option value="appointment_reminder">Appointment Reminder</option>
-                            <option value="survey">Survey</option>
-                            <option value="other">Other</option>
+                        <select name="assistant" required class="select select-bordered w-full">
+                            <option value="">Select an AI Assistant</option>
+                            {% for assistant in assistants %}
+                            <option value="{{ assistant.id }}">{{ assistant.name }} - {{ assistant.description|truncatechars:50 }}</option>
+                            {% empty %}
+                            <option value="" disabled>No assistants available</option>
+                            {% endfor %}
                         </select>
                         <label class="label">
-                            <span class="label-text-alt text-base-content/70">Primary purpose of this campaign</span>
+                            <span class="label-text-alt text-base-content/70">Select the AI assistant to use for this campaign</span>
                         </label>
                     </div>
                 </div>
@@ -310,14 +308,15 @@
                              <span class="label-text font-medium">From Address Book</span>
                          </label>
                          <div class="space-y-2">
-                             <button type="button" id="open-address-book-btn" class="btn bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 h-20 w-full">
-                                 <div class="text-center">
-                                     <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                     </svg>
-                                     <span class="text-sm">Browse Contacts</span>
-                                 </div>
-                             </button>
+                                                         <button type="button" id="open-address-book-btn" class="btn bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 h-20 w-full">
+                                <div class="text-center">
+                                    <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    <span class="text-sm">Browse Contacts</span>
+                                </div>
+                            </button>
+
                              <button type="button" id="download-template-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black w-full">
                                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -347,10 +346,10 @@
                 <div id="manual-entry-form" class="hidden mb-4">
                     <div class="bg-base-200 rounded-lg p-4">
                                                 <div class="flex gap-2 mb-3">
-                            <input type="tel" name="manual_phone" placeholder="+1 555 123 4567"
+                            <input type="tel" name="manual_phone" placeholder="30123456"
                                    class="input input-bordered input-sm flex-1" 
-                                   pattern="[\+]?[0-9\s\-\(\)]+"
-                                   title="Enter phone number with country code (e.g., +1 555 123 4567)" />
+                                   pattern="[0-9]+"
+                                   title="Enter 8-digit Bahraini phone number (e.g., 30123456, 66123456)" />
                             <input type="text" name="manual_first_name" placeholder="First name"
                                    class="input input-bordered input-sm flex-1" />
                             <input type="text" name="manual_last_name" placeholder="Last name"
@@ -363,7 +362,7 @@
                             </button>
                         </div>
                         <div class="text-xs text-base-content/50 mb-2">
-                            <strong>Format:</strong> +[Country Code] [Number] (e.g., +1 555 123 4567, +44 20 7946 0958, +971 50 123 4567)
+                            <strong>Format:</strong> 8-digit Bahraini number starting with 3, 6, 7, or 9 (e.g., 30123456, 66123456, 77123456, 99123456)
                         </div>
                     </div>
                 </div>
@@ -404,50 +403,57 @@
     <input type="hidden" name="contacts_data" id="contacts-data" value="[]" />
                 
                 <!-- Address Book Modal -->
-                <div id="address-book-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-                    <div class="modal-backdrop"></div>
-                    <div class="modal-box w-11/12 max-w-4xl relative z-10 bg-base-100 shadow-xl rounded-lg p-6 mx-auto mt-20">
+                <div id="address-book-modal" class="modal">
+                    <div class="modal-box w-11/12 max-w-6xl bg-base-100 shadow-xl rounded-lg p-6 mx-auto">
                         <h3 class="font-bold text-lg mb-4">Select Contacts from Address Book</h3>
                         
                         <!-- Search and Filters -->
                         <div class="flex gap-4 mb-4">
                             <div class="form-control flex-1">
-                                <input type="text" id="address-book-search" placeholder="Search contacts..." 
+                                <input type="text" id="address-book-search" placeholder="Search contacts by name, email, company..." 
                                        class="input input-bordered w-full" />
-                            </div>
-                            <div class="form-control">
-                                <select id="address-book-filter" class="select select-bordered">
-                                    <option value="">All Types</option>
-                                    <option value="person">Person</option>
-                                    <option value="company">Company</option>
-                                </select>
                             </div>
                             <div class="form-control">
                                 <select id="address-book-segment-filter" class="select select-bordered">
                                     <option value="">All Segments</option>
-                                    <option value="prefers_english">Prefers English</option>
-                                    <option value="prefers_arabic">Prefers Arabic</option>
-                                    <option value="vip_customer">VIP Customer</option>
-                                    <option value="new_lead">New Lead</option>
-                                    <option value="returning_customer">Returning Customer</option>
-                                    <option value="high_value">High Value</option>
-                                    <option value="technical_support">Technical Support</option>
-                                    <option value="sales_qualified">Sales Qualified</option>
+                                    <!-- Segments will be populated dynamically -->
                                 </select>
                             </div>
                         </div>
                         
+                        <!-- Loading State -->
+                        <div id="address-book-loading" class="text-center py-8">
+                            <div class="loading loading-spinner loading-lg text-primary"></div>
+                            <p class="mt-2 text-base-content/70">Loading contacts...</p>
+                        </div>
+                        
                         <!-- Contacts List -->
-                        <div class="max-h-96 overflow-y-auto">
+                        <div id="address-book-contacts-container" class="max-h-96 overflow-y-auto">
                             <div id="address-book-contacts" class="space-y-2">
-                                <!-- Sample contacts will be populated here -->
+                                <!-- Contacts will be populated dynamically -->
                             </div>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div id="address-book-pagination" class="flex justify-center items-center gap-2 mt-4 pt-4 border-t">
+                            <button type="button" id="prev-page-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black">
+                                Previous
+                            </button>
+                            <span class="text-sm text-base-content/70">
+                                Page <span id="current-page">1</span> of <span id="total-pages">1</span>
+                            </span>
+                            <button type="button" id="next-page-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black">
+                                Next
+                            </button>
                         </div>
                         
                         <!-- Selection Summary -->
                         <div class="flex justify-between items-center mt-4 pt-4 border-t">
                             <div class="text-sm text-base-content/70">
                                 <span id="selected-count">0</span> contacts selected
+                                <span id="duplicate-warning" class="text-warning ml-2" style="display: none;">
+                                    ⚠️ Some contacts already exist in campaign
+                                </span>
                             </div>
                             <div class="flex gap-2">
                                 <button type="button" id="select-all-btn" class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300">
@@ -462,6 +468,7 @@
                                 <button type="button" id="close-address-book-btn" class="btn btn-ghost btn-sm hover:bg-[#20D5F9]/20 hover:text-[#20D5F9] transition-all duration-300">
                                     Close
                                 </button>
+
                             </div>
                         </div>
                     </div>
@@ -502,17 +509,41 @@
                 Create Campaign
             </button>
         </div>
+        
+
     </form>
 </div>
 {% endblock %}
 
+
+
 {% block extra_js %}
-<script src="{% static 'campaigns/js/campaign_create.js' %}"></script>
+<style>
+/* Ensure modal is visible when modal-open class is present */
+.modal.modal-open {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0,0,0,0.5) !important;
+    z-index: 9999 !important;
+}
+
+
+</style>
+
+
 
 <script>
 // Audience & Contacts functionality
 document.addEventListener('DOMContentLoaded', function() {
     let contacts = [];
+    let currentPage = 1; // Add this variable
+    
     const contactList = document.getElementById('contact-list');
     const contactCount = document.getElementById('contact-count');
     const contactsDataInput = document.getElementById('contacts-data');
@@ -526,7 +557,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const addressBookModal = document.getElementById('address-book-modal');
     const closeAddressBookBtn = document.getElementById('close-address-book-btn');
     const addressBookSearch = document.getElementById('address-book-search');
-    const addressBookFilter = document.getElementById('address-book-filter');
     const addressBookSegmentFilter = document.getElementById('address-book-segment-filter');
     const addressBookContacts = document.getElementById('address-book-contacts');
     const selectAllBtn = document.getElementById('select-all-btn');
@@ -580,10 +610,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Check for duplicates
-        const isDuplicate = contacts.some(contact => contact.phone === validationResult.formatted);
+        // Check for duplicates - check both phone AND name combination
+        const isDuplicate = contacts.some(contact => 
+            contact.phone === validationResult.formatted && 
+            contact.first_name === firstName && 
+            contact.last_name === lastName
+        );
         if (isDuplicate) {
-            showToast('This phone number is already in the list', 'warning');
+            showToast('This contact (same name and phone) is already in the list', 'warning');
             return;
         }
 
@@ -643,26 +677,54 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Address book modal
-    openAddressBookBtn.addEventListener('click', function() {
-        if (addressBookModal) {
-            addressBookModal.style.display = 'block';
-            loadAddressBookContacts();
-        } else {
-            showToast('Address book modal not found. Please check the page structure.', 'error');
-        }
-    });
+    if (openAddressBookBtn) {
+        openAddressBookBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Browse Contacts button clicked');
+            
+            if (!addressBookModal) {
+                console.error('Address book modal not found');
+                showToast('Address book modal not found. Please check the page structure.', 'error');
+                return;
+            }
+            
+            console.log('Modal found, opening...');
+            try {
+                // Show modal using DaisyUI
+                addressBookModal.classList.add('modal-open');
+                console.log('Modal classes after opening:', addressBookModal.className);
+                console.log('Modal element:', addressBookModal);
+                console.log('Modal display style:', window.getComputedStyle(addressBookModal).display);
+                
+                // Load contacts immediately
+                loadAddressBookContacts();
+            } catch (error) {
+                console.error('Error opening modal:', error);
+                showToast('Error opening modal: ' + error.message, 'error');
+            }
+        });
+    } else {
+        console.error('Open address book button not found');
+    }
 
     if (closeAddressBookBtn) {
         closeAddressBookBtn.addEventListener('click', function() {
-            addressBookModal.style.display = 'none';
+            if (addressBookModal) {
+                addressBookModal.classList.remove('modal-open');
+                console.log('Modal closed');
+            }
         });
     }
+
+
 
     // Close modal when clicking outside
     if (addressBookModal) {
         addressBookModal.addEventListener('click', function(e) {
             if (e.target === addressBookModal) {
-                addressBookModal.style.display = 'none';
+                addressBookModal.classList.remove('modal-open');
+                console.log('Modal closed by clicking outside');
             }
         });
     }
@@ -670,9 +732,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Address book search and filters
     if (addressBookSearch) {
         addressBookSearch.addEventListener('input', filterAddressBookContacts);
-    }
-    if (addressBookFilter) {
-        addressBookFilter.addEventListener('change', filterAddressBookContacts);
     }
     if (addressBookSegmentFilter) {
         addressBookSegmentFilter.addEventListener('change', filterAddressBookContacts);
@@ -708,21 +767,57 @@ document.addEventListener('DOMContentLoaded', function() {
                 const selectedContacts = [];
 
                 checkboxes.forEach(checkbox => {
-                    const contactId = checkbox.value;
-                    const contact = getContactById(contactId);
-                    if (contact && !contacts.some(c => c.phone === contact.phone)) {
-                        selectedContacts.push(contact);
+                    const contactData = JSON.parse(checkbox.dataset.contact);
+                    const phone = contactData.primary_phone || (contactData.phones && contactData.phones.length > 0 ? contactData.phones[0] : '');
+                    
+                    if (!phone) {
+                        showToast(`Contact ${contactData.display_name} has no phone number`, 'warning');
+                        return;
                     }
+
+                    // Check for duplicates
+                    const isDuplicate = contacts.some(c => 
+                        c.phone === phone && 
+                        c.first_name === contactData.first_name && 
+                        c.last_name === contactData.last_name
+                    );
+
+                    if (isDuplicate) {
+                        showToast(`Contact ${contactData.display_name} is already in the campaign`, 'warning');
+                        return;
+                    }
+
+                    // Create contact object for campaign
+                    const campaignContact = {
+                        id: Date.now() + Math.random(), // Unique ID
+                        phone: phone,
+                        first_name: contactData.first_name || '',
+                        last_name: contactData.last_name || '',
+                        email: contactData.email || '',
+                        company: contactData.company || '',
+                        type: 'person',
+                        country_code: phone.startsWith('+') ? phone.split(' ')[0] : '+1',
+                        source: 'address_book',
+                        original_id: contactData.id
+                    };
+
+                    selectedContacts.push(campaignContact);
                 });
 
                 if (selectedContacts.length > 0) {
                     contacts.push(...selectedContacts);
                     updateContactDisplay();
                     updateContactsData();
+                    
+                    // Close modal and show success
                     if (addressBookModal) {
-                        addressBookModal.style.display = 'none';
+                        addressBookModal.classList.remove('modal-open');
                     }
                     showToast(`Added ${selectedContacts.length} contacts to campaign`, 'success');
+                    
+                    // Clear selection
+                    checkboxes.forEach(checkbox => checkbox.checked = false);
+                    updateSelectedCount();
                 } else {
                     showToast('No new contacts selected or all contacts already exist', 'warning');
                 }
@@ -803,6 +898,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateContactsData() {
         contactsDataInput.value = JSON.stringify(contacts);
+        window.contacts = contacts; // Update global reference
     }
 
     function removeContact(contactId) {
@@ -829,11 +925,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateCSVTemplate() {
         const headers = ['phone', 'first_name', 'last_name', 'email', 'company'];
         const examples = [
-            ['+1 555 123 4567', 'John', 'Doe', 'john.doe@example.com', 'Tech Corp'],
-            ['+44 20 7946 0958', 'Jane', 'Smith', 'jane.smith@example.com', 'Design Inc'],
-            ['+971 50 123 4567', 'Ahmed', 'Al-Rashid', 'ahmed@example.com', 'Dubai Corp'],
-            ['+966 50 987 6543', 'Sarah', 'Johnson', 'sarah@example.com', 'Saudi Tech'],
-            ['+49 30 12345678', 'Hans', 'Mueller', 'hans@example.com', 'German Solutions']
+            ['30123456', 'Ahmed', 'Al-Rashid', 'ahmed@example.com', 'Tech Corp'],
+            ['66123456', 'Fatima', 'Al-Sayed', 'fatima@example.com', 'Design Inc'],
+            ['77123456', 'Omar', 'Al-Khalil', 'omar@example.com', 'Dubai Corp'],
+            ['99123456', 'Layla', 'Al-Mahmoud', 'layla@example.com', 'Saudi Tech'],
+            ['30123457', 'Hassan', 'Al-Nasser', 'hassan@example.com', 'Bahrain Solutions']
         ];
         
         const csvRows = [headers.join(',')];
@@ -846,15 +942,149 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function loadAddressBookContacts() {
-        // Mock data - replace with actual API call
-        const mockContacts = [
-            { id: 1, first_name: 'John', last_name: 'Doe', phone: '+1234567890', email: 'john@example.com', company: 'Tech Corp', type: 'person' },
-            { id: 2, first_name: 'Jane', last_name: 'Smith', phone: '+1234567891', email: 'jane@example.com', company: 'Design Inc', type: 'person' },
-            { id: 3, name: 'Acme Corp', phone: '+1234567892', contact_person: 'Bob Wilson', company: 'Acme Corp', type: 'company' },
-            { id: 4, first_name: 'Alice', last_name: 'Johnson', phone: '+1234567893', email: 'alice@example.com', company: 'Marketing Pro', type: 'person' }
-        ];
+        console.log('Loading address book contacts...');
+        try {
+            // Show loading state
+            const loadingEl = document.getElementById('address-book-loading');
+            const contactsContainer = document.getElementById('address-book-contacts-container');
+            const paginationEl = document.getElementById('address-book-pagination');
+            
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (contactsContainer) contactsContainer.style.display = 'none';
+            if (paginationEl) paginationEl.style.display = 'none';
+            
+            // Get current filters
+            const searchQuery = document.getElementById('address-book-search')?.value || '';
+            const segmentFilter = document.getElementById('address-book-segment-filter')?.value || '';
+            
+            // Build API URL
+            const params = new URLSearchParams({
+                search: searchQuery,
+                segment: segmentFilter,
+                page: currentPage,
+                per_page: 20
+            });
+            
+            const apiUrl = `/people/api/contacts/?${params}`;
+            console.log('Fetching from API:', apiUrl);
+            
+            // Fetch contacts from API
+            console.log('🔍 Fetching contacts from:', apiUrl);
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            console.log('🔍 CSRF token:', csrfToken ? 'Found' : 'Not found');
+            
+            fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken || ''
+                },
+                credentials: 'same-origin' // Include cookies for authentication
+            })
+                .then(response => {
+                    console.log('🔍 API response status:', response.status);
+                    console.log('🔍 API response headers:', response.headers);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('🔍 API response data:', data);
+                    if (data.success) {
+                        console.log('🔍 Success! Found', data.contacts.length, 'contacts');
+                        renderAddressBookContacts(data.contacts);
+                        renderSegments(data.segments);
+                        updatePagination(data.pagination);
+                        
+                        // Hide loading, show contacts
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        if (contactsContainer) contactsContainer.style.display = 'block';
+                        if (paginationEl) paginationEl.style.display = 'flex';
+                    } else {
+                        console.error('🔍 Failed to load contacts:', data.error);
+                        showToast('Failed to load contacts: ' + (data.error || 'Unknown error'), 'error');
+                        if (loadingEl) loadingEl.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading contacts:', error);
+                    showToast('Error loading contacts: ' + error.message, 'error');
+                    if (loadingEl) loadingEl.style.display = 'none';
+                    
+                    // Show error message instead of fallback contacts
+                    if (contactsContainer) {
+                        contactsContainer.style.display = 'block';
+                        contactsContainer.innerHTML = `
+                            <div class="text-center py-8">
+                                <div class="text-error text-lg mb-2">⚠️ Failed to load contacts</div>
+                                <div class="text-base-content/70 mb-4">${error.message}</div>
+                                <button onclick="loadAddressBookContacts()" class="btn btn-outline btn-sm">
+                                    Retry
+                                </button>
+                            </div>
+                        `;
+                    }
+                });
+        } catch (error) {
+            console.error('Error in loadAddressBookContacts:', error);
+            showToast('Error loading contacts: ' + error.message, 'error');
+            if (loadingEl) loadingEl.style.display = 'none';
+            
+            // Show error message instead of fallback contacts
+            if (contactsContainer) {
+                contactsContainer.style.display = 'block';
+                contactsContainer.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-error text-lg mb-2">⚠️ Failed to load contacts</div>
+                        <div class="text-base-content/70 mb-4">${error.message}</div>
+                        <button onclick="loadAddressBookContacts()" class="btn btn-outline btn-sm">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    }
 
-        renderAddressBookContacts(mockContacts);
+    function renderSegments(segments) {
+        const segmentFilter = document.getElementById('address-book-segment-filter');
+        if (!segmentFilter) return;
+        
+        // Keep the "All Segments" option
+        const allOption = segmentFilter.querySelector('option[value=""]');
+        segmentFilter.innerHTML = '';
+        if (allOption) segmentFilter.appendChild(allOption);
+        
+        // Add segment options
+        segments.forEach(segment => {
+            const option = document.createElement('option');
+            option.value = segment.id;
+            option.textContent = segment.name;
+            segmentFilter.appendChild(option);
+        });
+    }
+
+    function updatePagination(pagination) {
+        const paginationEl = document.getElementById('address-book-pagination');
+        const currentPageEl = document.getElementById('current-page');
+        const totalPagesEl = document.getElementById('total-pages');
+        const prevBtn = document.getElementById('prev-page-btn');
+        const nextBtn = document.getElementById('next-page-btn');
+        
+        if (!paginationEl || !currentPageEl || !totalPagesEl || !prevBtn || !nextBtn) return;
+        
+        currentPageEl.textContent = pagination.page;
+        totalPagesEl.textContent = pagination.total_pages;
+        
+        prevBtn.disabled = !pagination.has_previous;
+        nextBtn.disabled = !pagination.has_next;
+        
+        // Update current page variable
+        currentPage = pagination.page;
     }
 
     function renderAddressBookContacts(contacts) {
@@ -864,53 +1094,118 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const contactsHtml = contacts.map(contact => {
-            const displayName = contact.type === 'person' 
-                ? `${contact.first_name} ${contact.last_name}`
-                : contact.name;
-            const displayCompany = contact.type === 'person' 
-                ? contact.company 
-                : `Contact: ${contact.contact_person}`;
+            const displayName = contact.first_name && contact.last_name 
+                ? `${contact.first_name} ${contact.last_name}`.trim() 
+                : contact.first_name || contact.last_name || 'Unnamed Contact';
+            
+            const phone = contact.primary_phone || (contact.phones && contact.phones.length > 0 ? contact.phones[0] : 'No phone');
+            
+            // Check if this contact is already in the campaign
+            const isDuplicate = window.contacts && window.contacts.some(c => 
+                c.phone === phone && 
+                c.first_name === contact.first_name && 
+                c.last_name === contact.last_name
+            );
+            
+            const duplicateClass = isDuplicate ? 'opacity-50' : '';
+            const duplicateText = isDuplicate ? ' (Already in campaign)' : '';
             
             return `
-                <div class="flex items-center justify-between bg-base-100 p-3 rounded-lg border border-base-300 hover:border-primary/30 transition-colors">
+                <div class="flex items-center justify-between bg-base-100 p-3 rounded-lg border border-base-300 hover:border-primary/30 transition-colors ${duplicateClass}">
                     <div class="flex items-center gap-3">
-                        <input type="checkbox" class="checkbox checkbox-primary" value="${contact.id}" />
+                        <input type="checkbox" class="checkbox checkbox-primary" value="${contact.id}" 
+                               ${isDuplicate ? 'disabled' : ''} data-contact='${JSON.stringify(contact)}' />
                         <div class="flex-1">
-                            <div class="font-medium">${displayName}</div>
-                            <div class="text-sm text-base-content/70">${contact.phone}</div>
-                            <div class="text-xs text-base-content/50">${displayCompany}</div>
+                            <div class="font-medium">
+                                ${displayName}${duplicateText}
+                                ${isDuplicate ? '<span class="badge badge-warning badge-xs ml-2">Duplicate</span>' : ''}
+                            </div>
+                            <div class="text-sm text-base-content/70">${phone}</div>
+                            <div class="text-xs text-base-content/50">${contact.company || ''}</div>
+                            <div class="text-xs text-base-content/40">${contact.email || ''}</div>
                         </div>
+                    </div>
+                    <div class="badge badge-primary badge-sm">
+                        Person
                     </div>
                 </div>
             `;
         }).join('');
         
         addressBookContacts.innerHTML = contactsHtml;
+        
+        // Add event listeners to checkboxes
+        const checkboxes = addressBookContacts.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateSelectedCount();
+            });
+        });
+        
         updateSelectedCount();
+        checkForDuplicates();
+    }
+
+    function checkForDuplicates() {
+        const duplicateWarning = document.getElementById('duplicate-warning');
+        if (!duplicateWarning) return;
+        
+        const checkboxes = addressBookContacts.querySelectorAll('input[type="checkbox"]:checked');
+        let hasDuplicates = false;
+        
+        checkboxes.forEach(checkbox => {
+            const contactData = JSON.parse(checkbox.dataset.contact);
+            const phone = contactData.primary_phone || (contactData.phones && contactData.phones.length > 0 ? contactData.phones[0] : '');
+            
+            const isDuplicate = window.contacts && window.contacts.some(c => 
+                c.phone === phone && 
+                c.first_name === contactData.first_name && 
+                c.last_name === contactData.last_name
+            );
+            
+            if (isDuplicate) hasDuplicates = true;
+        });
+        
+        duplicateWarning.style.display = hasDuplicates ? 'inline' : 'none';
     }
 
     function filterAddressBookContacts() {
-        // Implement filtering logic here
-        loadAddressBookContacts(); // For now, just reload
+        // Reset to first page when filtering
+        currentPage = 1;
+        loadAddressBookContacts();
     }
 
     function updateSelectedCount() {
         if (addressBookContacts && selectedCount) {
             const checkboxes = addressBookContacts.querySelectorAll('input[type="checkbox"]:checked');
             selectedCount.textContent = checkboxes.length;
+            checkForDuplicates();
         }
     }
 
-    function getContactById(contactId) {
-        // Mock function - replace with actual data lookup
-        const mockContacts = [
-            { id: 1, first_name: 'John', last_name: 'Doe', phone: '+1234567890', email: 'john@example.com', company: 'Tech Corp', type: 'person' },
-            { id: 2, first_name: 'Jane', last_name: 'Smith', phone: '+1234567891', email: 'jane@example.com', company: 'Design Inc', type: 'person' },
-            { id: 3, name: 'Acme Corp', phone: '+1234567892', contact_person: 'Bob Wilson', company: 'Acme Corp', type: 'company' },
-            { id: 4, first_name: 'Alice', last_name: 'Johnson', phone: '+1234567893', email: 'alice@example.com', company: 'Marketing Pro', type: 'person' }
-        ];
-        return mockContacts.find(c => c.id == contactId);
+    // Add pagination variables and functions
+
+    // Pagination event listeners
+    const prevPageBtn = document.getElementById('prev-page-btn');
+    const nextPageBtn = document.getElementById('next-page-btn');
+
+    if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadAddressBookContacts();
+            }
+        });
     }
+
+    if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', function() {
+            currentPage++;
+            loadAddressBookContacts();
+        });
+    }
+
+
 
     function handleFileUpload(event) {
         const file = event.target.files[0];
@@ -1012,289 +1307,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Phone number validation functions
+    // Phone number validation functions for Bahraini numbers
     function validatePhoneNumber(phone) {
-        // Remove all non-digit characters except + and spaces
-        let cleaned = phone.replace(/[^\d+\s]/g, '');
+        // Remove all non-digit characters
+        let cleaned = phone.replace(/\D/g, '');
         
-        // Remove spaces
-        cleaned = cleaned.replace(/\s/g, '');
-        
-        // Check if it starts with +
-        if (!cleaned.startsWith('+')) {
+        // Check if it's a Bahraini number (8 digits starting with 3, 6, 7, or 9)
+        if (cleaned.length === 8 && /^[3679]/.test(cleaned)) {
             return {
-                isValid: false,
-                error: 'Phone number must start with a country code (e.g., +1, +44, +971)',
-                formatted: null,
-                countryCode: null
+                isValid: true,
+                error: null,
+                formatted: cleaned,
+                countryCode: '+973',
+                fullNumber: '+973' + cleaned
             };
         }
         
-        // Extract country code and number
-        const countryCodeMatch = cleaned.match(/^\+(\d{1,4})/);
-        if (!countryCodeMatch) {
-            return {
-                isValid: false,
-                error: 'Invalid country code format',
-                formatted: null,
-                countryCode: null
-            };
-        }
-        
-        const countryCode = '+' + countryCodeMatch[1];
-        const number = cleaned.substring(countryCodeMatch[0].length);
-        
-        // Validate country code length (1-4 digits)
-        if (countryCodeMatch[1].length < 1 || countryCodeMatch[1].length > 4) {
-            return {
-                isValid: false,
-                error: 'Country code must be 1-4 digits',
-                formatted: null,
-                countryCode: null
-            };
-        }
-        
-        // Validate number length (7-15 digits)
-        if (number.length < 7 || number.length > 15) {
-            return {
-                isValid: false,
-                error: `Phone number must be 7-15 digits (got ${number.length})`,
-                formatted: null,
-                countryCode: null
-            };
-        }
-        
-        // Common country code validations
-        const countryValidations = {
-            '+1': { minLength: 10, maxLength: 10, name: 'US/Canada' },
-            '+44': { minLength: 10, maxLength: 11, name: 'UK' },
-            '+971': { minLength: 9, maxLength: 9, name: 'UAE' },
-            '+966': { minLength: 9, maxLength: 9, name: 'Saudi Arabia' },
-            '+974': { minLength: 8, maxLength: 8, name: 'Qatar' },
-            '+973': { minLength: 8, maxLength: 8, name: 'Bahrain' },
-            '+965': { minLength: 8, maxLength: 8, name: 'Kuwait' },
-            '+968': { minLength: 8, maxLength: 8, name: 'Oman' },
-            '+973': { minLength: 8, maxLength: 8, name: 'Bahrain' },
-            '+20': { minLength: 10, maxLength: 10, name: 'Egypt' },
-            '+212': { minLength: 9, maxLength: 9, name: 'Morocco' },
-            '+216': { minLength: 8, maxLength: 8, name: 'Tunisia' },
-            '+213': { minLength: 9, maxLength: 9, name: 'Algeria' },
-            '+33': { minLength: 9, maxLength: 9, name: 'France' },
-            '+49': { minLength: 10, maxLength: 12, name: 'Germany' },
-            '+39': { minLength: 9, maxLength: 10, name: 'Italy' },
-            '+34': { minLength: 9, maxLength: 9, name: 'Spain' },
-            '+31': { minLength: 9, maxLength: 9, name: 'Netherlands' },
-            '+32': { minLength: 9, maxLength: 9, name: 'Belgium' },
-            '+41': { minLength: 9, maxLength: 9, name: 'Switzerland' },
-            '+43': { minLength: 10, maxLength: 13, name: 'Austria' },
-            '+46': { minLength: 9, maxLength: 9, name: 'Sweden' },
-            '+47': { minLength: 8, maxLength: 8, name: 'Norway' },
-            '+45': { minLength: 8, maxLength: 8, name: 'Denmark' },
-            '+358': { minLength: 9, maxLength: 9, name: 'Finland' },
-            '+48': { minLength: 9, maxLength: 9, name: 'Poland' },
-            '+420': { minLength: 9, maxLength: 9, name: 'Czech Republic' },
-            '+36': { minLength: 9, maxLength: 9, name: 'Hungary' },
-            '+30': { minLength: 10, maxLength: 10, name: 'Greece' },
-            '+351': { minLength: 9, maxLength: 9, name: 'Portugal' },
-            '+353': { minLength: 9, maxLength: 9, name: 'Ireland' },
-            '+61': { minLength: 9, maxLength: 9, name: 'Australia' },
-            '+64': { minLength: 8, maxLength: 10, name: 'New Zealand' },
-            '+81': { minLength: 10, maxLength: 10, name: 'Japan' },
-            '+82': { minLength: 9, maxLength: 10, name: 'South Korea' },
-            '+86': { minLength: 11, maxLength: 11, name: 'China' },
-            '+91': { minLength: 10, maxLength: 10, name: 'India' },
-            '+65': { minLength: 8, maxLength: 8, name: 'Singapore' },
-            '+60': { minLength: 9, maxLength: 10, name: 'Malaysia' },
-            '+66': { minLength: 9, maxLength: 9, name: 'Thailand' },
-            '+84': { minLength: 9, maxLength: 10, name: 'Vietnam' },
-            '+62': { minLength: 9, maxLength: 11, name: 'Indonesia' },
-            '+63': { minLength: 10, maxLength: 10, name: 'Philippines' },
-            '+852': { minLength: 8, maxLength: 8, name: 'Hong Kong' },
-            '+886': { minLength: 9, maxLength: 9, name: 'Taiwan' },
-            '+55': { minLength: 10, maxLength: 11, name: 'Brazil' },
-            '+54': { minLength: 10, maxLength: 11, name: 'Argentina' },
-            '+56': { minLength: 9, maxLength: 9, name: 'Chile' },
-            '+57': { minLength: 10, maxLength: 10, name: 'Colombia' },
-            '+58': { minLength: 10, maxLength: 10, name: 'Venezuela' },
-            '+51': { minLength: 9, maxLength: 9, name: 'Peru' },
-            '+52': { minLength: 10, maxLength: 10, name: 'Mexico' },
-            '+593': { minLength: 9, maxLength: 9, name: 'Ecuador' },
-            '+595': { minLength: 9, maxLength: 9, name: 'Paraguay' },
-            '+598': { minLength: 8, maxLength: 8, name: 'Uruguay' },
-            '+591': { minLength: 8, maxLength: 8, name: 'Bolivia' },
-            '+593': { minLength: 9, maxLength: 9, name: 'Ecuador' },
-            '+507': { minLength: 8, maxLength: 8, name: 'Panama' },
-            '+506': { minLength: 8, maxLength: 8, name: 'Costa Rica' },
-            '+502': { minLength: 8, maxLength: 8, name: 'Guatemala' },
-            '+503': { minLength: 8, maxLength: 8, name: 'El Salvador' },
-            '+504': { minLength: 8, maxLength: 8, name: 'Honduras' },
-            '+505': { minLength: 8, maxLength: 8, name: 'Nicaragua' },
-            '+27': { minLength: 9, maxLength: 9, name: 'South Africa' },
-            '+234': { minLength: 10, maxLength: 10, name: 'Nigeria' },
-            '+254': { minLength: 9, maxLength: 9, name: 'Kenya' },
-            '+256': { minLength: 9, maxLength: 9, name: 'Uganda' },
-            '+255': { minLength: 9, maxLength: 9, name: 'Tanzania' },
-            '+233': { minLength: 9, maxLength: 9, name: 'Ghana' },
-            '+251': { minLength: 9, maxLength: 9, name: 'Ethiopia' },
-            '+260': { minLength: 9, maxLength: 9, name: 'Zambia' },
-            '+263': { minLength: 9, maxLength: 9, name: 'Zimbabwe' },
-            '+265': { minLength: 9, maxLength: 9, name: 'Malawi' },
-            '+267': { minLength: 8, maxLength: 8, name: 'Botswana' },
-            '+268': { minLength: 8, maxLength: 8, name: 'Eswatini' },
-            '+269': { minLength: 7, maxLength: 7, name: 'Comoros' },
-            '+290': { minLength: 4, maxLength: 4, name: 'Saint Helena' },
-            '+291': { minLength: 7, maxLength: 7, name: 'Eritrea' },
-            '+297': { minLength: 7, maxLength: 7, name: 'Aruba' },
-            '+298': { minLength: 6, maxLength: 6, name: 'Faroe Islands' },
-            '+299': { minLength: 6, maxLength: 6, name: 'Greenland' },
-            '+350': { minLength: 8, maxLength: 8, name: 'Gibraltar' },
-            '+351': { minLength: 9, maxLength: 9, name: 'Portugal' },
-            '+352': { minLength: 9, maxLength: 9, name: 'Luxembourg' },
-            '+353': { minLength: 9, maxLength: 9, name: 'Ireland' },
-            '+354': { minLength: 7, maxLength: 7, name: 'Iceland' },
-            '+355': { minLength: 9, maxLength: 9, name: 'Albania' },
-            '+356': { minLength: 8, maxLength: 8, name: 'Malta' },
-            '+357': { minLength: 8, maxLength: 8, name: 'Cyprus' },
-            '+358': { minLength: 9, maxLength: 9, name: 'Finland' },
-            '+359': { minLength: 9, maxLength: 9, name: 'Bulgaria' },
-            '+370': { minLength: 8, maxLength: 8, name: 'Lithuania' },
-            '+371': { minLength: 8, maxLength: 8, name: 'Latvia' },
-            '+372': { minLength: 7, maxLength: 8, name: 'Estonia' },
-            '+373': { minLength: 8, maxLength: 8, name: 'Moldova' },
-            '+374': { minLength: 8, maxLength: 8, name: 'Armenia' },
-            '+375': { minLength: 9, maxLength: 9, name: 'Belarus' },
-            '+376': { minLength: 6, maxLength: 6, name: 'Andorra' },
-            '+377': { minLength: 8, maxLength: 8, name: 'Monaco' },
-            '+378': { minLength: 10, maxLength: 10, name: 'San Marino' },
-            '+379': { minLength: 10, maxLength: 10, name: 'Vatican City' },
-            '+380': { minLength: 9, maxLength: 9, name: 'Ukraine' },
-            '+381': { minLength: 9, maxLength: 9, name: 'Serbia' },
-            '+382': { minLength: 8, maxLength: 8, name: 'Montenegro' },
-            '+383': { minLength: 8, maxLength: 8, name: 'Kosovo' },
-            '+385': { minLength: 9, maxLength: 9, name: 'Croatia' },
-            '+386': { minLength: 8, maxLength: 8, name: 'Slovenia' },
-            '+387': { minLength: 8, maxLength: 8, name: 'Bosnia and Herzegovina' },
-            '+389': { minLength: 8, maxLength: 8, name: 'North Macedonia' },
-            '+390': { minLength: 10, maxLength: 10, name: 'Italy' },
-            '+420': { minLength: 9, maxLength: 9, name: 'Czech Republic' },
-            '+421': { minLength: 9, maxLength: 9, name: 'Slovakia' },
-            '+423': { minLength: 7, maxLength: 7, name: 'Liechtenstein' },
-            '+500': { minLength: 5, maxLength: 5, name: 'Falkland Islands' },
-            '+501': { minLength: 7, maxLength: 7, name: 'Belize' },
-            '+502': { minLength: 8, maxLength: 8, name: 'Guatemala' },
-            '+503': { minLength: 8, maxLength: 8, name: 'El Salvador' },
-            '+504': { minLength: 8, maxLength: 8, name: 'Honduras' },
-            '+505': { minLength: 8, maxLength: 8, name: 'Nicaragua' },
-            '+506': { minLength: 8, maxLength: 8, name: 'Costa Rica' },
-            '+507': { minLength: 8, maxLength: 8, name: 'Panama' },
-            '+508': { minLength: 6, maxLength: 6, name: 'Saint Pierre and Miquelon' },
-            '+509': { minLength: 8, maxLength: 8, name: 'Haiti' },
-            '+590': { minLength: 9, maxLength: 9, name: 'Guadeloupe' },
-            '+591': { minLength: 8, maxLength: 8, name: 'Bolivia' },
-            '+592': { minLength: 7, maxLength: 7, name: 'Guyana' },
-            '+593': { minLength: 9, maxLength: 9, name: 'Ecuador' },
-            '+594': { minLength: 9, maxLength: 9, name: 'French Guiana' },
-            '+595': { minLength: 9, maxLength: 9, name: 'Paraguay' },
-            '+596': { minLength: 9, maxLength: 9, name: 'Martinique' },
-            '+597': { minLength: 7, maxLength: 7, name: 'Suriname' },
-            '+598': { minLength: 8, maxLength: 8, name: 'Uruguay' },
-            '+599': { minLength: 7, maxLength: 7, name: 'Netherlands Antilles' },
-            '+670': { minLength: 7, maxLength: 7, name: 'East Timor' },
-            '+672': { minLength: 5, maxLength: 5, name: 'Australian External Territories' },
-            '+673': { minLength: 7, maxLength: 7, name: 'Brunei' },
-            '+674': { minLength: 7, maxLength: 7, name: 'Nauru' },
-            '+675': { minLength: 8, maxLength: 8, name: 'Papua New Guinea' },
-            '+676': { minLength: 5, maxLength: 5, name: 'Tonga' },
-            '+677': { minLength: 7, maxLength: 7, name: 'Solomon Islands' },
-            '+678': { minLength: 7, maxLength: 7, name: 'Vanuatu' },
-            '+679': { minLength: 7, maxLength: 7, name: 'Fiji' },
-            '+680': { minLength: 7, maxLength: 7, name: 'Palau' },
-            '+681': { minLength: 6, maxLength: 6, name: 'Wallis and Futuna' },
-            '+682': { minLength: 5, maxLength: 5, name: 'Cook Islands' },
-            '+683': { minLength: 4, maxLength: 4, name: 'Niue' },
-            '+685': { minLength: 5, maxLength: 5, name: 'Samoa' },
-            '+686': { minLength: 8, maxLength: 8, name: 'Kiribati' },
-            '+687': { minLength: 6, maxLength: 6, name: 'New Caledonia' },
-            '+688': { minLength: 5, maxLength: 5, name: 'Tuvalu' },
-            '+689': { minLength: 6, maxLength: 6, name: 'French Polynesia' },
-            '+690': { minLength: 4, maxLength: 4, name: 'Tokelau' },
-            '+691': { minLength: 7, maxLength: 7, name: 'Micronesia' },
-            '+692': { minLength: 7, maxLength: 7, name: 'Marshall Islands' },
-            '+850': { minLength: 9, maxLength: 9, name: 'North Korea' },
-            '+852': { minLength: 8, maxLength: 8, name: 'Hong Kong' },
-            '+853': { minLength: 8, maxLength: 8, name: 'Macau' },
-            '+855': { minLength: 9, maxLength: 9, name: 'Cambodia' },
-            '+856': { minLength: 10, maxLength: 10, name: 'Laos' },
-            '+880': { minLength: 10, maxLength: 10, name: 'Bangladesh' },
-            '+886': { minLength: 9, maxLength: 9, name: 'Taiwan' },
-            '+960': { minLength: 7, maxLength: 7, name: 'Maldives' },
-            '+961': { minLength: 8, maxLength: 8, name: 'Lebanon' },
-            '+962': { minLength: 9, maxLength: 9, name: 'Jordan' },
-            '+963': { minLength: 9, maxLength: 9, name: 'Syria' },
-            '+964': { minLength: 10, maxLength: 10, name: 'Iraq' },
-            '+965': { minLength: 8, maxLength: 8, name: 'Kuwait' },
-            '+966': { minLength: 9, maxLength: 9, name: 'Saudi Arabia' },
-            '+967': { minLength: 9, maxLength: 9, name: 'Yemen' },
-            '+968': { minLength: 8, maxLength: 8, name: 'Oman' },
-            '+970': { minLength: 9, maxLength: 9, name: 'Palestine' },
-            '+971': { minLength: 9, maxLength: 9, name: 'UAE' },
-            '+972': { minLength: 9, maxLength: 9, name: 'Israel' },
-            '+973': { minLength: 8, maxLength: 8, name: 'Bahrain' },
-            '+974': { minLength: 8, maxLength: 8, name: 'Qatar' },
-            '+975': { minLength: 8, maxLength: 8, name: 'Bhutan' },
-            '+976': { minLength: 8, maxLength: 8, name: 'Mongolia' },
-            '+977': { minLength: 10, maxLength: 10, name: 'Nepal' },
-            '+992': { minLength: 9, maxLength: 9, name: 'Tajikistan' },
-            '+993': { minLength: 8, maxLength: 8, name: 'Turkmenistan' },
-            '+994': { minLength: 9, maxLength: 9, name: 'Azerbaijan' },
-            '+995': { minLength: 9, maxLength: 9, name: 'Georgia' },
-            '+996': { minLength: 9, maxLength: 9, name: 'Kyrgyzstan' },
-            '+998': { minLength: 9, maxLength: 9, name: 'Uzbekistan' },
-            '+1242': { minLength: 7, maxLength: 7, name: 'Bahamas' },
-            '+1246': { minLength: 7, maxLength: 7, name: 'Barbados' },
-            '+1264': { minLength: 7, maxLength: 7, name: 'Anguilla' },
-            '+1268': { minLength: 7, maxLength: 7, name: 'Antigua and Barbuda' },
-            '+1284': { minLength: 7, maxLength: 7, name: 'British Virgin Islands' },
-            '+1340': { minLength: 7, maxLength: 7, name: 'U.S. Virgin Islands' },
-            '+1345': { minLength: 7, maxLength: 7, name: 'Cayman Islands' },
-            '+1441': { minLength: 7, maxLength: 7, name: 'Bermuda' },
-            '+1473': { minLength: 7, maxLength: 7, name: 'Grenada' },
-            '+1649': { minLength: 7, maxLength: 7, name: 'Turks and Caicos Islands' },
-            '+1664': { minLength: 7, maxLength: 7, name: 'Montserrat' },
-            '+1671': { minLength: 7, maxLength: 7, name: 'Guam' },
-            '+1684': { minLength: 7, maxLength: 7, name: 'American Samoa' },
-            '+1758': { minLength: 7, maxLength: 7, name: 'Saint Lucia' },
-            '+1767': { minLength: 7, maxLength: 7, name: 'Dominica' },
-            '+1784': { minLength: 7, maxLength: 7, name: 'Saint Vincent and the Grenadines' },
-            '+1787': { minLength: 7, maxLength: 7, name: 'Puerto Rico' },
-            '+1809': { minLength: 7, maxLength: 7, name: 'Dominican Republic' },
-            '+1868': { minLength: 7, maxLength: 7, name: 'Trinidad and Tobago' },
-            '+1869': { minLength: 7, maxLength: 7, name: 'Saint Kitts and Nevis' },
-            '+1876': { minLength: 7, maxLength: 7, name: 'Jamaica' },
-            '+1939': { minLength: 7, maxLength: 7, name: 'Puerto Rico' }
-        };
-        
-        // Check if we have specific validation for this country code
-        if (countryValidations[countryCode]) {
-            const validation = countryValidations[countryCode];
-            if (number.length < validation.minLength || number.length > validation.maxLength) {
+        // Check if it's already a full Bahraini number with +973
+        if (cleaned.startsWith('973') && cleaned.length === 11) {
+            const number = cleaned.substring(3);
+            if (/^[3679]/.test(number)) {
                 return {
-                    isValid: false,
-                    error: `${validation.name} phone numbers must be ${validation.minLength}-${validation.maxLength} digits (got ${number.length})`,
-                    formatted: null,
-                    countryCode: null
+                    isValid: true,
+                    error: null,
+                    formatted: number,
+                    countryCode: '+973',
+                    fullNumber: '+973' + number
                 };
             }
         }
         
-        // Format the phone number
-        const formatted = countryCode + number;
-        
         return {
-            isValid: true,
-            error: null,
-            formatted: formatted,
-            countryCode: countryCode
+            isValid: false,
+            error: 'Phone number must be 8 digits starting with 3, 6, 7, or 9 (Bahraini format)',
+            formatted: null,
+            countryCode: null,
+            fullNumber: null
         };
     }
     
@@ -1339,6 +1387,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize
     updateContactDisplay();
     updateContactsData();
+
+
+
+
 });
 </script>
 {% endblock %}

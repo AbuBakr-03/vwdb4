@@ -20,4 +20,7 @@ urlpatterns = [
     
     # New navigation tabs
     path('roles/', views.placeholder_view, name='roles'),
+    
+    # API endpoints
+    path('api/contacts/', views.contacts_api, name='contacts_api'),
 ]

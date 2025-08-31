@@ -1,6 +1,6 @@
 /**
  * Contact Creation Form JavaScript
- * Handles form functionality, tab switching, and CSV import
+ * Handles form functionality, tab switching, CSV import, and phone numbers with full validation
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -30,33 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     
     // ============================================================================
-    // PHONE NUMBER MANAGEMENT
-    // ============================================================================
-    
-    window.addPhone = function() {
-        const phoneContainer = document.getElementById('phone-numbers');
-        const phoneDiv = document.createElement('div');
-        phoneDiv.className = 'flex gap-2';
-        phoneDiv.innerHTML = `
-            <input type="tel" name="phones[]" placeholder="+1234567890" 
-                   class="input input-bordered flex-1" />
-            <button type="button" class="btn btn-square btn-outline btn-sm" onclick="removePhone(this)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        `;
-        phoneContainer.appendChild(phoneDiv);
-    };
-    
-    window.removePhone = function(button) {
-        const phoneContainer = document.getElementById('phone-numbers');
-        if (phoneContainer.children.length > 1) {
-            button.closest('.flex').remove();
-        }
-    };
-    
-    // ============================================================================
     // FORM SUBMISSION
     // ============================================================================
     
@@ -69,25 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(contactForm);
         const data = {};
         
-                 // Handle regular fields
-         for (let [key, value] of formData.entries()) {
-             if (key === 'phones[]') {
-                 if (!data.phones) data.phones = [];
-                 if (value.trim()) data.phones.push(value.trim());
-             } else if (key === 'segments') {
-                 if (!data.segments) data.segments = [];
-                 if (value) data.segments.push(parseInt(value));
-             } else {
-                 data[key] = value;
-             }
-         }
-         
-         // Handle new segments field
-         if (data.new_segments && data.new_segments.trim()) {
-             const newSegmentNames = data.new_segments.split(',').map(s => s.trim()).filter(s => s);
-             if (!data.new_segment_names) data.new_segment_names = [];
-             data.new_segment_names = newSegmentNames;
-         }
+        // Handle regular fields
+        for (let [key, value] of formData.entries()) {
+            data[key] = value;
+        }
         
         // Validate required fields
         const errors = validateForm(data);
@@ -103,16 +61,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateForm(data) {
         const errors = [];
         
-            if (!data.first_name && !data.last_name) {
+        if (!data.first_name && !data.last_name) {
             errors.push('Contact must have first name or last name');
         }
         
-        if (data.phones && data.phones.length > 0) {
-            for (let phone of data.phones) {
-                if (!isValidPhoneNumber(phone)) {
-                    errors.push(`Invalid phone number: ${phone}`);
-                }
-            }
+        // Phone number is now required
+        if (!data.phone || !data.phone.trim()) {
+            errors.push('Phone number is required');
+        } else if (!isValidPhoneNumber(data.phone.trim())) {
+            errors.push(`Invalid phone number: ${data.phone.trim()}`);
         }
         
         return errors;
@@ -152,8 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </button>
                     </div>
                 `;
-                // Reset segments
-                document.querySelectorAll('input[name="segments"]').forEach(cb => cb.checked = false);
+                // Reset tenant_id to default
+                document.querySelector('input[name="tenant_id"]').value = 'zain_bh';
             } else {
                 showMessage(result.message, 'error');
             }
@@ -170,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ============================================================================
-    // CSV IMPORT WITH PREVIEW
+    // CSV IMPORT WITH PREVIEW AND FULL VALIDATION
     // ============================================================================
     
     let csvData = [];
@@ -195,10 +152,10 @@ document.addEventListener('DOMContentLoaded', function() {
     csvFileInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-        if (!file.name.toLowerCase().endsWith('.csv')) {
-            showMessage('Please select a valid CSV file', 'error');
-            return;
-        }
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                showMessage('Please select a valid CSV file', 'error');
+                return;
+            }
             parseCSVFile(file);
         }
     });
@@ -374,13 +331,14 @@ document.addEventListener('DOMContentLoaded', function() {
             errors.push('Contact must have first_name or last_name');
         }
         
-        // Validate phone numbers if provided
-        if (contact.phones) {
-            const phones = contact.phones.split(',').map(p => p.trim()).filter(p => p);
-            for (let phone of phones) {
-                if (!isValidPhoneNumber(cleanPhoneNumber(phone))) {
-                    errors.push(`Invalid phone number: ${phone}`);
-                }
+        // Validate phone number is required
+        const phoneNumber = contact.phone_number || contact.phones; // Support both field names
+        if (!phoneNumber || !phoneNumber.trim()) {
+            errors.push('Phone number is required');
+        } else {
+            const phone = phoneNumber.trim();
+            if (!isValidPhoneNumber(cleanPhoneNumber(phone))) {
+                errors.push(`Invalid phone number: ${phone}`);
             }
         }
         
@@ -396,32 +354,62 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function checkForDuplicate(contact) {
-        // Simplified duplicate check - in real implementation, this would check against the database
-        // For now, we'll just check against already processed contacts in this session
+        // Check for duplicates within the current batch and provide better duplicate detection
         const email = contact.email ? contact.email.toLowerCase().trim() : '';
-        const phones = contact.phones ? contact.phones.split(',').map(p => cleanPhoneNumber(p.trim())).filter(p => p) : [];
+        const phone = (contact.phone_number || contact.phones) ? cleanPhoneNumber((contact.phone_number || contact.phones).trim()) : '';
+        const externalId = contact.external_id ? contact.external_id.trim() : '';
+        const firstName = contact.first_name ? contact.first_name.trim().toLowerCase() : '';
+        const lastName = contact.last_name ? contact.last_name.trim().toLowerCase() : '';
         
         // Check against existing valid contacts in this batch
-        return validContacts.some(existing => {
+        const batchDuplicate = validContacts.some(existing => {
+            // Check by email
             if (email && existing.email && existing.email.toLowerCase().trim() === email) {
                 return true;
             }
-            if (phones.length > 0 && existing.phones) {
-                const existingPhones = existing.phones.split(',').map(p => cleanPhoneNumber(p.trim())).filter(p => p);
-                return phones.some(phone => existingPhones.includes(phone));
+            
+            // Check by external ID
+            if (externalId && existing.external_id && existing.external_id.trim() === externalId) {
+                return true;
             }
+            
+            // Check by name combination
+            if (firstName && lastName && existing.first_name && existing.last_name) {
+                const existingFirstName = existing.first_name.trim().toLowerCase();
+                const existingLastName = existing.last_name.trim().toLowerCase();
+                if (firstName === existingFirstName && lastName === existingLastName) {
+                    return true;
+                }
+            }
+            
+            // Check by phone
+            if (phone) {
+                const existingPhone = (existing.phone_number || existing.phones) ? cleanPhoneNumber((existing.phone_number || existing.phones).trim()) : '';
+                if (phone === existingPhone) {
+                    return true;
+                }
+            }
+            
             return false;
         });
+        
+        if (batchDuplicate) {
+            return true;
+        }
+        
+        // Note: We can't check against database duplicates here since this is client-side
+        // The backend will handle database duplicate checking when the CSV is actually imported
+        return false;
     }
     
     function cleanPhoneNumber(phone) {
         if (!phone) return '';
         phone = phone.trim();
-        // Add + if it's missing and looks like an international number
-        if (!phone.startsWith('+') && /^\d{8,15}$/.test(phone)) {
-            phone = '+' + phone;
+        // Ensure it's exactly 8 digits
+        if (/^\d{8}$/.test(phone)) {
+            return phone;
         }
-        return phone;
+        return phone; // Return as-is if not 8 digits
     }
     
     function isValidEmail(email) {
@@ -451,7 +439,8 @@ document.addEventListener('DOMContentLoaded', function() {
             duplicateContacts.forEach(duplicate => {
                 const div = document.createElement('div');
                 const name = `${duplicate.contact.first_name} ${duplicate.contact.last_name}`.trim();
-                div.innerHTML = `<strong>${name}</strong> - ${duplicate.reason}`;
+                const duplicateReason = getDuplicateReason(duplicate.contact, duplicate.reason);
+                div.innerHTML = `<strong>${name}</strong> - ${duplicateReason}`;
                 csvDuplicateDetails.appendChild(div);
             });
             csvDuplicateErrors.style.display = 'block';
@@ -472,40 +461,29 @@ document.addEventListener('DOMContentLoaded', function() {
         importCsvBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Importing...';
         importCsvBtn.disabled = true;
         
-                 // Convert to format expected by the backend
-         const contactsData = validContacts.map(contact => ({
-             first_name: contact.first_name || '',
-             last_name: contact.last_name || '',
-             email: contact.email || '',
-             phones: contact.phones ? contact.phones.split(',').map(p => cleanPhoneNumber(p.trim())).filter(p => p) : [],
-             company: contact.company || '',
-             segments: contact.segments ? contact.segments.split(',').map(s => s.trim()).filter(s => s) : [],
-             new_segment_names: contact.segments ? contact.segments.split(',').map(s => s.trim()).filter(s => s) : [],
-             timezone: contact.timezone || '',
-             external_id: contact.external_id || '',
-             tenant_id: contact.tenant_id || 'default'
-         }));
+        // Convert contacts back to CSV format for the backend
+        const csvContent = convertContactsToCSV(validContacts);
+        const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+        const csvFile = new File([csvBlob], 'contacts.csv', { type: 'text/csv' });
         
-        // Submit to backend (you may need to update the backend to handle batch import)
-        Promise.all(contactsData.map(contactData => 
-            fetch('', {
+        // Create FormData and submit to CSV import endpoint
+        const formData = new FormData();
+        formData.append('csv_file', csvFile);
+        
+        fetch('/people/contacts/import-csv/', {
             method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                },
-                body: JSON.stringify(contactData)
-            }).then(response => response.json())
-        ))
-        .then(results => {
-            const successful = results.filter(r => r.success).length;
-            const failed = results.filter(r => !r.success).length;
-            
-            if (successful > 0) {
-                showMessage(`Successfully imported ${successful} contacts${failed > 0 ? ` (${failed} failed)` : ''}`, 'success');
+            headers: {
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage(data.message, 'success');
                 clearCSVData();
             } else {
-                showMessage('Failed to import contacts', 'error');
+                showMessage(data.message || 'Failed to import contacts', 'error');
             }
         })
         .catch(error => {
@@ -517,6 +495,27 @@ document.addEventListener('DOMContentLoaded', function() {
             importCsvBtn.innerHTML = originalText;
             importCsvBtn.disabled = false;
         });
+    }
+    
+    function convertContactsToCSV(contacts) {
+        // Create CSV header
+        const headers = ['first_name', 'last_name', 'email', 'phone_number', 'external_id', 'tenant_id'];
+        let csvContent = headers.join(',') + '\n';
+        
+        // Add each contact as a CSV row
+        contacts.forEach(contact => {
+            const row = [
+                contact.first_name || '',
+                contact.last_name || '',
+                contact.email || '',
+                (contact.phone_number || contact.phones) || '',
+                contact.external_id || '',
+                'zain_bh'
+            ];
+            csvContent += row.map(field => `"${field}"`).join(',') + '\n';
+        });
+        
+        return csvContent;
     }
     
     function clearCSVData() {
@@ -538,14 +537,52 @@ document.addEventListener('DOMContentLoaded', function() {
     // UTILITY FUNCTIONS
     // ============================================================================
     
+    function getDuplicateReason(contact, reason) {
+        // Provide more detailed duplicate reason information
+        const reasons = [];
+        
+        if (contact.email) {
+            reasons.push('email');
+        }
+        if (contact.external_id) {
+            reasons.push('external ID');
+        }
+        if (contact.first_name && contact.last_name) {
+            reasons.push('name');
+        }
+        if (contact.phone_number || contact.phones) {
+            reasons.push('phone');
+        }
+        
+        if (reasons.length > 0) {
+            return `Duplicate detected by: ${reasons.join(', ')}`;
+        }
+        
+        return reason || 'Duplicate contact detected';
+    }
+    
     function getCSRFToken() {
+        // Try to get CSRF token from form input first
         const token = document.querySelector('[name=csrfmiddlewaretoken]');
-        return token ? token.value : '';
+        if (token) {
+            console.log('CSRF token found in form input:', token.value ? 'Yes' : 'No');
+            return token.value;
+        }
+        
+        // Fallback to meta tag
+        const metaToken = document.querySelector('meta[name="csrf-token"]');
+        if (metaToken) {
+            console.log('CSRF token found in meta tag:', metaToken.getAttribute('content') ? 'Yes' : 'No');
+            return metaToken.getAttribute('content');
+        }
+        
+        console.warn('No CSRF token found!');
+        return '';
     }
     
     function isValidPhoneNumber(phone) {
-        // Basic phone validation (E.164 format)
-        const phoneRegex = /^\+[1-9]\d{6,14}$/;
+        // Basic phone validation (8 digits only)
+        const phoneRegex = /^\d{8}$/;
         return phoneRegex.test(phone);
     }
     
@@ -560,10 +597,10 @@ document.addEventListener('DOMContentLoaded', function() {
             </svg>
             <span>${message}</span>
             <button type="button" onclick="this.parentElement.remove()" class="btn btn-ghost btn-xs">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
         `;
         
         container.appendChild(alertDiv);
@@ -593,11 +630,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // SAMPLE CSV DOWNLOAD
     // ============================================================================
     
-         window.downloadSampleCSV = function() {
-         const csvContent = `first_name,last_name,email,phones,company,segments,timezone,tenant_id
-John,Doe,john@example.com,"+1234567890,+1987654321",Acme Corp,"VIP,High Value",UTC,default
-Jane,Smith,jane@example.com,+1234567890,Tech Solutions,"Sales Qualified,Active",UTC,default
-Michael,Johnson,michael@tech.com,+1987654321,Tech Solutions,"Enterprise,VIP",UTC,default`;
+    window.downloadSampleCSV = function() {
+        const csvContent = `first_name,last_name,email,phone_number,external_id
+John,Doe,john@example.com,12345678,EMP001
+Jane,Smith,jane@example.com,87654321,EMP002
+Michael,Johnson,michael@tech.com,98765432,EMP003
+Sarah,Wilson,sarah@example.com,11223344,EMP004
+David,Brown,david@example.com,55667788,EMP005`;
         
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);

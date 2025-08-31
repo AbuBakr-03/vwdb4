@@ -260,13 +260,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================================
     
     function getCSRFToken() {
+        // Try to get CSRF token from form input first
         const token = document.querySelector('[name=csrfmiddlewaretoken]');
-        return token ? token.value : '';
+        if (token) {
+            console.log('CSRF token found in form input:', token.value ? 'Yes' : 'No');
+            return token.value;
+            }
+        
+        // Fallback to meta tag
+        const metaToken = document.querySelector('meta[name="csrf-token"]');
+        if (metaToken) {
+            console.log('CSRF token found in meta tag:', metaToken.getAttribute('content') ? 'Yes' : 'No');
+            return metaToken.getAttribute('content');
+        }
+        
+        console.warn('No CSRF token found!');
+        return '';
     }
     
     function isValidPhoneNumber(phone) {
-        // Basic phone validation (E.164 format)
-        const phoneRegex = /^\+[1-9]\d{6,14}$/;
+        // Basic phone validation (8 digits only)
+        const phoneRegex = /^\d{8}$/;
         return phoneRegex.test(phone);
     }
     
@@ -315,11 +329,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================================
     
     window.downloadSampleCSV = function() {
-        const csvContent = `party_type,first_name,last_name,email,phones,company,contact_person,segments,timezone,tenant_id
-person,John,Doe,john@example.com,"+1234567890,+1987654321",Acme Corp,,VIP;High Value,UTC,default
-person,Jane,Smith,jane@example.com,+1234567890,Tech Solutions,,Sales Qualified,UTC,default
-company,Acme Corp,,info@acme.com,+1234567890,,John Smith,Enterprise;Active,UTC,default
-company,Tech Solutions,,hello@tech.com,+1987654321,,Jane Smith,High Value;VIP,UTC,default`;
+        const csvContent = `first_name,last_name,email,phone_number,external_id
+John,Doe,john@example.com,12345678,EMP001
+Jane,Smith,jane@example.com,87654321,EMP002
+Michael,Johnson,michael@tech.com,98765432,EMP003
+Sarah,Wilson,sarah@example.com,11223344,EMP004
+David,Brown,david@example.com,55667788,EMP005`;
         
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
