@@ -90,27 +90,32 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(result => {
+            console.log('Parsed result:', result);
             if (result.success) {
+                console.log('Contact created successfully, showing success message...');
                 showMessage(result.message, 'success');
                 // Reset form
                 contactForm.reset();
-                // Reset phone numbers to single field
-                const phoneContainer = document.getElementById('phone-numbers');
-                phoneContainer.innerHTML = `
-                    <div class="flex gap-2">
-                        <input type="tel" name="phones[]" placeholder="+1234567890" 
-                               class="input input-bordered flex-1" />
-                        <button type="button" class="btn btn-square btn-outline btn-sm" onclick="removePhone(this)">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                `;
                 // Reset tenant_id to default
-                document.querySelector('input[name="tenant_id"]').value = 'zain_bh';
+                const tenantInput = document.querySelector('input[name="tenant_id"]');
+                if (tenantInput) {
+                    tenantInput.value = 'zain_bh';
+                }
+                // Don't clear messages on success - let the success message show
+                
+                // Redirect to contact list after a short delay to show the success message
+                setTimeout(() => {
+                    window.location.href = '/people/contacts/';
+                }, 2000);
             } else {
                 showMessage(result.message, 'error');
             }
@@ -373,14 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return true;
             }
             
-            // Check by name combination
-            if (firstName && lastName && existing.first_name && existing.last_name) {
-                const existingFirstName = existing.first_name.trim().toLowerCase();
-                const existingLastName = existing.last_name.trim().toLowerCase();
-                if (firstName === existingFirstName && lastName === existingLastName) {
-                    return true;
-                }
-            }
+
             
             // Check by phone
             if (phone) {
@@ -534,6 +532,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ============================================================================
+    // ERROR HANDLING AND FORM RESET
+    // ============================================================================
+    
+    function clearPreviousErrors() {
+        // Remove any existing error messages
+        const messageContainer = document.getElementById('message-container');
+        if (messageContainer) {
+            messageContainer.innerHTML = '';
+        }
+    }
+    
+    // Add event listeners to clear errors when user changes form fields
+    if (contactForm) {
+        const formInputs = contactForm.querySelectorAll('input, select, textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('input', clearPreviousErrors);
+            input.addEventListener('change', clearPreviousErrors);
+        });
+    }
+    
+    // ============================================================================
     // UTILITY FUNCTIONS
     // ============================================================================
     
@@ -547,9 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (contact.external_id) {
             reasons.push('external ID');
         }
-        if (contact.first_name && contact.last_name) {
-            reasons.push('name');
-        }
+
         if (contact.phone_number || contact.phones) {
             reasons.push('phone');
         }
@@ -587,7 +604,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showMessage(message, type = 'info') {
+        console.log(`showMessage called with: "${message}", type: ${type}`);
         const container = document.getElementById('message-container');
+        console.log('Message container found:', container);
         
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert alert-${type} mb-4 shadow-lg`;

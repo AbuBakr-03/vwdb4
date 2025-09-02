@@ -74,8 +74,8 @@ class DuplicatePreventionTestCase(TestCase):
         # Verify only one contact exists
         self.assertEqual(Contact.objects.count(), 1)
 
-    def test_duplicate_name_prevention(self):
-        """Test that contacts with duplicate names are prevented."""
+    def test_duplicate_name_allowed(self):
+        """Test that contacts with duplicate names are allowed."""
         # Try to create a contact with the same name
         data = {
             'first_name': 'John',
@@ -92,11 +92,11 @@ class DuplicatePreventionTestCase(TestCase):
             content_type='application/json'
         )
         
-        # Should fail due to duplicate name
-        self.assertEqual(response.status_code, 400)
+        # Should succeed - names are not unique
+        self.assertEqual(response.status_code, 200)
         
-        # Verify only one contact exists
-        self.assertEqual(Contact.objects.count(), 1)
+        # Verify two contacts exist
+        self.assertEqual(Contact.objects.count(), 2)
 
     def test_duplicate_phone_prevention(self):
         """Test that contacts with duplicate phone numbers are prevented."""
@@ -189,14 +189,7 @@ class DuplicatePreventionTestCase(TestCase):
         self.assertEqual(duplicates.count(), 1)
         self.assertEqual(duplicates.first(), self.existing_contact)
         
-        # Test finding duplicates by name
-        duplicates = Contact.find_duplicates(
-            first_name='John',
-            last_name='Doe',
-            tenant_id='zain_bh'
-        )
-        self.assertEqual(duplicates.count(), 1)
-        self.assertEqual(duplicates.first(), self.existing_contact)
+
         
         # Test finding duplicates by phone
         duplicates = Contact.find_duplicates(

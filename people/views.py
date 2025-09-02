@@ -132,18 +132,7 @@ def contact_create(request):
                         'message': f'Contact already exists with external ID "{external_id}" ({existing_external_id.display_name})'
                     }, status=400)
             
-            # Check for name duplicates (only if both first and last names are provided)
-            if first_name and last_name:
-                existing_name = Contact.objects.filter(
-                    tenant_id=tenant_id,
-                    first_name__iexact=first_name,
-                    last_name__iexact=last_name
-                ).first()
-                if existing_name:
-                    return JsonResponse({
-                        'success': False,
-                        'message': f'Contact already exists with name "{first_name} {last_name}" ({existing_name.phone})'
-                    }, status=400)
+
             
             # Create contact
             contact = Contact.objects.create(
@@ -361,16 +350,7 @@ def contact_import_csv(request):
                             errors.append(f"Row {row_num}: Contact already exists with external ID '{external_id}' ({existing_external_id.display_name})")
                             continue
                     
-                    # Check for name duplicates (only if both first and last names are provided)
-                    if first_name and last_name:
-                        existing_name = Contact.objects.filter(
-                            tenant_id=tenant_id,
-                            first_name__iexact=first_name,
-                            last_name__iexact=last_name
-                        ).first()
-                        if existing_name:
-                            errors.append(f"Row {row_num}: Contact already exists with name '{first_name} {last_name}' ({existing_name.phone})")
-                            continue
+
                     
                     # Create contact
                     Contact.objects.create(

@@ -10,8 +10,9 @@ The system checks for duplicates based on the following criteria:
 
 1. **Email Address** - Exact match (case-insensitive)
 2. **External ID** - Exact match (CRM/HRIS IDs)
-3. **Name Combination** - First name + Last name (case-insensitive)
-4. **Phone Number** - Exact match for phone number
+3. **Phone Number** - Exact match for phone number
+
+Note: Name combinations (first name + last name) are NOT considered duplicates, as multiple people can have the same name (e.g., Ahmad Mohammad).
 
 ### How It Works
 

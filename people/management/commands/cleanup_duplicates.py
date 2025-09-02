@@ -65,10 +65,7 @@ class Command(BaseCommand):
         if external_id_duplicates:
             duplicates['external_id'] = external_id_duplicates
         
-        # Find duplicates by name combination
-        name_duplicates = self.find_name_duplicates(tenant_id)
-        if name_duplicates:
-            duplicates['name'] = name_duplicates
+
         
         # Find duplicates by phone numbers
         phone_duplicates = self.find_phone_duplicates(tenant_id)
@@ -119,28 +116,7 @@ class Command(BaseCommand):
         
         return duplicates
 
-    def find_name_duplicates(self, tenant_id):
-        """Find contacts with duplicate name combinations."""
-        from django.db.models import Count
-        
-        duplicate_names = Contact.objects.filter(
-            tenant_id=tenant_id,
-            first_name__isnull=False,
-            last_name__isnull=False
-        ).exclude(first_name='').exclude(last_name='').values(
-            'first_name', 'last_name'
-        ).annotate(count=Count('id')).filter(count__gt=1)
-        
-        duplicates = []
-        for dup in duplicate_names:
-            contacts = Contact.objects.filter(
-                tenant_id=tenant_id,
-                first_name=dup['first_name'],
-                last_name=dup['last_name']
-            ).order_by('created_at')
-            duplicates.append(list(contacts))
-        
-        return duplicates
+
 
     def find_phone_duplicates(self, tenant_id):
         """Find contacts with duplicate phone numbers."""

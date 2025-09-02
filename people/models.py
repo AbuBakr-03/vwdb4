@@ -83,12 +83,7 @@ class Contact(models.Model):
         if kwargs.get('external_id'):
             query |= Q(external_id=kwargs['external_id'])
         
-        # Check by name combination
-        if kwargs.get('first_name') and kwargs.get('last_name'):
-            query |= Q(
-                first_name__iexact=kwargs['first_name'],
-                last_name__iexact=kwargs['last_name']
-            )
+
         
         # Check by phone number
         if kwargs.get('phone'):
