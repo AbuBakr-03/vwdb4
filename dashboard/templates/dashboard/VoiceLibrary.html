@@ -1,0 +1,820 @@
+{% extends 'base.html' %}
+
+{% block title %}Voice Library{% endblock %}
+
+{% block content %}
+<style>
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Enhanced focus styles for better accessibility */
+  .btn:focus-visible {
+    outline: 2px solid hsl(var(--p));
+    outline-offset: 2px;
+  }
+  
+  /* Ensure tag buttons have proper keyboard navigation */
+  .btn[tabindex="0"]:focus {
+    outline: 2px solid hsl(var(--p));
+    outline-offset: 2px;
+  }
+</style>
+
+<main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-24">
+  <!-- Top Bar -->
+    <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-base-content">Voice Library</h1>
+      <p class="text-base-content/70 mt-1">Discover and manage AI voices for your projects</p>
+    </div>
+      <div class="md:justify-self-end flex flex-wrap gap-2">
+        <button class="btn btn-outline btn-sm h-9 min-h-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"/>
+        </svg>
+        Import
+      </button>
+        <button class="btn btn-outline btn-sm h-9 min-h-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Sync
+      </button>
+        <button class="btn btn-primary btn-sm h-9 min-h-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        New Voice
+      </button>
+        <button class="btn btn-ghost btn-sm btn-circle h-9 min-h-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" title="Help">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Filters Card -->
+    <div class="card bg-base-200/30 border border-base-content/10">
+      <div class="card-body">
+        <!-- Search Section -->
+        <div class="space-y-4">
+          <!-- Search Header -->
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-base-content">Search & Filter</h3>
+            <div class="text-sm text-base-content/60">
+              {{ all_voices|length }} voice{{ all_voices|length|pluralize }} available
+            </div>
+          </div>
+          
+          <!-- Search Input -->
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+              <svg class="w-5 h-5 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          <input 
+            type="text" 
+            name="search" 
+            value="{{ search_query }}"
+              placeholder="Search by name, provider, or tag..." 
+              class="input input-bordered w-full pl-12 pr-4 h-12 bg-base-100 border-base-content/15 hover:border-base-content/25 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-base placeholder:text-base-content/50"
+          >
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider my-6 opacity-50"></div>
+
+        <!-- Filters Section -->
+        <div class="space-y-5">
+          <!-- Filters Header -->
+          <div class="flex items-center justify-between">
+            <h4 class="text-base font-medium text-base-content">Filter Options</h4>
+            {% if search_query or filters.selected_provider or filters.selected_gender or filters.selected_accent or filters.selected_language %}
+              <button type="button" onclick="resetFilters()" class="text-sm text-primary hover:text-primary/80 font-medium transition-colors">
+                Clear All
+              </button>
+            {% endif %}
+          </div>
+          
+          <!-- Filter Controls -->
+          <form method="GET" class="space-y-4">
+            <!-- Primary Filters Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Provider Dropdown -->
+              <div class="form-control">
+                <label class="label pb-2">
+                  <span class="label-text text-sm font-medium">Provider</span>
+                </label>
+                <div class="dropdown dropdown-bottom w-full">
+                  <div tabindex="0" role="button" class="btn btn-outline w-full h-11 justify-between normal-case font-normal hover:bg-base-200/50 focus:ring-2 focus:ring-primary/20 transition-all">
+                    <span class="flex items-center gap-2">
+                      <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+              {% if filters.selected_provider %}
+                        {{ filters.selected_provider|length }} selected
+                      {% else %}
+                        All Providers
+              {% endif %}
+                    </span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+            </div>
+                  <div tabindex="0" class="dropdown-content menu bg-base-100 rounded-xl w-full mt-2 p-3 shadow-lg border border-base-content/10 z-20 max-h-48 overflow-y-auto">
+              {% for provider in filters.providers %}
+                      <label class="label cursor-pointer justify-start py-2 hover:bg-base-200/50 rounded-lg px-2 transition-colors">
+                  <input type="checkbox" name="provider" value="{{ provider }}" 
+                         {% if provider in filters.selected_provider %}checked{% endif %}
+                               class="checkbox checkbox-primary checkbox-sm">
+                        <span class="label-text ml-3 font-medium">{{ provider }}</span>
+                </label>
+              {% endfor %}
+                  </div>
+            </div>
+          </div>
+
+              <!-- Gender Select -->
+              <div class="form-control">
+                <label class="label pb-2">
+                  <span class="label-text text-sm font-medium">Gender</span>
+                </label>
+                <select name="gender" class="select select-bordered w-full h-11 bg-base-100 hover:bg-base-200/50 focus:ring-2 focus:ring-primary/20 transition-all">
+            <option value="">All Genders</option>
+            {% for gender in filters.genders %}
+              <option value="{{ gender }}" {% if gender == filters.selected_gender %}selected{% endif %}>
+                {{ gender }}
+              </option>
+            {% endfor %}
+          </select>
+              </div>
+
+              <!-- Accent Select -->
+              <div class="form-control">
+                <label class="label pb-2">
+                  <span class="label-text text-sm font-medium">Accent</span>
+                </label>
+                <select name="accent" class="select select-bordered w-full h-11 bg-base-100 hover:bg-base-200/50 focus:ring-2 focus:ring-primary/20 transition-all">
+            <option value="">All Accents</option>
+            {% for accent in filters.accents %}
+              <option value="{{ accent }}" {% if accent == filters.selected_accent %}selected{% endif %}>
+                {{ accent }}
+              </option>
+            {% endfor %}
+          </select>
+              </div>
+
+              <!-- Language Select -->
+              <div class="form-control">
+                <label class="label pb-2">
+                  <span class="label-text text-sm font-medium">Language</span>
+                </label>
+                <select name="language" class="select select-bordered w-full h-11 bg-base-100 hover:bg-base-200/50 focus:ring-2 focus:ring-primary/20 transition-all">
+            <option value="">All Languages</option>
+            {% for language in filters.languages %}
+              <option value="{{ language }}" {% if language == filters.selected_language %}selected{% endif %}>
+                {{ language }}
+              </option>
+            {% endfor %}
+          </select>
+              </div>
+            </div>
+
+            <!-- Secondary Controls Row -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+              <!-- Sort Control -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-base-content/80">Sort by:</span>
+                <select name="sort" class="select select-bordered select-sm h-9 bg-base-100 hover:bg-base-200/50 focus:ring-2 focus:ring-primary/20 transition-all min-w-32">
+            <option value="popular" {% if filters.sort_by == 'popular' %}selected{% endif %}>Popular</option>
+            <option value="price_low" {% if filters.sort_by == 'price_low' %}selected{% endif %}>Price ↑</option>
+            <option value="price_high" {% if filters.sort_by == 'price_high' %}selected{% endif %}>Price ↓</option>
+            <option value="latency" {% if filters.sort_by == 'latency' %}selected{% endif %}>Latency</option>
+          </select>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-3">
+                <button type="button" onclick="resetFilters()" class="btn btn-ghost btn-sm h-9 px-4 hover:bg-base-200/50 transition-all">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  </svg>
+                  Reset
+                </button>
+                <button type="submit" class="btn btn-primary btn-sm h-9 px-6 hover:bg-primary/90 transition-all">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+                  </svg>
+            Apply Filters
+          </button>
+              </div>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+    
+
+  <!-- Recommended Voices -->
+    <div>
+    <h2 class="text-2xl font-semibold text-base-content mb-6">Recommended Voices</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-7">
+      {% for voice in recommended_voices %}
+          <div class="card h-full bg-base-200/50 border border-base-content/10 hover:shadow-lg transition group">
+          <figure class="relative aspect-square overflow-hidden rounded-t-2xl">
+            <img src="{{ voice.cover_image }}" alt="{{ voice.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            <!-- Preview Button Overlay -->
+              <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <button class="btn btn-circle btn-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" title="Preview voice">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </button>
+            </div>
+            <!-- Provider Badge -->
+            <div class="absolute top-3 left-3">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary/90 text-primary-content backdrop-blur-sm shadow-sm">{{ voice.provider }}</span>
+            </div>
+          </figure>
+            <div class="card-body p-4 flex flex-col">
+              <h3 class="card-title text-lg leading-tight">{{ voice.name }}</h3>
+              <p class="text-sm text-base-content/60">{{ voice.use_cases }}</p>
+            
+            <!-- Tags -->
+              <div class="flex flex-wrap gap-2 mt-3">
+              {% for tag in voice.tags %}
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-base-200/80 text-base-content/80 border border-base-content/10 hover:bg-base-200 transition-colors">{{ tag }}</span>
+              {% endfor %}
+            </div>
+
+            <!-- Footer with Price and Latency -->
+              <div class="mt-auto pt-3 flex justify-between items-center text-xs">
+                <div class="font-mono text-sm">${{ voice.price_min }}–${{ voice.price_max }}/min</div>
+                <div class="text-base-content/60">~{{ voice.latency_min }}–{{ voice.latency_max }}ms</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- All Voices -->
+  <div>
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-semibold text-base-content">All Voices</h2>
+        <div class="text-sm text-base-content/60">
+        {{ all_voices|length }} voice{{ all_voices|length|pluralize }}
+      </div>
+    </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 lg:gap-5">
+      {% for voice in all_voices %}
+          <div class="rounded-3xl border border-base-content/10 bg-base-200/30 backdrop-blur p-4 md:p-5 relative flex flex-col gap-3 min-h-[240px] transition-transform hover:-translate-y-0.5 active:scale-[0.98] group">
+            <!-- Header Row: Avatar + Name -->
+            <div class="flex items-start gap-3">
+              <!-- Avatar -->
+              <img src="{{ voice.avatar }}" alt="{{ voice.name }}" class="w-14 h-14 rounded-full object-cover ring-2 ring-base-100/30 flex-shrink-0">
+              
+              <!-- Name & Provider Stack -->
+              <div class="flex-1 min-w-0 space-y-1">
+                <!-- Name (full width, no truncation conflict) -->
+                <h3 class="text-lg font-bold text-base-content truncate leading-tight">{{ voice.name }}</h3>
+                
+                <!-- Provider Badge (below name, left-aligned) -->
+                <div class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-info/10 text-info border border-info/20 hover:bg-info/15 transition-colors cursor-default">
+                  {{ voice.provider }}
+                </div>
+              </div>
+                </div>
+                
+            <!-- Cost/Latency Row (under provider badge) -->
+            <div class="text-sm text-base-content/70 flex items-center gap-2">
+              <span class="font-mono font-medium">${{ voice.price }}/min</span>
+              <span class="w-1 h-1 bg-base-content/30 rounded-full"></span>
+                  <span>~{{ voice.latency }}ms</span>
+                </div>
+
+            <!-- Tag Scroller (single horizontal line) -->
+            <div class="overflow-x-auto no-scrollbar -mx-1 px-1 snap-x">
+              <div class="flex gap-2 min-w-max">
+                  {% for tag in voice.tags %}
+                  <button class="btn btn-sm btn-outline rounded-full snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hover:scale-105 transition-transform" tabindex="0" aria-label="{{ tag }} tag">{{ tag }}</button>
+                  {% endfor %}
+              </div>
+                </div>
+
+            <!-- Actions (Bottom Centered with Perfect Alignment) -->
+            <div class="mt-auto pt-2 flex justify-center gap-3">
+              <button class="flex items-center justify-center w-10 h-10 rounded-lg bg-base-200/50 hover:bg-base-200 text-base-content/70 hover:text-base-content transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hover:scale-105 tooltip" 
+                      data-tip="Play preview" 
+                      aria-label="Play preview"
+                      tabindex="0"
+                      onclick="previewVoice('{{ voice.id }}')">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </button>
+              <button class="flex items-center justify-center w-10 h-10 rounded-lg bg-base-200/50 hover:bg-base-200 text-base-content/70 hover:text-base-content transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hover:scale-105 tooltip" 
+                      data-tip="Voice info" 
+                      aria-label="Voice info"
+                      tabindex="0"
+                      onclick="openVoiceDetails('{{ voice.id }}')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </button>
+              <button class="flex items-center justify-center w-10 h-10 rounded-lg bg-base-200/50 hover:bg-base-200 text-base-content/70 hover:text-base-content transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hover:scale-105 tooltip" 
+                      data-tip="Copy voice ID" 
+                      aria-label="Copy voice ID"
+                      tabindex="0"
+                      onclick="copyVoiceId('{{ voice.id }}')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                  </button>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-span-full">
+            <div class="card bg-base-200/30 border border-base-content/10">
+            <div class="card-body text-center py-12">
+              <div class="text-6xl text-base-content/20 mb-4">🔍</div>
+              <h3 class="text-xl font-semibold text-base-content mb-2">No voices found</h3>
+                <p class="text-base-content/60">Try adjusting your search or filters to find more voices.</p>
+                <button onclick="resetFilters()" class="btn btn-primary btn-sm mt-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">Reset Filters</button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Load More -->
+    {% if all_voices|length >= 8 %}
+      <div class="text-center mt-8">
+          <button class="btn btn-outline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">Load More Voices</button>
+        </div>
+      {% endif %}
+    </div>
+</main>
+
+
+
+<script>
+// Filter management
+function resetFilters() {
+  window.location.href = window.location.pathname;
+}
+
+
+
+// Voice actions
+function previewVoice(voiceId) {
+  console.log('Preview voice:', voiceId);
+  // Add preview functionality
+}
+
+function openVoiceDetails(voiceId) {
+  document.getElementById('voice-details-drawer').checked = true;
+  
+  // Show loading state
+  document.getElementById('voice-details-content').innerHTML = `
+    <div class="text-center py-12">
+      <div class="loading loading-spinner loading-lg text-primary"></div>
+      <p class="text-base-content/70 mt-4">Loading voice details...</p>
+    </div>
+  `;
+  
+  // Simulate API call and load voice details
+  setTimeout(() => {
+    const voiceData = getVoiceData(voiceId);
+    
+    document.getElementById('voice-details-content').innerHTML = `
+      <div class="space-y-4 sm:space-y-6" id="voice-details-container">
+        <!-- Voice Header -->
+        <div class="text-center">
+          <div class="avatar mb-3 sm:mb-4">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ring-2 ring-base-content/20">
+              <img src="${voiceData.avatar}" alt="${voiceData.name}" class="object-cover w-full h-full">
+            </div>
+          </div>
+          <h4 class="text-xl sm:text-2xl font-bold text-base-content mb-2 px-2">${voiceData.name}</h4>
+          <div class="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-primary/10 text-primary border border-primary/20">
+            ${voiceData.provider}
+          </div>
+          
+          <!-- Quick Actions -->
+          <div class="flex justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">
+            <button class="btn btn-sm btn-circle btn-ghost hover:bg-base-200" onclick="previewVoice('${voiceId}')" title="Play Preview">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <button class="btn btn-sm btn-circle btn-ghost hover:bg-base-200" onclick="copyVoiceId('${voiceId}')" title="Copy ID">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Tabs -->
+        <div class="tabs tabs-boxed tabs-sm sm:tabs-lg justify-center bg-base-200/50 overflow-x-auto" role="tablist">
+          <button class="tab tab-active font-medium text-xs sm:text-sm whitespace-nowrap" onclick="switchVoiceTab('overview')" data-tab="overview">Overview</button>
+          <button class="tab font-medium text-xs sm:text-sm whitespace-nowrap" onclick="switchVoiceTab('pricing')" data-tab="pricing">Pricing</button>
+          <button class="tab font-medium text-xs sm:text-sm whitespace-nowrap" onclick="switchVoiceTab('latency')" data-tab="latency">Latency</button>
+          <button class="tab font-medium text-xs sm:text-sm whitespace-nowrap" onclick="switchVoiceTab('samples')" data-tab="samples">Samples</button>
+        </div>
+
+        <!-- Tab Content Container -->
+        <div id="tab-content-container" class="min-h-0">
+          ${getOverviewTabContent(voiceData)}
+        </div>
+      </div>
+    `;
+  }, 300);
+}
+
+// Get voice data (in real app, this would be an API call)
+function getVoiceData(voiceId) {
+  // Mock data - in real app, fetch from API
+  const voiceDatabase = {
+    'charlie-playht': {
+      name: 'Charlie',
+      provider: 'PlayHT',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+      gender: 'Male',
+      accent: 'American',
+      language: 'English',
+      price: '$0.032/min',
+      latency: '~350ms',
+      tags: ['Professional', 'Friendly', 'Corporate'],
+      description: 'A warm, professional male voice perfect for business presentations and corporate communications.',
+      useCases: ['Business Presentations', 'E-learning', 'Corporate Videos', 'IVR Systems'],
+      samples: [
+        { name: 'Business Greeting', duration: '0:15', url: '#' },
+        { name: 'Product Demo', duration: '0:30', url: '#' },
+        { name: 'Training Module', duration: '0:45', url: '#' }
+      ]
+    },
+    'beth-gentle': {
+      name: 'Beth',
+      provider: 'ElevenLabs',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b6ebe55a?w=100&h=100&fit=crop&crop=face',
+      gender: 'Female',
+      accent: 'American',
+      language: 'English',
+      price: '$0.036/min',
+      latency: '~400ms',
+      tags: ['Gentle', 'Soothing', 'Narrative'],
+      description: 'A gentle, calming female voice ideal for meditation, audiobooks, and therapeutic applications.',
+      useCases: ['Audiobooks', 'Meditation Apps', 'Healthcare', 'Customer Service'],
+      samples: [
+        { name: 'Meditation Guide', duration: '1:00', url: '#' },
+        { name: 'Story Narration', duration: '0:45', url: '#' },
+        { name: 'Customer Support', duration: '0:20', url: '#' }
+      ]
+    }
+  };
+  
+  return voiceDatabase[voiceId] || voiceDatabase['beth-gentle'];
+}
+
+// Tab switching functionality
+function switchVoiceTab(tabName) {
+  // Update tab active states
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('tab-active');
+  });
+  document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-active');
+  
+  // Get current voice data
+  const voiceId = getCurrentVoiceId();
+  const voiceData = getVoiceData(voiceId);
+  
+  // Update tab content
+  const contentContainer = document.getElementById('tab-content-container');
+  
+  switch(tabName) {
+    case 'overview':
+      contentContainer.innerHTML = getOverviewTabContent(voiceData);
+      break;
+    case 'pricing':
+      contentContainer.innerHTML = getPricingTabContent(voiceData);
+      break;
+    case 'latency':
+      contentContainer.innerHTML = getLatencyTabContent(voiceData);
+      break;
+    case 'samples':
+      contentContainer.innerHTML = getSamplesTabContent(voiceData);
+      break;
+  }
+}
+
+// Get current voice ID from the modal
+function getCurrentVoiceId() {
+  const nameElement = document.querySelector('#voice-details-container h4');
+  return nameElement ? nameElement.textContent.toLowerCase().replace(/\s+/g, '-') + '-' + document.querySelector('#voice-details-container .bg-primary\\/10').textContent.toLowerCase() : 'beth-gentle';
+}
+
+// Tab content generators
+function getOverviewTabContent(voiceData) {
+  return `
+    <div class="space-y-4 sm:space-y-6">
+      <!-- Description -->
+      <div class="card bg-base-200/30 border border-base-content/10">
+        <div class="card-body p-3 sm:p-4">
+          <h5 class="font-semibold mb-2 text-sm sm:text-base">Description</h5>
+          <p class="text-base-content/80 text-xs sm:text-sm leading-relaxed">${voiceData.description}</p>
+        </div>
+      </div>
+      
+      <!-- Voice Characteristics -->
+      <div class="grid grid-cols-2 gap-2 sm:gap-3">
+        <div class="stat bg-base-200/30 rounded-xl border border-base-content/10 p-3 sm:p-4">
+          <div class="stat-title text-xs">Gender</div>
+          <div class="stat-value text-sm sm:text-base font-semibold truncate">${voiceData.gender}</div>
+        </div>
+        <div class="stat bg-base-200/30 rounded-xl border border-base-content/10 p-3 sm:p-4">
+          <div class="stat-title text-xs">Accent</div>
+          <div class="stat-value text-sm sm:text-base font-semibold truncate">${voiceData.accent}</div>
+        </div>
+        <div class="stat bg-base-200/30 rounded-xl border border-base-content/10 p-3 sm:p-4">
+          <div class="stat-title text-xs">Language</div>
+          <div class="stat-value text-sm sm:text-base font-semibold truncate">${voiceData.language}</div>
+        </div>
+        <div class="stat bg-base-200/30 rounded-xl border border-base-content/10 p-3 sm:p-4">
+          <div class="stat-title text-xs">Provider</div>
+          <div class="stat-value text-sm sm:text-base font-semibold truncate">${voiceData.provider}</div>
+        </div>
+      </div>
+      
+      <!-- Voice Tags -->
+      <div class="card bg-base-200/30 border border-base-content/10">
+        <div class="card-body p-3 sm:p-4">
+          <h5 class="font-semibold mb-3 text-sm sm:text-base">Voice Characteristics</h5>
+          <div class="flex flex-wrap gap-1.5 sm:gap-2">
+            ${voiceData.tags.map(tag => `
+              <span class="badge badge-outline badge-sm text-xs">${tag}</span>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Use Cases -->
+      <div class="card bg-base-200/30 border border-base-content/10">
+        <div class="card-body p-3 sm:p-4">
+          <h5 class="font-semibold mb-3 text-sm sm:text-base">Recommended Use Cases</h5>
+          <div class="space-y-2">
+            ${voiceData.useCases.map(useCase => `
+              <div class="flex items-center gap-2">
+                <svg class="w-3 h-3 sm:w-4 sm:h-4 text-success flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-xs sm:text-sm">${useCase}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getPricingTabContent(voiceData) {
+  return `
+    <div class="space-y-4 sm:space-y-6">
+      <!-- Current Price -->
+      <div class="card bg-primary/5 border border-primary/20">
+        <div class="card-body p-4 sm:p-6 text-center">
+          <div class="text-2xl sm:text-3xl font-bold text-primary mb-2">${voiceData.price}</div>
+          <p class="text-base-content/70 text-xs sm:text-sm">per minute of generated audio</p>
+        </div>
+      </div>
+      
+      <!-- Pricing Tiers -->
+      <div class="space-y-3 sm:space-y-4">
+        <h5 class="font-semibold text-sm sm:text-base">Volume Pricing</h5>
+        <div class="overflow-x-auto">
+          <table class="table table-xs sm:table-sm w-full">
+            <thead>
+              <tr>
+                <th class="text-xs">Usage Tier</th>
+                <th class="text-xs">Price/Min</th>
+                <th class="text-xs hidden sm:table-cell">Monthly Commitment</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-xs sm:text-sm">Starter</td>
+                <td class="text-xs sm:text-sm">$0.040/min</td>
+                <td class="text-xs sm:text-sm hidden sm:table-cell">0 - 1,000 minutes</td>
+              </tr>
+              <tr class="bg-primary/5">
+                <td class="text-xs sm:text-sm">Professional</td>
+                <td class="text-xs sm:text-sm"><strong>${voiceData.price}</strong></td>
+                <td class="text-xs sm:text-sm hidden sm:table-cell">1,000 - 10,000 minutes</td>
+              </tr>
+              <tr>
+                <td class="text-xs sm:text-sm">Enterprise</td>
+                <td class="text-xs sm:text-sm">$0.028/min</td>
+                <td class="text-xs sm:text-sm hidden sm:table-cell">10,000+ minutes</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Cost Calculator -->
+      <div class="card bg-base-200/30 border border-base-content/10">
+        <div class="card-body p-3 sm:p-4">
+          <h5 class="font-semibold mb-3 text-sm sm:text-base">Cost Calculator</h5>
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text text-xs sm:text-sm">Minutes per month</span>
+            </label>
+            <input type="number" placeholder="1000" class="input input-bordered input-sm h-10" 
+                   oninput="updateCostCalculation(this.value, '${voiceData.price}')">
+          </div>
+          <div class="mt-3 p-3 bg-base-200/50 rounded-lg">
+            <div class="text-xs sm:text-sm text-base-content/70">Estimated monthly cost:</div>
+            <div class="text-base sm:text-lg font-semibold" id="cost-result">$32.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getLatencyTabContent(voiceData) {
+  return `
+    <div class="space-y-6">
+      <!-- Current Latency -->
+      <div class="card bg-info/5 border border-info/20">
+        <div class="card-body p-6 text-center">
+          <div class="text-3xl font-bold text-info mb-2">${voiceData.latency}</div>
+          <p class="text-base-content/70">average response time</p>
+        </div>
+      </div>
+      
+      <!-- Latency Breakdown -->
+        <div class="space-y-4">
+        <h5 class="font-semibold">Performance Metrics</h5>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center p-3 bg-base-200/30 rounded-lg">
+            <span class="text-sm">Processing Time</span>
+            <span class="font-semibold">~280ms</span>
+          </div>
+          <div class="flex justify-between items-center p-3 bg-base-200/30 rounded-lg">
+            <span class="text-sm">Network Latency</span>
+            <span class="font-semibold">~70ms</span>
+          </div>
+          <div class="flex justify-between items-center p-3 bg-base-200/30 rounded-lg">
+            <span class="text-sm">Buffer Time</span>
+            <span class="font-semibold">~50ms</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Performance Chart Placeholder -->
+      <div class="card bg-base-200/30 border border-base-content/10">
+        <div class="card-body p-4">
+          <h5 class="font-semibold mb-3">24-Hour Performance</h5>
+          <div class="h-32 bg-base-200/50 rounded-lg flex items-center justify-center">
+            <div class="text-center text-base-content/50">
+              <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+              <p class="text-xs">Performance chart would display here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getSamplesTabContent(voiceData) {
+  return `
+    <div class="space-y-6">
+      <!-- Audio Samples -->
+      <div class="space-y-4">
+        <h5 class="font-semibold">Voice Samples</h5>
+        ${voiceData.samples.map((sample, index) => `
+          <div class="card bg-base-200/30 border border-base-content/10">
+            <div class="card-body p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h6 class="font-medium">${sample.name}</h6>
+                  <p class="text-sm text-base-content/70">${sample.duration}</p>
+                </div>
+                <div class="flex gap-2">
+                  <button class="btn btn-sm btn-circle btn-ghost" onclick="playSample('${sample.url}', ${index})" title="Play Sample">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </button>
+                  <button class="btn btn-sm btn-circle btn-ghost" onclick="downloadSample('${sample.url}')" title="Download">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <!-- Audio player would go here -->
+              <div class="mt-3 p-2 bg-base-200/50 rounded text-center text-xs text-base-content/50">
+                Audio player placeholder
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <!-- Custom Sample Generator -->
+      <div class="card bg-base-200/30 border border-base-content/10">
+        <div class="card-body p-4">
+          <h5 class="font-semibold mb-3">Generate Custom Sample</h5>
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Enter text to generate</span>
+            </label>
+            <textarea class="textarea textarea-bordered" placeholder="Enter your text here to hear how it sounds with this voice..." rows="3"></textarea>
+          </div>
+          <div class="mt-3">
+            <button class="btn btn-primary btn-sm">Generate Sample</button>
+          </div>
+          </div>
+        </div>
+      </div>
+    `;
+}
+
+// Helper functions
+function updateCostCalculation(minutes, priceString) {
+  const price = parseFloat(priceString.replace('$', '').replace('/min', ''));
+  const cost = minutes * price;
+  document.getElementById('cost-result').textContent = `$${cost.toFixed(2)}`;
+}
+
+function playSample(url, index) {
+  console.log(`Playing sample ${index}: ${url}`);
+  // Implement audio playback
+}
+
+function downloadSample(url) {
+  console.log(`Downloading sample: ${url}`);
+  // Implement sample download
+}
+
+function copyVoiceId(voiceId) {
+  navigator.clipboard.writeText(voiceId).then(() => {
+    // Show standardized success toast
+    showSuccessToast(`Voice ID "${voiceId}" copied to clipboard!`);
+  }).catch(() => {
+    // Show error toast if clipboard fails
+    showErrorToast('Failed to copy voice ID to clipboard');
+  });
+}
+
+// Form auto-submit on filter change
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form[method="GET"]');
+  const selects = form.querySelectorAll('select');
+  
+  selects.forEach(select => {
+    select.addEventListener('change', () => {
+      form.submit();
+    });
+  });
+  
+  // Enhanced keyboard accessibility for tag buttons and action buttons
+  const tagButtons = document.querySelectorAll('.btn[tabindex="0"]');
+  tagButtons.forEach(button => {
+    button.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+  
+  // Add keyboard navigation for action buttons
+  const actionButtons = document.querySelectorAll('[aria-label]');
+  actionButtons.forEach(button => {
+    button.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

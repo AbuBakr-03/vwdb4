@@ -9,7 +9,38 @@ from django.db.models import Q
 import json
 import csv
 import io
-from .models import Contact, Segment, PartyType
+from .models import Contact, Segment
+
+
+@login_required
+def address_book(request):
+    """Main address book page with tabs for contacts and segments."""
+    # Get search parameters
+    search_query = request.GET.get('search', '')
+    
+    # Base queryset for contacts (filter by tenant in production)
+    contacts = Contact.objects.all()
+    
+    # Apply filters
+    if search_query:
+        contacts = contacts.filter(
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(external_id__icontains=search_query)
+        )
+    
+    # Pagination for contacts
+    paginator = Paginator(contacts, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'contacts': page_obj,
+        'search_query': search_query,
+    }
+    
+    return render(request, 'people/address_book.html', context)
 
 
 @login_required
@@ -17,8 +48,6 @@ def contact_list(request):
     """Display list of contacts with search and filtering."""
     # Get search parameters
     search_query = request.GET.get('search', '')
-    party_type = request.GET.get('party_type', '')
-    segment_id = request.GET.get('segment', '')
     
     # Base queryset (filter by tenant in production)
     contacts = Contact.objects.all()
@@ -28,34 +57,18 @@ def contact_list(request):
         contacts = contacts.filter(
             Q(first_name__icontains=search_query) |
             Q(last_name__icontains=search_query) |
-            Q(name__icontains=search_query) |
             Q(email__icontains=search_query) |
-            Q(company__icontains=search_query) |
-            Q(contact_person__icontains=search_query) |
             Q(external_id__icontains=search_query)
         )
-    
-    if party_type:
-        contacts = contacts.filter(party_type=party_type)
-    
-    if segment_id:
-        contacts = contacts.filter(segments__contains=[int(segment_id)])
     
     # Pagination
     paginator = Paginator(contacts, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # Get segments for filter dropdown
-    segments = Segment.objects.all()
-    
     context = {
         'contacts': page_obj,
-        'segments': segments,
-        'party_types': PartyType.choices,
         'search_query': search_query,
-        'selected_party_type': party_type,
-        'selected_segment': segment_id,
     }
     
     return render(request, 'people/contact_list.html', context)
@@ -68,20 +81,67 @@ def contact_create(request):
         try:
             data = json.loads(request.body)
             
+            # Validate required fields
+            if not data.get('phone'):
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Phone number is required'
+                }, status=400)
+            
+            # Check for duplicates before creating
+            tenant_id = data.get('tenant_id', 'zain_bh')
+            phone = data.get('phone', '').strip()
+            first_name = data.get('first_name', '').strip()
+            last_name = data.get('last_name', '').strip()
+            email = data.get('email', '').strip()
+            external_id = data.get('external_id', '').strip()
+            
+            # Check for phone duplicates first (most important)
+            if phone:
+                existing_phone = Contact.objects.filter(
+                    tenant_id=tenant_id,
+                    phone=phone
+                ).first()
+                if existing_phone:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Contact already exists with phone number "{phone}" ({existing_phone.display_name})'
+                    }, status=400)
+            
+            # Check for email duplicates
+            if email:
+                existing_email = Contact.objects.filter(
+                    tenant_id=tenant_id,
+                    email=email
+                ).first()
+                if existing_email:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Contact already exists with email "{email}" ({existing_email.display_name})'
+                    }, status=400)
+            
+            # Check for external_id duplicates
+            if external_id:
+                existing_external_id = Contact.objects.filter(
+                    tenant_id=tenant_id,
+                    external_id=external_id
+                ).first()
+                if existing_external_id:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Contact already exists with external ID "{external_id}" ({existing_external_id.display_name})'
+                    }, status=400)
+            
+
+            
             # Create contact
             contact = Contact.objects.create(
-                party_type=data.get('party_type', PartyType.PERSON),
                 external_id=data.get('external_id', ''),
                 first_name=data.get('first_name', ''),
                 last_name=data.get('last_name', ''),
-                name=data.get('name', ''),
                 email=data.get('email', ''),
-                phones=data.get('phones', []),
-                timezone=data.get('timezone', ''),
-                company=data.get('company', ''),
-                contact_person=data.get('contact_person', ''),
-                segments=data.get('segments', []),
-                tenant_id=data.get('tenant_id', 'default'),  # In production, get from request
+                phone=data.get('phone'),
+                tenant_id=tenant_id,
                 created_by=request.user
             )
             
@@ -97,14 +157,7 @@ def contact_create(request):
                 'message': f'Error creating contact: {str(e)}'
             }, status=400)
     
-    # Get segments for the form
-    segments = Segment.objects.all()
-    
-    context = {
-        'segments': segments,
-        'party_types': PartyType.choices,
-    }
-    
+    context = {}
     return render(request, 'people/contact_create.html', context)
 
 
@@ -118,17 +171,11 @@ def contact_edit(request, contact_id):
             data = json.loads(request.body)
             
             # Update contact fields
-            contact.party_type = data.get('party_type', contact.party_type)
             contact.external_id = data.get('external_id', contact.external_id)
             contact.first_name = data.get('first_name', contact.first_name)
             contact.last_name = data.get('last_name', contact.last_name)
-            contact.name = data.get('name', contact.name)
             contact.email = data.get('email', contact.email)
-            contact.phones = data.get('phones', contact.phones)
-            contact.timezone = data.get('timezone', contact.timezone)
-            contact.company = data.get('company', contact.company)
-            contact.contact_person = data.get('contact_person', contact.contact_person)
-            contact.segments = data.get('segments', contact.segments)
+            contact.phone = data.get('phone', contact.phone)
             
             contact.save()
             
@@ -143,13 +190,8 @@ def contact_edit(request, contact_id):
                 'message': f'Error updating contact: {str(e)}'
             }, status=400)
     
-    # Get segments for the form
-    segments = Segment.objects.all()
-    
     context = {
         'contact': contact,
-        'segments': segments,
-        'party_types': PartyType.choices,
     }
     
     return render(request, 'people/contact_edit.html', context)
@@ -162,19 +204,76 @@ def contact_delete(request, contact_id):
         try:
             contact = get_object_or_404(Contact, id=contact_id)
             contact.delete()
-            
-            return JsonResponse({
-                'success': True,
-                'message': 'Contact deleted successfully'
-            })
-            
+            return JsonResponse({'success': True, 'message': 'Contact deleted successfully'})
         except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'message': f'Error deleting contact: {str(e)}'
-            }, status=400)
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)
     
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
+
+@login_required
+def contacts_api(request):
+    """API endpoint for fetching contacts for campaigns."""
+    try:
+        # Get search parameters
+        search_query = request.GET.get('search', '')
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 50))
+        
+        # Base queryset - filter by tenant in production
+        contacts = Contact.objects.all()
+        
+        # Apply search filter
+        if search_query:
+            contacts = contacts.filter(
+                Q(first_name__icontains=search_query) |
+                Q(last_name__icontains=search_query) |
+                Q(email__icontains=search_query) |
+                Q(external_id__icontains=search_query)
+            )
+        
+        # Pagination
+        paginator = Paginator(contacts, per_page)
+        page_obj = paginator.get_page(page)
+        
+        # Prepare contacts data
+        contacts_data = []
+        for contact in page_obj:
+            contact_data = {
+                'id': contact.id,
+                'first_name': contact.first_name or '',
+                'last_name': contact.last_name or '',
+                'name': '',  # Not used for person type
+                'email': contact.email or '',
+                'company': '',  # Removed
+                'contact_person': '',  # Not used for person type
+                'party_type': 'person',  # All contacts are persons in current model
+                'phones': [contact.phone] if contact.phone else [],
+                'external_id': contact.external_id or '',
+                'segments': [],  # Removed
+                'display_name': contact.display_name,
+                'primary_phone': contact.primary_phone
+            }
+            contacts_data.append(contact_data)
+        
+        return JsonResponse({
+            'success': True,
+            'contacts': contacts_data,
+            'segments': [],  # Removed segments
+            'pagination': {
+                'page': page_obj.number,
+                'total_pages': paginator.num_pages,
+                'total_count': paginator.count,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous()
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
 
 
 @login_required
@@ -199,54 +298,68 @@ def contact_import_csv(request):
             
             for row_num, row in enumerate(csv_reader, start=2):
                 try:
+                    # Parse phone number
+                    phone = row.get('phone_number', '').strip()
+                    if not phone and row.get('phones'):  # Fallback for backward compatibility
+                        phone = row['phones'].strip()
+                    
                     # Validate required fields
-                    if not row.get('party_type'):
-                        errors.append(f"Row {row_num}: Missing party_type")
+                    if not (row.get('first_name') or row.get('last_name')):
+                        errors.append(f"Row {row_num}: Contact must have first_name or last_name")
                         continue
                     
-                    if row['party_type'] == 'person' and not (row.get('first_name') or row.get('last_name')):
-                        errors.append(f"Row {row_num}: Person must have first_name or last_name")
+                    # Validate phone number is required
+                    if not phone:
+                        errors.append(f"Row {row_num}: Phone number is required")
                         continue
                     
-                    if row['party_type'] == 'company' and not row.get('name'):
-                        errors.append(f"Row {row_num}: Company must have name")
-                        continue
+                    # Check for duplicates before creating
+                    first_name = row.get('first_name', '').strip()
+                    last_name = row.get('last_name', '').strip()
+                    email = row.get('email', '').strip()
+                    external_id = row.get('external_id', '').strip()
+                    tenant_id = row.get('tenant_id', 'zain_bh')
                     
-                    # Parse phones (comma-separated)
-                    phones = []
-                    if row.get('phones'):
-                        phones = [phone.strip() for phone in row['phones'].split(',') if phone.strip()]
+                    # Check for phone duplicates first (most important)
+                    if phone:
+                        existing_phone = Contact.objects.filter(
+                            tenant_id=tenant_id,
+                            phone=phone
+                        ).first()
+                        if existing_phone:
+                            errors.append(f"Row {row_num}: Contact already exists with phone number '{phone}' ({existing_phone.display_name})")
+                            continue
                     
-                    # Parse segments (comma-separated)
-                    segments = []
-                    if row.get('segments'):
-                        segment_names = [s.strip() for s in row['segments'].split(',') if s.strip()]
-                        for segment_name in segment_names:
-                            segment, created = Segment.objects.get_or_create(
-                                name=segment_name,
-                                tenant_id=row.get('tenant_id', 'default'),
-                                defaults={
-                                    'description': f'Auto-created segment: {segment_name}',
-                                    'color': 'badge-outline',
-                                    'created_by': request.user
-                                }
-                            )
-                            segments.append(segment.id)
+                    # Check for email duplicates
+                    if email:
+                        existing_email = Contact.objects.filter(
+                            tenant_id=tenant_id,
+                            email=email
+                        ).first()
+                        if existing_email:
+                            errors.append(f"Row {row_num}: Contact already exists with email '{email}' ({existing_email.display_name})")
+                            continue
+                    
+                    # Check for external_id duplicates
+                    if external_id:
+                        existing_external_id = Contact.objects.filter(
+                            tenant_id=tenant_id,
+                            external_id=external_id
+                        ).first()
+                        if existing_external_id:
+                            errors.append(f"Row {row_num}: Contact already exists with external ID '{external_id}' ({existing_external_id.display_name})")
+                            continue
+                    
+
                     
                     # Create contact
                     Contact.objects.create(
-                        party_type=row['party_type'],
                         external_id=row.get('external_id', ''),
                         first_name=row.get('first_name', ''),
                         last_name=row.get('last_name', ''),
-                        name=row.get('name', ''),
                         email=row.get('email', ''),
-                        phones=phones,
-                        timezone=row.get('timezone', ''),
-                        company=row.get('company', ''),
-                        contact_person=row.get('contact_person', ''),
-                        segments=segments,
-                        tenant_id=row.get('tenant_id', 'default'),
+                        phone=phone,
+                        tenant_id=row.get('tenant_id', 'zain_bh'),
                         created_by=request.user
                     )
                     
@@ -294,7 +407,6 @@ def segment_create(request):
                 name=data.get('name'),
                 description=data.get('description', ''),
                 color=data.get('color', 'badge-primary'),
-                tenant_id=data.get('tenant_id', 'default'),
                 created_by=request.user
             )
             
@@ -311,3 +423,14 @@ def segment_create(request):
             }, status=400)
     
     return render(request, 'people/segment_create.html')
+
+
+@login_required
+def placeholder_view(request):
+    """Placeholder view for new navigation sections."""
+    section_name = request.resolver_match.url_name.replace('_', ' ').title()
+    context = {
+        'section_name': section_name,
+        'message': f'Welcome to the {section_name} section. This feature is coming soon!',
+    }
+    return render(request, 'people/placeholder.html', context)

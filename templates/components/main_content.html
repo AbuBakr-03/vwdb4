@@ -1,0 +1,52 @@
+{% comment %}
+Main Content Component - Standardized layout container
+Usage: {% include 'components/main_content.html' with title="Page Title" description="Optional description" %}
+
+Parameters:
+- title: Page title (required)
+- description: Optional page description
+- breadcrumb_items: List of breadcrumb items
+- show_breadcrumb: Boolean to show/hide breadcrumb (default: true)
+- extra_actions: HTML content for action buttons in header
+- page_id: Unique page identifier for debugging
+- class: Additional CSS classes
+{% endcomment %}
+
+{% load static %}
+
+<!-- Main Content Container - Tagged for debugging -->
+<div class="min-h-screen bg-base-100" data-component="main-content" data-page-id="{{ page_id|default:'unknown' }}">
+  <main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-10 pb-24 {{ class|default:'' }}" data-component="main-content-inner">
+    
+    <!-- Breadcrumb Navigation -->
+    {% if show_breadcrumb == True and breadcrumb_items %}
+      <div data-component="breadcrumb-container">
+        {% include 'components/breadcrumb.html' with items=breadcrumb_items class="breadcrumb-enhanced" %}
+      </div>
+    {% endif %}
+    
+    <!-- Page Header -->
+    <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-4" data-component="page-header">
+      <div data-component="page-header-content">
+        <h1 class="text-3xl font-bold text-base-content" data-element="page-title">{{ title }}</h1>
+        {% if description %}
+          <p class="text-base-content/70 mt-1" data-element="page-description">{{ description }}</p>
+        {% endif %}
+      </div>
+      
+      {% if extra_actions %}
+        <div class="md:justify-self-end flex flex-wrap gap-2" data-component="page-actions">
+          {{ extra_actions }}
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Page Content Slot -->
+    <div data-component="page-content">
+      {% block page_content %}
+        <!-- Content will be inserted here -->
+      {% endblock %}
+    </div>
+    
+  </main>
+</div>

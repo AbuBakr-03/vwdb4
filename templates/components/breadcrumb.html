@@ -1,0 +1,49 @@
+{% comment %}
+Dynamic Breadcrumb Component
+Usage: {% include 'components/breadcrumb.html' with items=breadcrumb_items %}
+
+Parameters:
+- items: List of breadcrumb items, each with 'text', optional 'href', and optional 'active'
+  Example: [
+    {'text': 'Organization', 'href': '/dashboard/'},
+    {'text': organization.name, 'href': '/dashboard/org/'},
+    {'text': 'Assistants', 'active': True}
+  ]
+- separator: Custom separator (default: chevron-right)
+- class: Additional CSS classes
+{% endcomment %}
+
+{% load static %}
+
+<nav class="breadcrumbs text-sm {{ class|default:'' }}" aria-label="Breadcrumb navigation">
+  <ul class="flex items-center space-x-2">
+    {% for item in items %}
+      <li class="flex items-center">
+        {% if not forloop.first %}
+          <!-- Separator -->
+          {% if separator == "slash" %}
+            <span class="mx-2 text-base-content/40">/</span>
+          {% elif separator == "arrow" %}
+            <span class="mx-2 text-base-content/40">→</span>
+          {% else %}
+            <!-- Default: chevron-right -->
+            <svg class="w-4 h-4 mx-2 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          {% endif %}
+        {% endif %}
+        
+        {% if item.href and not item.active %}
+          <a href="{{ item.href }}" 
+             class="text-base-content/60 hover:text-base-content/80 transition-colors rounded-lg px-2 py-1 hover:bg-base-200/50">
+            {{ item.text }}
+          </a>
+        {% else %}
+          <span class="{% if item.active %}text-base-content font-medium{% else %}text-base-content/60{% endif %} px-2 py-1">
+            {{ item.text }}
+          </span>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

@@ -3,12 +3,16 @@
 
 {% block title %}Create Contact - Address Book{% endblock %}
 
+{% block extra_head %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-base-content mb-2">Create New Contact</h1>
-        <p class="text-base-content/70">Add a new person or company to your address book</p>
+        <p class="text-base-content/70">Add a new person to your address book</p>
     </div>
 
     <!-- Tabs for different creation methods -->
@@ -29,25 +33,9 @@
                 </h3>
                 
                 <form id="contact-form" class="space-y-6">
-                    <!-- Party Type Selection -->
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Contact Type *</span>
-                        </label>
-                        <div class="flex gap-4">
-                            <label class="label cursor-pointer">
-                                <input type="radio" name="party_type" value="person" class="radio radio-primary" checked />
-                                <span class="label-text ml-2">Person</span>
-                            </label>
-                            <label class="label cursor-pointer">
-                                <input type="radio" name="party_type" value="company" class="radio radio-primary" />
-                                <span class="label-text ml-2">Company</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Person Fields -->
-                    <div id="person-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% csrf_token %}
+                    <!-- Contact Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="form-control">
                             <label class="label">
                                 <span class="label-text font-medium">First Name</span>
@@ -61,33 +49,6 @@
                                 <span class="label-text font-medium">Last Name</span>
                             </label>
                             <input type="text" name="last_name" placeholder="Enter last name" 
-                                   class="input input-bordered w-full" />
-                        </div>
-                        
-                        <div class="form-control md:col-span-2">
-                            <label class="label">
-                                <span class="label-text font-medium">Company</span>
-                            </label>
-                            <input type="text" name="company" placeholder="Enter company name" 
-                                   class="input input-bordered w-full" />
-                        </div>
-                    </div>
-
-                    <!-- Company Fields -->
-                    <div id="company-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display: none;">
-                        <div class="form-control md:col-span-2">
-                            <label class="label">
-                                <span class="label-text font-medium">Company Name *</span>
-                            </label>
-                            <input type="text" name="name" placeholder="Enter company name" 
-                                   class="input input-bordered w-full" />
-                        </div>
-                        
-                        <div class="form-control md:col-span-2">
-                            <label class="label">
-                                <span class="label-text font-medium">Contact Person</span>
-                            </label>
-                            <input type="text" name="contact_person" placeholder="Enter contact person name" 
                                    class="input input-bordered w-full" />
                         </div>
                     </div>
@@ -114,76 +75,18 @@
                         </div>
                     </div>
 
-                    <!-- Phone Numbers -->
+                    <!-- Phone Number -->
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text font-medium">Phone Numbers</span>
+                            <span class="label-text font-medium">Phone Number</span>
+                            <span class="label-text-alt text-error">* Required</span>
                         </label>
-                        <div id="phone-numbers" class="space-y-2">
-                            <div class="flex gap-2">
-                                <input type="tel" name="phones[]" placeholder="+1234567890" 
-                                       class="input input-bordered flex-1" />
-                                <button type="button" class="btn btn-square btn-outline btn-sm" onclick="removePhone(this)">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-outline btn-sm mt-2" onclick="addPhone()">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            Add Phone Number
-                        </button>
+                        <input type="tel" name="phone" placeholder="+1234567890" 
+                               class="input input-bordered w-full" required />
                     </div>
 
-                    <!-- Segments -->
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Segments</span>
-                        </label>
-                        <div class="flex flex-wrap gap-2" id="segments-container">
-                            {% for segment in segments %}
-                            <label class="label cursor-pointer">
-                                <input type="checkbox" name="segments" value="{{ segment.id }}" 
-                                       class="checkbox checkbox-primary" />
-                                <span class="label-text ml-2">{{ segment.name }}</span>
-                            </label>
-                            {% empty %}
-                            <p class="text-base-content/50">No segments available. <a href="{% url 'people:segment_create' %}" class="link link-primary">Create one</a></p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- Additional Fields -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Timezone</span>
-                            </label>
-                            <select name="timezone" class="select select-bordered w-full">
-                                <option value="">Select timezone</option>
-                                <option value="UTC">UTC</option>
-                                <option value="America/New_York">Eastern Time</option>
-                                <option value="America/Chicago">Central Time</option>
-                                <option value="America/Denver">Mountain Time</option>
-                                <option value="America/Los_Angeles">Pacific Time</option>
-                                <option value="Asia/Dubai">Dubai (GST)</option>
-                                <option value="Asia/Bahrain">Bahrain (AST)</option>
-                                <option value="Europe/London">London (GMT)</option>
-                                <option value="Europe/Paris">Paris (CET)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Tenant ID</span>
-                            </label>
-                            <input type="text" name="tenant_id" value="default" 
-                                   class="input input-bordered w-full" />
-                        </div>
-                    </div>
+                    <!-- Tenant ID (Hidden, defaulted to zain_bh) -->
+                    <input type="hidden" name="tenant_id" value="zain_bh" />
 
                     <!-- Submit Button -->
                     <div class="flex gap-4 pt-4">
@@ -215,42 +118,139 @@
                 </h3>
                 
                 <div class="space-y-4">
-                    <div class="alert alert-info">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+
+                    
+                    <!-- File Upload Section -->
+                    <div class="border-2 border-dashed border-base-300 rounded-lg p-6 text-center">
+                        <svg class="w-12 h-12 mx-auto text-base-content/40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
-                        <span>Upload a CSV file with contact information. Required columns: party_type, first_name/last_name (for persons), name (for companies)</span>
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">CSV File *</span>
-                        </label>
-                        <input type="file" id="csv-file" accept=".csv" class="file-input file-input-bordered w-full" />
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Sample CSV Format</span>
-                        </label>
-                        <div class="mockup-code">
-                            <pre data-prefix=""><code>party_type,first_name,last_name,email,phones,company,segments
-person,John,Doe,john@example.com,+1234567890,Acme Corp,"VIP,High Value"
-company,Acme Corp,,info@acme.com,+1234567890,"John Smith","Enterprise,Active"</code></pre>
+                        <div class="space-y-2">
+                            <p class="text-base-content/70">Drop your CSV file here or click to browse</p>
+                            <p class="text-xs text-base-content/50">Supported format: CSV (Max 10MB)</p>
+                            <input type="file" id="csv-file" accept=".csv" 
+                                   class="file-input file-input-bordered w-full max-w-xs" />
                         </div>
                     </div>
                     
+                    <!-- CSV Preview -->
+                    <div id="csv-preview" class="form-control" style="display: none;">
+                        <label class="label">
+                            <span class="label-text font-medium">Preview</span>
+                            <span class="label-text-alt" id="csv-count">0 contacts found</span>
+                        </label>
+                        <div class="bg-base-200 rounded-lg p-4 max-h-96 overflow-auto">
+                            <div class="overflow-x-auto">
+                                <table class="table table-sm w-full">
+                                    <thead>
+                                        <tr id="csv-headers">
+                                            <!-- Headers will be populated by JavaScript -->
+                                        </tr>
+                                    </thead>
+                                    <tbody id="csv-body">
+                                        <!-- Rows will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sample CSV Format -->
+                    <div class="form-control">
+                       
+                     
+                        
+                    </div>
+                    
+                    <!-- CSV Format and Duplicate Protection Disclaimer -->
+                    <div class="text-xs text-base-content/60 text-center mb-4 space-y-1">
+                        <div>
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Required: first_name or last_name, phone_number. Optional: email, external_id
+                        </div>
+                        <div>
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Duplicate contacts will be automatically skipped during import
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
                     <div class="flex gap-4">
-                        <button type="button" id="import-csv-btn" class="btn btn-success">
+                        <button type="button" id="process-csv-btn" class="btn btn-primary" style="display: none;">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Process CSV
+                        </button>
+                        
+                        <button type="button" id="import-csv-btn" class="btn btn-success" style="display: none;">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                             </svg>
-                            Import CSV
+                            Import Contacts
+                        </button>
+                        
+                        <button type="button" id="clear-csv-btn" class="btn btn-outline" style="display: none;">
+                            Clear
                         </button>
                         
                         <a href="#" class="btn btn-outline" onclick="downloadSampleCSV()">
                             Download Sample
                         </a>
+                    </div>
+                </div>
+                
+                <!-- CSV Processing Errors -->
+                <div id="csv-errors" class="form-control" style="display: none;">
+                    <div class="bg-error/10 border border-error/20 rounded-lg p-4 relative">
+                        <button type="button" onclick="document.getElementById('csv-errors').style.display='none'" class="btn btn-ghost btn-xs text-white hover:bg-white/20 absolute top-2 right-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                        <div class="pr-8">
+                            <div class="flex justify-between items-start mb-3">
+                                <label class="label">
+                                    <span class="label-text font-medium text-error">CSV Processing Errors</span>
+                                </label>
+                            </div>
+                            <div class="text-sm text-error">
+                                <div class="font-medium mb-2">The following rows had issues:</div>
+                                <div id="csv-error-details" class="space-y-1"></div>
+                            </div>
+                            <label class="label">
+                                <span class="label-text-alt text-error/70">These contacts were not processed. Please fix the data and try again.</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Duplicate Validation Messages -->
+                <div id="csv-duplicate-errors" class="form-control" style="display: none;">
+                    <div class="bg-warning/10 border border-warning/20 rounded-lg p-4 relative">
+                        <button type="button" onclick="document.getElementById('csv-duplicate-errors').style.display='none'" class="btn btn-ghost btn-xs text-white hover:bg-white/20 absolute top-2 right-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                        <div class="pr-8">
+                            <div class="flex justify-between items-start mb-3">
+                                <label class="label">
+                                    <span class="label-text font-medium text-warning">Duplicate Contacts Detected</span>
+                                </label>
+                            </div>
+                            <div class="text-sm text-warning">
+                                <div class="font-medium mb-2">The following contacts already exist:</div>
+                                <div id="csv-duplicate-details" class="space-y-1"></div>
+                            </div>
+                            <label class="label">
+                                <span class="label-text-alt text-warning/70">These contacts were skipped to avoid duplicates.</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>

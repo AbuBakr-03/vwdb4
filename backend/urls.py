@@ -18,14 +18,33 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+def dashboard_redirect(request):
+    """Redirect old dashboard URLs to root."""
+    return redirect('/', permanent=True)
+
+def health_check(request):
+    """Health check endpoint for Docker and load balancers."""
+    return JsonResponse({
+        'status': 'healthy',
+        'timestamp': '2024-01-01T00:00:00Z',
+        'service': 'watchtower-v2'
+    })
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("dashboard/", include("dashboard.urls")),
+    path("", include("dashboard.urls")),  # Dashboard at root
+    path("dashboard/", dashboard_redirect, name="dashboard_redirect"),  # Redirect old URLs
     path("authorization/", include("authorization.urls")),
     path("campaigns/", include("campaigns.urls")),
     path("accounts/", include("accounts.urls")),
+    path("reports/", include("reports.urls")),
     path("people/", include("people.urls")),
+    path("tools/", include("tools.urls")),
+    path('health/', health_check, name='health_check'),
 ]
 
 # Serve static and media files during development

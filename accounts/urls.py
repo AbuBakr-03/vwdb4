@@ -11,11 +11,14 @@ urlpatterns = [
     
     # User Management (Root Users Only)
     path('users/', views.company_users, name='company_users'),
-    path('users/create/', views.create_sub_user, name='create_sub_user'),
+    path('users/new/', views.create_sub_user, name='create_sub_user'),  # Changed from 'users/create/'
     
     # Test view for the new data table component
     path('users/data-table-test/', views.company_users_data_table_test, name='company_users_data_table_test'),
     
-    # Simple test view
+    # Placeholder routes for new navigation tabs
+    path('teams/', views.placeholder_view, name='teams'),
+    path('permissions/', views.placeholder_view, name='permissions'),
+    
 
 ]

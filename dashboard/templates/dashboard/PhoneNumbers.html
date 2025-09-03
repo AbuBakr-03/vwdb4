@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Phone Numbers{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-6">
+  <!-- Phone Numbers Page Content -->
+  <div class="w-full max-w-4xl">
+    
+    {% if not has_phone_numbers %}
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center text-center">
+      <!-- Container for better organization -->
+      <div class="w-full max-w-2xl mx-auto">
+        <!-- Phone Icon -->
+        <div class="mb-6">
+          <div class="w-24 h-24 mx-auto bg-base-200/50 rounded-2xl flex items-center justify-center">
+            <svg class="w-12 h-12 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Title and Description -->
+        <h1 class="text-3xl font-bold text-base-content mb-3">Phone Numbers</h1>
+        <p class="text-lg text-base-content/70 mb-2">
+          Assistants are able to be connected to phone numbers for calls.
+        </p>
+        <p class="text-base text-base-content/60 mb-8">
+          Create a free number directly from Zain for use with your assistants.
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <!-- Create Phone Number Button -->
+          <button 
+            id="createPhoneNumberBtn"
+            class="btn btn-primary w-full sm:w-auto bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-3 rounded-xl font-medium inline-flex items-center justify-center space-x-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>Create Phone Number</span>
+          </button>
+
+          <!-- Documentation Button -->
+          <button class="btn btn-ghost w-full sm:w-auto border border-base-content/20 hover:border-base-content/40 text-base-content/70 hover:text-base-content px-6 py-3 rounded-xl font-medium inline-flex items-center justify-center space-x-2 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.967 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </svg>
+            <span>Documentation</span>
+          </button>
+        </div>
+
+        <!-- Search Bar (shown even in empty state) -->
+        <div class="w-full max-w-md mx-auto">
+          <div class="relative">
+            <input 
+              type="text" 
+              placeholder="Search name, number, SIP..." 
+              class="input input-bordered w-full bg-base-100 border-base-content/20 focus:border-primary rounded-lg pl-10 pr-4 py-3"
+            >
+            <svg class="w-5 h-5 text-base-content/40 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- Create Phone Number Modal -->
+<dialog id="createPhoneNumberModal" class="modal">
+  <div class="modal-box max-w-4xl bg-neutral text-neutral-content p-0 rounded-2xl overflow-hidden">
+    
+    <!-- Modal Content -->
+    <div class="flex h-[500px]">
+      
+      <!-- Left Panel - Phone Number Options -->
+      <div class="w-1/3 bg-neutral-focus p-6 border-r border-neutral-content/10">
+        <h3 class="text-lg font-semibold text-neutral-content mb-6">Phone Number Options</h3>
+        
+        <div class="space-y-2">
+          <!-- Free Zain Number -->
+          <button class="phone-option-btn w-full text-left p-3 rounded-lg bg-[#20D5F9]/20 border border-[#20D5F9]/30 text-[#20D5F9] hover:bg-[#20D5F9]/30 transition-colors duration-200" data-option="free-zain">
+            <div class="font-medium">Free Zain Number</div>
+          </button>
+          
+          <!-- Free Zain SIP -->
+          <button class="phone-option-btn w-full text-left p-3 rounded-lg hover:bg-neutral-content/10 border border-transparent hover:border-neutral-content/20 text-neutral-content/70 transition-colors duration-200" data-option="free-sip">
+            <div class="font-medium">Free Zain SIP</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Panel - Content Area -->
+      <div class="flex-1 p-6">
+        
+        <!-- Free Zain Number Content (Default) -->
+        <div id="free-zain-content" class="option-content">
+          <h4 class="text-xl font-semibold text-neutral-content mb-4">Area Code</h4>
+          
+          <!-- Area Code Input -->
+          <div class="mb-6">
+            <input 
+              type="text" 
+              placeholder="e.g. 346, 464, 326"
+              class="input input-bordered w-full bg-neutral border-neutral-content/20 text-neutral-content placeholder-neutral-content/50 focus:border-[#20D5F9] rounded-lg"
+              value=""
+            >
+          </div>
+
+          <!-- Info Box -->
+          <div class="bg-neutral-content/5 border border-neutral-content/10 rounded-lg p-4 mb-6">
+            <div class="flex items-start space-x-3">
+              <div class="w-2 h-2 bg-[#20D5F9] rounded-full mt-2 flex-shrink-0"></div>
+              <div>
+                <p class="text-sm text-neutral-content/80 font-medium mb-1">Free Zain phone numbers • Up to 10 per account</p>
+                <p class="text-xs text-neutral-content/60">Only Zain area codes are supported. For international numbers, use the import options above.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other option contents (hidden by default) -->
+        <div id="free-sip-content" class="option-content hidden">
+          <h4 class="text-xl font-semibold text-neutral-content mb-4">Free Zain SIP</h4>
+          <p class="text-neutral-content/60">Configure your SIP settings here...</p>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex justify-end space-x-3 mt-8 pt-6 border-t border-neutral-content/10">
+          <button class="btn btn-ghost text-neutral-content/60 hover:text-neutral-content hover:bg-neutral-content/10" onclick="document.getElementById('createPhoneNumberModal').close()">
+            Cancel
+          </button>
+          <button class="btn bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0">
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal backdrop -->
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<!-- JavaScript for Modal and Option Switching -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Open modal
+  const createBtn = document.getElementById('createPhoneNumberBtn');
+  const modal = document.getElementById('createPhoneNumberModal');
+  
+  createBtn.addEventListener('click', function() {
+    modal.showModal();
+  });
+
+  // Handle option switching
+  const optionBtns = document.querySelectorAll('.phone-option-btn');
+  const optionContents = document.querySelectorAll('.option-content');
+
+  // Set default selected option
+  const defaultOption = 'free-zain';
+  const defaultBtn = document.querySelector(`[data-option="${defaultOption}"]`);
+  const defaultContent = document.getElementById(`${defaultOption}-content`);
+  
+  if (defaultBtn && defaultContent) {
+    defaultBtn.classList.add('bg-[#20D5F9]/20', 'border-[#20D5F9]/30', 'text-[#20D5F9]');
+    defaultBtn.classList.remove('hover:bg-neutral-content/10', 'border-transparent', 'hover:border-neutral-content/20', 'text-neutral-content/70');
+    defaultContent.classList.remove('hidden');
+  }
+
+  optionBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const option = this.dataset.option;
+      
+      // Update button states
+      optionBtns.forEach(b => {
+        b.classList.remove('bg-[#20D5F9]/20', 'border-[#20D5F9]/30', 'text-[#20D5F9]');
+        b.classList.add('hover:bg-neutral-content/10', 'border-transparent', 'hover:border-neutral-content/20', 'text-neutral-content/70');
+      });
+      
+      this.classList.add('bg-[#20D5F9]/20', 'border-[#20D5F9]/30', 'text-[#20D5F9]');
+      this.classList.remove('hover:bg-neutral-content/10', 'border-transparent', 'hover:border-neutral-content/20', 'text-neutral-content/70');
+      
+      // Show corresponding content
+      optionContents.forEach(content => {
+        content.classList.add('hidden');
+      });
+      
+      const targetContent = document.getElementById(`${option}-content`);
+      if (targetContent) {
+        targetContent.classList.remove('hidden');
+      }
+    });
+  });
+});
+</script>
+
+{% endblock %}

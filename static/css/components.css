@@ -1,0 +1,344 @@
+/**
+ * Component-specific CSS utilities and custom properties
+ * Provides standardized classes and CSS variables for consistent design
+ * Performance optimized with critical CSS and efficient selectors
+ */
+
+:root {
+  /* Sidebar dimensions */
+  --sidebar-width: 320px;
+  --sidebar-collapsed-width: 88px;
+  
+  /* Header dimensions */
+  --header-height: 140px;
+  --header-offset: 160px;
+  
+  /* Spacing scale (complementing Tailwind) */
+  --space-xs: 0.25rem;    /* 4px */
+  --space-sm: 0.5rem;     /* 8px */
+  --space-md: 1rem;       /* 16px */
+  --space-lg: 1.5rem;     /* 24px */
+  --space-xl: 2rem;       /* 32px */
+  --space-2xl: 3rem;      /* 48px */
+  
+  /* Border radius scale */
+  --radius-sm: 0.5rem;    /* 8px - rounded-lg */
+  --radius-md: 0.75rem;   /* 12px - rounded-xl */
+  --radius-lg: 1rem;      /* 16px - rounded-2xl */
+  
+  /* Shadow scale */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Performance optimization: Preload hints */
+  --font-display: swap;
+}
+
+/* Performance Optimizations */
+
+/* Lazy loading placeholder */
+.lazy {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.lazy.loaded {
+  opacity: 1;
+}
+
+/* Critical CSS for above-the-fold content */
+.critical-sidebar {
+  /* Inline critical styles for sidebar to prevent FOUC */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-width);
+  background: #0f172a;
+  border-right: 1px solid rgba(148, 163, 184, 0.3);
+  z-index: 40;
+}
+
+.critical-main {
+  /* Inline critical styles for main content area */
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+}
+
+/* SVG Icon Performance Optimizations */
+.icon-sprite {
+  /* Optimize SVG rendering */
+  shape-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+}
+
+/* Reduce paint complexity for animations */
+.smooth-transform {
+  will-change: transform;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* Optimize scroll performance */
+.scroll-container {
+  -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
+  overflow-scrolling: touch;
+}
+
+/* Preload animation for better perceived performance */
+@keyframes skeleton-loading {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.skeleton-loader {
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+}
+
+/* Fixed Header Utilities */
+.header-fixed {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  z-index: 50;
+  background: #0f172a !important; /* slate-900 equivalent - force override */
+  color: #f8fafc !important; /* white text - force override */
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important; /* slate-400 with opacity */
+  padding: 0.75rem 1.5rem;
+  height: var(--header-height);
+}
+
+.header-fixed-collapsed {
+  left: var(--sidebar-collapsed-width);
+}
+
+/* Content offset for fixed header */
+.content-with-fixed-header {
+  padding-top: var(--header-height);
+}
+
+/* Metric Grid Utilities */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.metric-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+  .metric-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .metric-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Section Spacing */
+.section-spacing {
+  margin-top: 2rem;
+}
+
+.section-spacing:first-child {
+  margin-top: 0;
+}
+
+/* Collapsible Animations */
+.collapsible-content {
+  overflow: hidden;
+  transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 0;
+}
+
+.collapsible-content[data-collapsed="false"] {
+  max-height: none;
+}
+
+/* Enhanced Button Styles */
+.btn-enhanced {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-enhanced:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-enhanced:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-enhanced.btn-primary {
+  background: linear-gradient(135deg, hsl(var(--p)) 0%, hsl(var(--p)) 100%);
+}
+
+.btn-enhanced.btn-primary:hover {
+  background: linear-gradient(135deg, hsl(var(--p)) 0%, hsl(var(--pf)) 100%);
+}
+
+/* Card Enhancements */
+.card-enhanced {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid hsl(var(--bc) / 0.1);
+}
+
+.card-enhanced:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* Navigation Tab Styles */
+.nav-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  color: hsl(var(--nc) / 0.7);
+}
+
+.nav-tab:hover {
+  color: hsl(var(--nc));
+}
+
+.nav-tab.active {
+  color: hsl(var(--nc));
+  font-weight: 500;
+}
+
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: currentColor;
+  box-shadow: 0 1px 3px currentColor;
+}
+
+/* Breadcrumb Enhancements */
+.breadcrumb-enhanced {
+  padding: 0.5rem 0;
+}
+
+.breadcrumb-enhanced a {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.5rem;
+}
+
+.breadcrumb-enhanced a:hover {
+  background: hsl(var(--b2));
+  color: hsl(var(--bc));
+}
+
+/* Icon Hover Effects */
+.icon-hover {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-hover:hover {
+  transform: scale(1.1);
+  color: hsl(var(--p));
+}
+
+/* Search Input Enhancements */
+.search-enhanced {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-lg);
+}
+
+.search-enhanced:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 3px hsl(var(--p) / 0.1);
+}
+
+/* Status Badge Animations */
+.status-badge {
+  animation: pulse-soft 2s infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Sidebar Responsive Adjustments */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 280px;
+  }
+  
+  .header-fixed {
+    left: 0;
+    right: 0;
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .card-enhanced {
+    border-color: hsl(var(--bc) / 0.2);
+  }
+  
+  .btn-enhanced {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .collapsible-content,
+  .btn-enhanced,
+  .card-enhanced,
+  .nav-tab,
+  .icon-hover,
+  .search-enhanced {
+    transition: none;
+  }
+  
+  .status-badge {
+    animation: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .header-fixed {
+    position: static;
+    box-shadow: none;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .content-with-fixed-header {
+    padding-top: 0;
+  }
+  
+  .btn-enhanced {
+    box-shadow: none;
+  }
+}

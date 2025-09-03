@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      target: development
+    volumes:
+      # Mount local code for hot reload
+      - .:/app
+      # Exclude directories that shouldn't be mounted
+      - /app/staticfiles
+      - /app/media
+      - /app/.git
+      - /app/env
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=backend.settings
+    command: python manage.py runserver 0.0.0.0:8000 

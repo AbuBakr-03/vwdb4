@@ -12,15 +12,15 @@ class CampaignAdmin(admin.ModelAdmin):
     """Admin interface for Campaign model."""
     
     list_display = [
-        'name', 'tenant_id', 'status', 'priority', 'total_calls', 
+        'name', 'assistant', 'tenant_id', 'status', 'priority', 'total_calls', 
         'success_rate_display', 'created_at', 'created_by'
     ]
     
     list_filter = [
-        'status', 'priority', 'tenant_id', 'created_at', 'start_date', 'end_date'
+        'status', 'priority', 'tenant_id', 'assistant', 'created_at', 'start_date', 'end_date'
     ]
     
-    search_fields = ['name', 'description', 'tenant_id', 'created_by__username']
+    search_fields = ['name', 'description', 'tenant_id', 'created_by__username', 'assistant__name']
     
     readonly_fields = [
         'total_calls', 'successful_calls', 'failed_calls', 'last_activity',
@@ -35,7 +35,7 @@ class CampaignAdmin(admin.ModelAdmin):
             'fields': ('tenant_id', 'created_by')
         }),
         ('Configuration', {
-            'fields': ('prompt_template', 'voice_id', 'agent_config')
+            'fields': ('assistant', 'prompt_template', 'voice_id', 'agent_config')
         }),
         ('Scheduling', {
             'fields': ('start_date', 'end_date')

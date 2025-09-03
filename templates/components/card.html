@@ -1,0 +1,60 @@
+{% comment %}
+Standardized Card Component
+Usage: {% include 'components/card.html' with title="Card Title" content="Card content" %}
+
+Parameters:
+- title: Card title (optional)
+- content: Main card content (HTML)
+- actions: Footer action buttons (HTML, optional)
+- variant: Card style (default, featured, compact)
+- class: Additional CSS classes
+- hover: Enable hover effects (default: true)
+- border: Show border (default: true)
+- shadow: Shadow level (sm, md, lg, xl)
+- card_id: Unique identifier for debugging
+{% endcomment %}
+
+{% load static %}
+
+<!-- Standardized Card - Tagged for debugging -->
+<div class="card h-full 
+    {% if variant == 'featured' %}
+        bg-base-200/50 border border-base-content/10 hover:shadow-lg
+    {% elif variant == 'compact' %}
+        bg-base-200/30 border border-base-content/10 hover:shadow-md
+    {% else %}
+        bg-base-100 border border-base-content/10 hover:shadow-lg
+    {% endif %}
+    {% if hover != False %}transition group{% endif %}
+    {% if shadow == 'sm' %}shadow-sm{% elif shadow == 'md' %}shadow-md{% elif shadow == 'lg' %}shadow-lg{% elif shadow == 'xl' %}shadow-xl{% else %}shadow-md{% endif %}
+    {{ class|default:'' }}"
+    data-component="card" 
+    data-variant="{{ variant|default:'default' }}"
+    {% if card_id %}data-card-id="{{ card_id }}"{% endif %}>
+  
+  <!-- Card Body -->
+  <div class="card-body p-4 sm:p-5 lg:p-6 flex flex-col" data-component="card-body">
+    
+    <!-- Card Title -->
+    {% if title %}
+      <h2 class="card-title text-lg sm:text-xl leading-tight mb-4" data-element="card-title">
+        {{ title }}
+      </h2>
+    {% endif %}
+    
+    <!-- Card Content -->
+    {% if content %}
+      <div class="flex-1" data-component="card-content">
+        {{ content }}
+      </div>
+    {% endif %}
+    
+    <!-- Card Actions Footer -->
+    {% if actions %}
+      <div class="mt-auto pt-4 flex flex-col sm:flex-row justify-between items-center gap-3" data-component="card-actions">
+        {{ actions }}
+      </div>
+    {% endif %}
+    
+  </div>
+</div>

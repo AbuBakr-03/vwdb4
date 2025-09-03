@@ -23,6 +23,9 @@ from authorization.utils import (
 
 from .models import Campaign, CampaignSession, CampaignQueue
 
+# Import Assistant model for campaign relationships
+from dashboard.models import Assistant
+
 
 class CampaignBaseView(View):
     """Base view class with tenant context validation."""
@@ -59,13 +62,19 @@ class CampaignListView(CampaignBaseView):
             campaigns = campaigns.filter(
                 Q(name__icontains=search_query) |
                 Q(description__icontains=search_query) |
-                Q(status__icontains=search_query)
+                Q(status__icontains=search_query) |
+                Q(assistant__name__icontains=search_query)
             )
         
         # Filter by status
         status_filter = request.GET.get('status', '')
         if status_filter:
             campaigns = campaigns.filter(status=status_filter)
+        
+        # Filter by assistant
+        assistant_filter = request.GET.get('assistant', '')
+        if assistant_filter:
+            campaigns = campaigns.filter(assistant_id=assistant_filter)
         
         # Pagination
         paginator = Paginator(campaigns, 20)
@@ -80,6 +89,12 @@ class CampaignListView(CampaignBaseView):
             'completed': campaigns.filter(status='completed').count(),
         }
         
+        # Get assistants for filtering
+        assistants = Assistant.objects.filter(
+            client_id=tenant_id,
+            status='published'
+        ).order_by('name')
+        
         # Log the access
         tenant_audit_log(request, 'campaign_list_view', 'campaigns_list', {
             'tenant_id': tenant_id,
@@ -90,8 +105,10 @@ class CampaignListView(CampaignBaseView):
         context = {
             'campaigns': page_obj,
             'stats': stats,
+            'assistants': assistants,
             'search_query': search_query,
             'status_filter': status_filter,
+            'assistant_filter': assistant_filter,
             'tenant_info': get_tenant_info(request)
         }
         
@@ -139,8 +156,15 @@ class CampaignCreateView(CampaignBaseView):
         # Check campaign creation limit
         limit_check = check_tenant_limit(request, 'campaigns_per_month')
         
+        # Get assistants for this tenant
+        tenant_id = request.tenant_flags['tenant_id']
+        assistants = Assistant.objects.filter(
+            client_id=tenant_id,
+        ).order_by('name')
+        
         context = {
             'limit_check': limit_check,
+            'assistants': assistants,
             'tenant_info': get_tenant_info(request)
         }
         
@@ -169,6 +193,20 @@ class CampaignCreateView(CampaignBaseView):
                 max_calls=int(request.POST.get('max_calls', 1000)),
                 max_concurrent=int(request.POST.get('max_concurrent', 10))
             )
+            
+            # Set assistant if provided
+            assistant_id = request.POST.get('assistant')
+            if assistant_id:
+                try:
+                    assistant = Assistant.objects.get(
+                        id=assistant_id,
+                        client_id=tenant_id,
+                        status='published'
+                    )
+                    campaign.assistant = assistant
+                    campaign.save()
+                except Assistant.DoesNotExist:
+                    pass  # Assistant not found, continue without it
             
             # Store additional campaign data in agent_config
             campaign.agent_config = {
@@ -212,8 +250,15 @@ class CampaignEditView(CampaignBaseView):
         tenant_id = request.tenant_flags['tenant_id']
         campaign = get_object_or_404(Campaign, id=campaign_id, tenant_id=tenant_id)
         
+        # Get assistants for this tenant
+        assistants = Assistant.objects.filter(
+            client_id=tenant_id,
+            status='published'
+        ).order_by('name')
+        
         context = {
             'campaign': campaign,
+            'assistants': assistants,
             'tenant_info': get_tenant_info(request)
         }
         
@@ -231,6 +276,21 @@ class CampaignEditView(CampaignBaseView):
             campaign.voice_id = request.POST.get('voice_id', '')
             campaign.max_calls = int(request.POST.get('max_calls', 1000))
             campaign.max_concurrent = int(request.POST.get('max_concurrent', 10))
+            
+            # Update assistant if provided
+            assistant_id = request.POST.get('assistant')
+            if assistant_id:
+                try:
+                    assistant = Assistant.objects.get(
+                        id=assistant_id,
+                        client_id=tenant_id,
+                        status='published'
+                    )
+                    campaign.assistant = assistant
+                except Assistant.DoesNotExist:
+                    campaign.assistant = None
+            else:
+                campaign.assistant = None
             
             # Update additional campaign data in agent_config
             campaign.agent_config.update({

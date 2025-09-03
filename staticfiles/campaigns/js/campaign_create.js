@@ -388,23 +388,23 @@ Your responses help us improve our services. Would you be willing to participate
     const addSelectedBtn = document.getElementById('add-selected-btn');
     const selectedCount = document.getElementById('selected-count');
     
-    // Sample address book data
+    // Sample address book data with segments
     const addressBookData = [
-        { id: 'ab_1', type: 'person', first_name: 'Ahmed', last_name: 'Al-Rashid', phone: '+97335000001', email: 'ahmed.alrashid@email.com', company: 'TechCorp Bahrain' },
-        { id: 'ab_2', type: 'person', first_name: 'Fatima', last_name: 'Hassan', phone: '+97335000002', email: 'fatima.hassan@email.com', company: 'Digital Solutions' },
-        { id: 'ab_3', type: 'person', first_name: 'Omar', last_name: 'Khalil', phone: '+97335000003', email: 'omar.khalil@email.com', company: 'Innovation Hub' },
-        { id: 'ab_4', type: 'person', first_name: 'Layla', last_name: 'Mahmoud', phone: '+97335000004', email: 'layla.mahmoud@email.com', company: 'Future Systems' },
-        { id: 'ab_5', type: 'person', first_name: 'Yusuf', last_name: 'Ibrahim', phone: '+97335000005', email: 'yusuf.ibrahim@email.com', company: 'Smart Tech' },
-        { id: 'ab_6', type: 'company', name: 'Bahrain Tech Solutions', phone: '+97335000006', email: 'info@bts.bh', contact_person: 'Sarah Johnson' },
-        { id: 'ab_7', type: 'company', name: 'Gulf Innovation Group', phone: '+97335000007', email: 'hello@gig.bh', contact_person: 'Michael Chen' },
-        { id: 'ab_8', type: 'person', first_name: 'Noor', last_name: 'Al-Zahra', phone: '+97335000008', email: 'noor.alzahra@email.com', company: 'Creative Agency' },
-        { id: 'ab_9', type: 'person', first_name: 'Khalid', last_name: 'Rashid', phone: '+97335000009', email: 'khalid.rashid@email.com', company: 'Data Dynamics' },
-        { id: 'ab_10', type: 'company', name: 'Middle East Digital', phone: '+97335000010', email: 'contact@med.bh', contact_person: 'Emily Rodriguez' },
-        { id: 'ab_11', type: 'person', first_name: 'Zainab', last_name: 'Saleh', phone: '+97335000011', email: 'zainab.saleh@email.com', company: 'Cloud Solutions' },
-        { id: 'ab_12', type: 'person', first_name: 'Hassan', last_name: 'Ali', phone: '+97335000012', email: 'hassan.ali@email.com', company: 'AI Innovations' },
-        { id: 'ab_13', type: 'company', name: 'Bahrain Digital Hub', phone: '+97335000013', email: 'info@bdh.bh', contact_person: 'David Thompson' },
-        { id: 'ab_14', type: 'person', first_name: 'Aisha', last_name: 'Mohammed', phone: '+97335000014', email: 'aisha.mohammed@email.com', company: 'Tech Pioneers' },
-        { id: 'ab_15', type: 'person', first_name: 'Rashid', last_name: 'Al-Mansouri', phone: '+97335000015', email: 'rashid.almansouri@email.com', company: 'Digital Future' }
+        { id: 'ab_1', type: 'person', first_name: 'Ahmed', last_name: 'Al-Rashid', phone: '+97335000001', email: 'ahmed.alrashid@email.com', company: 'TechCorp Bahrain', segments: ['prefers_arabic', 'vip_customer', 'high_value'] },
+        { id: 'ab_2', type: 'person', first_name: 'Fatima', last_name: 'Hassan', phone: '+97335000002', email: 'fatima.hassan@email.com', company: 'Digital Solutions', segments: ['prefers_english', 'new_lead', 'sales_qualified'] },
+        { id: 'ab_3', type: 'person', first_name: 'Omar', last_name: 'Khalil', phone: '+97335000003', email: 'omar.khalil@email.com', company: 'Innovation Hub', segments: ['prefers_arabic', 'technical_support'] },
+        { id: 'ab_4', type: 'person', first_name: 'Layla', last_name: 'Mahmoud', phone: '+97335000004', email: 'layla.mahmoud@email.com', company: 'Future Systems', segments: ['prefers_english', 'returning_customer', 'high_value'] },
+        { id: 'ab_5', type: 'person', first_name: 'Yusuf', last_name: 'Ibrahim', phone: '+97335000005', email: 'yusuf.ibrahim@email.com', company: 'Smart Tech', segments: ['prefers_arabic', 'new_lead', 'vip_customer'] },
+        { id: 'ab_6', type: 'company', name: 'Bahrain Tech Solutions', phone: '+97335000006', email: 'info@bts.bh', contact_person: 'Sarah Johnson', segments: ['prefers_english', 'vip_customer', 'high_value', 'sales_qualified'] },
+        { id: 'ab_7', type: 'company', name: 'Gulf Innovation Group', phone: '+97335000007', email: 'hello@gig.bh', contact_person: 'Michael Chen', segments: ['prefers_english', 'sales_qualified', 'returning_customer'] },
+        { id: 'ab_8', type: 'person', first_name: 'Noor', last_name: 'Al-Zahra', phone: '+97335000008', email: 'noor.alzahra@email.com', company: 'Creative Agency', segments: ['prefers_arabic', 'new_lead', 'technical_support'] },
+        { id: 'ab_9', type: 'person', first_name: 'Khalid', last_name: 'Rashid', phone: '+97335000009', email: 'khalid.rashid@email.com', company: 'Data Dynamics', segments: ['prefers_english', 'technical_support', 'high_value'] },
+        { id: 'ab_10', type: 'company', name: 'Middle East Digital', phone: '+97335000010', email: 'contact@med.bh', contact_person: 'Emily Rodriguez', segments: ['prefers_english', 'returning_customer', 'high_value', 'vip_customer'] },
+        { id: 'ab_11', type: 'person', first_name: 'Zainab', last_name: 'Saleh', phone: '+97335000011', email: 'zainab.saleh@email.com', company: 'Cloud Solutions', segments: ['prefers_arabic', 'sales_qualified', 'new_lead'] },
+        { id: 'ab_12', type: 'person', first_name: 'Hassan', last_name: 'Ali', phone: '+97335000012', email: 'hassan.ali@email.com', company: 'AI Innovations', segments: ['prefers_english', 'new_lead', 'technical_support'] },
+        { id: 'ab_13', type: 'company', name: 'Bahrain Digital Hub', phone: '+97335000013', email: 'info@bdh.bh', contact_person: 'David Thompson', segments: ['prefers_english', 'vip_customer', 'sales_qualified'] },
+        { id: 'ab_14', type: 'person', first_name: 'Aisha', last_name: 'Mohammed', phone: '+97335000014', email: 'aisha.mohammed@email.com', company: 'Tech Pioneers', segments: ['prefers_arabic', 'returning_customer', 'high_value'] },
+        { id: 'ab_15', type: 'person', first_name: 'Rashid', last_name: 'Al-Mansouri', phone: '+97335000015', email: 'rashid.almansouri@email.com', company: 'Digital Future', segments: ['prefers_english', 'technical_support', 'sales_qualified', 'vip_customer'] }
     ];
     
     let filteredAddressBookData = [...addressBookData];
@@ -420,20 +420,40 @@ Your responses help us improve our services. Would you be willing to participate
                 ? contact.company 
                 : `Contact: ${contact.contact_person}`;
             
+            // Render segments as badges with colors
+            const segmentBadges = contact.segments ? contact.segments.map(segment => {
+                const segmentConfig = {
+                    'prefers_english': { label: 'Prefers English', color: 'badge-primary' },
+                    'prefers_arabic': { label: 'Prefers Arabic', color: 'badge-secondary' },
+                    'vip_customer': { label: 'VIP', color: 'badge-warning' },
+                    'new_lead': { label: 'New Lead', color: 'badge-info' },
+                    'returning_customer': { label: 'Returning', color: 'badge-success' },
+                    'high_value': { label: 'High Value', color: 'badge-accent' },
+                    'technical_support': { label: 'Tech Support', color: 'badge-neutral' },
+                    'sales_qualified': { label: 'Sales Qualified', color: 'badge-primary' }
+                };
+                
+                const config = segmentConfig[segment] || { label: segment, color: 'badge-outline' };
+                return `<span class="badge ${config.color} badge-sm mr-1 mb-1 px-3 py-2 text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200">
+                    ${config.label}
+                </span>`;
+            }).join('') : '';
+            
             return `
                 <div class="flex items-center justify-between bg-base-100 p-3 rounded-lg border border-base-300 hover:border-primary/30 transition-colors">
                     <div class="flex items-center gap-3">
                         <input type="checkbox" class="checkbox checkbox-primary" 
                                value="${contact.id}" ${isSelected ? 'checked' : ''} />
-                        <div>
+                        <div class="flex-1">
                             <div class="font-medium">${displayName}</div>
                             <div class="text-sm text-base-content/70">${displayCompany}</div>
                             <div class="text-xs text-base-content/50 font-mono">${contact.phone}</div>
+                            <div class="mt-1">${segmentBadges}</div>
                         </div>
                     </div>
-                    <div class="badge badge-${contact.type === 'person' ? 'primary' : 'secondary'} badge-sm">
-                        ${contact.type === 'person' ? 'Person' : 'Company'}
-                    </div>
+                                         <div class="badge badge-${contact.type === 'person' ? 'primary' : 'secondary'} badge-sm px-3 py-2">
+                         ${contact.type === 'person' ? 'Person' : 'Company'}
+                     </div>
                 </div>
             `;
         }).join('');
@@ -449,6 +469,7 @@ Your responses help us improve our services. Would you be willing to participate
     function filterAddressBookContacts() {
         const searchTerm = addressBookSearch.value.toLowerCase();
         const filterType = addressBookFilter.value;
+        const filterSegment = document.getElementById('address-book-segment-filter').value;
         
         filteredAddressBookData = addressBookData.filter(contact => {
             const matchesSearch = contact.first_name?.toLowerCase().includes(searchTerm) ||
@@ -460,7 +481,9 @@ Your responses help us improve our services. Would you be willing to participate
             
             const matchesFilter = !filterType || contact.type === filterType;
             
-            return matchesSearch && matchesFilter;
+            const matchesSegment = !filterSegment || (contact.segments && contact.segments.includes(filterSegment));
+            
+            return matchesSearch && matchesFilter && matchesSegment;
         });
         
         renderAddressBookContacts();
@@ -540,6 +563,10 @@ Your responses help us improve our services. Would you be willing to participate
     
     addressBookSearch.addEventListener('input', filterAddressBookContacts);
     addressBookFilter.addEventListener('change', filterAddressBookContacts);
+    
+    // Add event listener for segment filter
+    const addressBookSegmentFilter = document.getElementById('address-book-segment-filter');
+    addressBookSegmentFilter.addEventListener('change', filterAddressBookContacts);
     
     selectAllBtn.addEventListener('click', () => {
         filteredAddressBookData.forEach(contact => selectedAddressBookContacts.add(contact.id));

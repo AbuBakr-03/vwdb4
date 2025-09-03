@@ -1,0 +1,47 @@
+{% comment %}
+Standardized Grid Component
+Usage: {% include 'components/grid.html' with variant="featured" items=item_list %}
+
+Parameters:
+- variant: Grid type (featured, compact, metrics, custom)
+- items: List of items to display in grid
+- columns: Custom column configuration
+- gap: Gap size (sm, md, lg)
+- grid_id: Unique identifier for debugging
+- class: Additional CSS classes
+
+Grid Variants:
+- featured: 1/md:2/xl:4 columns with larger gaps
+- compact: 1/sm:2/lg:3/xl:4/2xl:5 columns with smaller gaps  
+- metrics: 1/md:2/lg:4 columns optimized for metric cards
+- custom: Use custom columns parameter
+{% endcomment %}
+
+{% load static %}
+
+<!-- Standardized Grid - Tagged for debugging -->
+<div class="
+    {% if variant == 'featured' %}
+        grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-7
+    {% elif variant == 'compact' %}
+        grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 lg:gap-5
+    {% elif variant == 'metrics' %}
+        grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6
+    {% elif variant == 'custom' and columns %}
+        grid {{ columns }} {% if gap == 'sm' %}gap-3{% elif gap == 'lg' %}gap-8{% else %}gap-6{% endif %}
+    {% else %}
+        grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6
+    {% endif %}
+    {{ class|default:'' }}"
+    data-component="grid" 
+    data-variant="{{ variant|default:'default' }}"
+    data-items-count="{{ items|length }}"
+    {% if grid_id %}data-grid-id="{{ grid_id }}"{% endif %}>
+  
+  {% for item in items %}
+    <div data-component="grid-item" data-item-index="{{ forloop.counter0 }}">
+      {{ item }}
+    </div>
+  {% endfor %}
+  
+</div>

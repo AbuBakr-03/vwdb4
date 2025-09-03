@@ -1,0 +1,57 @@
+# Docker Compose configuration for development with enhanced hot reload
+
+services:
+  web:
+    build: 
+      context: .
+      target: development
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=backend.settings
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/watchtower
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      # Exclude certain directories for better performance
+      - /app/.git
+      - /app/staticfiles
+      - /app/media
+      - /app/env
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    restart: unless-stopped
+    # Enable file watching for better hot reload
+    stdin_open: true
+    tty: true
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=watchtower
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume: 

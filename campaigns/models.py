@@ -40,6 +40,16 @@ class Campaign(models.Model):
     voice_id = models.CharField(max_length=100, blank=True)
     agent_config = models.JSONField(default=dict)
     
+    # Assistant relationship
+    assistant = models.ForeignKey(
+        'dashboard.Assistant',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='campaigns',
+        help_text="AI Assistant to use for this campaign"
+    )
+    
     # Scheduling
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
