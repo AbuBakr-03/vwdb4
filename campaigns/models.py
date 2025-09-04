@@ -40,6 +40,9 @@ class Campaign(models.Model):
     voice_id = models.CharField(max_length=100, blank=True)
     agent_config = models.JSONField(default=dict)
     
+    # Campaign targets
+    contacts = models.JSONField(default=list, help_text="List of contacts/phone numbers for this campaign")
+    
     # Assistant relationship
     assistant = models.ForeignKey(
         'dashboard.Assistant',

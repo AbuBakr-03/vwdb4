@@ -1,5 +1,5 @@
 """
-Campaign views with tenant management integration.
+Campaign views with tenant management integration and enhanced dashboard features.
 """
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -8,8 +8,15 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.paginator import Paginator
-from django.db.models import Q, Count, Avg
+from django.db.models import Q, Count, Avg, Sum
 from django.utils import timezone
+from django.contrib import messages
+import json
+import redis
+import logging
+from datetime import datetime, timedelta
+
+logger = logging.getLogger(__name__)
 
 # Import tenant management decorators and utilities
 from authorization.consumer_middleware import require_feature, require_plan
@@ -26,6 +33,12 @@ from .models import Campaign, CampaignSession, CampaignQueue
 # Import Assistant model for campaign relationships
 from dashboard.models import Assistant
 
+# Import queue service
+from .queue_service import CampaignQueueService
+
+# Redis connection for queue monitoring
+import redis
+from django.conf import settings
 
 class CampaignBaseView(View):
     """Base view class with tenant context validation."""
@@ -47,46 +60,193 @@ class CampaignBaseView(View):
 
 
 @method_decorator(login_required, name='dispatch')
+class CampaignDashboardView(CampaignBaseView):
+    """Enhanced dashboard view with real-time metrics and queue monitoring."""
+    
+    def get(self, request):
+        tenant_id = request.tenant_flags['tenant_id']
+        
+        # Get comprehensive campaign statistics
+        campaigns = Campaign.objects.filter(tenant_id=tenant_id)
+        
+        # Real-time statistics
+        stats = {
+            'total': campaigns.count(),
+            'active': campaigns.filter(status='active').count(),
+            'draft': campaigns.filter(status='draft').count(),
+            'paused': campaigns.filter(status='paused').count(),
+            'completed': campaigns.filter(status='completed').count(),
+            'cancelled': campaigns.filter(status='cancelled').count(),
+            'total_calls': campaigns.aggregate(Sum('total_calls'))['total_calls__sum'] or 0,
+            'successful_calls': campaigns.aggregate(Sum('successful_calls'))['successful_calls__sum'] or 0,
+            'failed_calls': campaigns.aggregate(Sum('failed_calls'))['failed_calls__sum'] or 0,
+        }
+        
+        # Calculate success rate
+        if stats['total_calls'] > 0:
+            stats['success_rate'] = round((stats['successful_calls'] / stats['total_calls']) * 100, 2)
+        else:
+            stats['success_rate'] = 0
+        
+        # Get recent campaigns
+        recent_campaigns = campaigns.order_by('-created_at')[:5]
+        
+        # Get active campaigns with real-time status
+        active_campaigns = campaigns.filter(status='active').order_by('-created_at')[:10]
+        
+        # Get campaign performance data for charts
+        performance_data = self._get_performance_data(tenant_id)
+        
+        # Get queue status
+        queue_status = self._get_queue_status(tenant_id)
+        
+        # Get recent sessions
+        recent_sessions = CampaignSession.objects.filter(
+            tenant_id=tenant_id
+        ).select_related('campaign').order_by('-created_at')[:10]
+        
+        context = {
+            'stats': stats,
+            'recent_campaigns': recent_campaigns,
+            'active_campaigns': active_campaigns,
+            'recent_sessions': recent_sessions,
+            'performance_data': performance_data,
+            'queue_status': queue_status,
+        }
+        
+        return render(request, 'campaigns/dashboard.html', context)
+    
+    def _get_performance_data(self, tenant_id):
+        """Get performance data for charts."""
+        # Last 30 days performance
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=30)
+        
+        daily_stats = []
+        for i in range(30):
+            date = start_date + timedelta(days=i)
+            day_campaigns = Campaign.objects.filter(
+                tenant_id=tenant_id,
+                created_at__date=date.date()
+            )
+            
+            daily_stats.append({
+                'date': date.strftime('%Y-%m-%d'),
+                'campaigns': day_campaigns.count(),
+                'calls': day_campaigns.aggregate(Sum('total_calls'))['total_calls__sum'] or 0,
+                'success_rate': self._calculate_daily_success_rate(day_campaigns)
+            })
+        
+        return daily_stats
+    
+    def _calculate_daily_success_rate(self, campaigns):
+        """Calculate success rate for a given set of campaigns."""
+        total_calls = campaigns.aggregate(Sum('total_calls'))['total_calls__sum'] or 0
+        successful_calls = campaigns.aggregate(Sum('successful_calls'))['successful_calls__sum'] or 0
+        
+        if total_calls > 0:
+            return round((successful_calls / total_calls) * 100, 2)
+        return 0
+    
+    def _get_queue_status(self, tenant_id):
+        """Get Redis queue status for real-time monitoring."""
+        try:
+            # Connect to Redis
+            redis_client = redis.Redis.from_url(settings.REDIS_URL)
+            stream_name = f"campaign_queue:{tenant_id}"
+            
+            # Get stream info
+            stream_info = redis_client.xinfo_stream(stream_name)
+            stream_length = stream_info.get('length', 0)
+            
+            # Get consumer groups
+            groups = redis_client.xinfo_groups(stream_name)
+            
+            # Get recent messages
+            recent_messages = redis_client.xrevrange(stream_name, count=5)
+            
+            return {
+                'stream_length': stream_length,
+                'consumer_groups': len(groups),
+                'recent_messages': len(recent_messages),
+                'status': 'active' if stream_length > 0 else 'idle'
+            }
+        except Exception as e:
+            return {
+                'stream_length': 0,
+                'consumer_groups': 0,
+                'recent_messages': 0,
+                'status': 'error',
+                'error': str(e)
+            }
+
+
+@method_decorator(login_required, name='dispatch')
 class CampaignListView(CampaignBaseView):
-    """List all campaigns for the current tenant."""
+    """Enhanced list view with advanced filtering and real-time updates."""
     
     def get(self, request):
         tenant_id = request.tenant_flags['tenant_id']
         
         # Get campaigns for this tenant
-        campaigns = Campaign.objects.filter(tenant_id=tenant_id).order_by('-created_at')
+        campaigns = Campaign.objects.filter(tenant_id=tenant_id).select_related('assistant')
         
-        # Search functionality
+        # Enhanced search functionality
         search_query = request.GET.get('search', '')
         if search_query:
             campaigns = campaigns.filter(
                 Q(name__icontains=search_query) |
                 Q(description__icontains=search_query) |
                 Q(status__icontains=search_query) |
-                Q(assistant__name__icontains=search_query)
+                Q(assistant__name__icontains=search_query) |
+                Q(tenant_id__icontains=search_query)
             )
         
-        # Filter by status
+        # Advanced filtering
         status_filter = request.GET.get('status', '')
         if status_filter:
             campaigns = campaigns.filter(status=status_filter)
         
-        # Filter by assistant
         assistant_filter = request.GET.get('assistant', '')
         if assistant_filter:
             campaigns = campaigns.filter(assistant_id=assistant_filter)
         
+        priority_filter = request.GET.get('priority', '')
+        if priority_filter:
+            campaigns = campaigns.filter(priority=priority_filter)
+        
+        date_filter = request.GET.get('date', '')
+        if date_filter:
+            if date_filter == 'today':
+                campaigns = campaigns.filter(created_at__date=timezone.now().date())
+            elif date_filter == 'week':
+                campaigns = campaigns.filter(created_at__gte=timezone.now() - timedelta(days=7))
+            elif date_filter == 'month':
+                campaigns = campaigns.filter(created_at__gte=timezone.now() - timedelta(days=30))
+        
+        # Sorting
+        sort_by = request.GET.get('sort', '-created_at')
+        if sort_by in ['name', '-name', 'status', '-status', 'priority', '-priority', 'created_at', '-created_at']:
+            campaigns = campaigns.order_by(sort_by)
+        else:
+            campaigns = campaigns.order_by('-created_at')
+        
         # Pagination
-        paginator = Paginator(campaigns, 20)
+        paginator = Paginator(campaigns, 25)  # Increased page size
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
-        # Get campaign statistics
+        # Enhanced statistics
         stats = {
             'total': campaigns.count(),
             'active': campaigns.filter(status='active').count(),
             'draft': campaigns.filter(status='draft').count(),
+            'paused': campaigns.filter(status='paused').count(),
             'completed': campaigns.filter(status='completed').count(),
+            'cancelled': campaigns.filter(status='cancelled').count(),
+            'total_calls': campaigns.aggregate(Sum('total_calls'))['total_calls__sum'] or 0,
+            'successful_calls': campaigns.aggregate(Sum('successful_calls'))['successful_calls__sum'] or 0,
+            'failed_calls': campaigns.aggregate(Sum('failed_calls'))['failed_calls__sum'] or 0,
         }
         
         # Get assistants for filtering
@@ -95,12 +255,8 @@ class CampaignListView(CampaignBaseView):
             status='published'
         ).order_by('name')
         
-        # Log the access
-        tenant_audit_log(request, 'campaign_list_view', 'campaigns_list', {
-            'tenant_id': tenant_id,
-            'search_query': search_query,
-            'status_filter': status_filter
-        })
+        # Get queue status for real-time updates
+        queue_status = self._get_queue_status(tenant_id)
         
         context = {
             'campaigns': page_obj,
@@ -109,43 +265,289 @@ class CampaignListView(CampaignBaseView):
             'search_query': search_query,
             'status_filter': status_filter,
             'assistant_filter': assistant_filter,
-            'tenant_info': get_tenant_info(request)
+            'priority_filter': priority_filter,
+            'date_filter': date_filter,
+            'sort_by': sort_by,
+            'queue_status': queue_status,
         }
         
         return render(request, 'campaigns/campaign_list.html', context)
+    
+    def _get_queue_status(self, tenant_id):
+        """Get Redis queue status."""
+        try:
+            redis_client = redis.Redis.from_url(settings.REDIS_URL)
+            stream_name = f"campaign_queue:{tenant_id}"
+            stream_info = redis_client.xinfo_stream(stream_name)
+            return {
+                'stream_length': stream_info.get('length', 0),
+                'status': 'active' if stream_info.get('length', 0) > 0 else 'idle'
+            }
+        except:
+            return {'stream_length': 0, 'status': 'error'}
 
 
 @method_decorator(login_required, name='dispatch')
 class CampaignDetailView(CampaignBaseView):
-    """View campaign details and sessions."""
+    """Enhanced detail view with real-time session monitoring."""
     
     def get(self, request, campaign_id):
         tenant_id = request.tenant_flags['tenant_id']
         
-        # Get campaign for this tenant
         campaign = get_object_or_404(Campaign, id=campaign_id, tenant_id=tenant_id)
         
         # Get campaign sessions
-        sessions = campaign.sessions.all().order_by('-created_at')
+        sessions = CampaignSession.objects.filter(campaign=campaign).order_by('-created_at')
         
-        # Get queue items
-        queue_items = campaign.queue_items.all().order_by('priority', 'position')
+        # Get session statistics
+        session_stats = {
+            'total': sessions.count(),
+            'queued': sessions.filter(status='queued').count(),
+            'in_progress': sessions.filter(status='in_progress').count(),
+            'completed': sessions.filter(status='completed').count(),
+            'failed': sessions.filter(status='failed').count(),
+        }
         
-        # Log the access
-        tenant_audit_log(request, 'campaign_detail_view', f'campaign_{campaign_id}', {
-            'tenant_id': tenant_id,
-            'campaign_id': campaign_id,
-            'campaign_name': campaign.name
-        })
+        # Get recent sessions
+        recent_sessions = sessions[:10]
+        
+        # Get queue position if campaign is queued
+        queue_position = None
+        if campaign.status == 'active':
+            try:
+                queue_item = CampaignQueue.objects.filter(
+                    campaign=campaign,
+                    is_processing=False
+                ).order_by('priority', 'position').first()
+                if queue_item:
+                    queue_position = queue_item.position
+            except:
+                pass
+        
+        # Get performance metrics
+        performance_metrics = self._get_performance_metrics(campaign)
         
         context = {
             'campaign': campaign,
             'sessions': sessions,
-            'queue_items': queue_items,
-            'tenant_info': get_tenant_info(request)
+            'session_stats': session_stats,
+            'recent_sessions': recent_sessions,
+            'queue_position': queue_position,
+            'performance_metrics': performance_metrics,
         }
         
         return render(request, 'campaigns/campaign_detail.html', context)
+    
+    def _get_performance_metrics(self, campaign):
+        """Get detailed performance metrics for the campaign."""
+        sessions = CampaignSession.objects.filter(campaign=campaign)
+        
+        # Calculate average call duration
+        avg_duration = sessions.aggregate(Avg('call_duration'))['call_duration__avg'] or 0
+        
+        # Calculate success rate over time
+        daily_success = []
+        for i in range(7):  # Last 7 days
+            date = timezone.now() - timedelta(days=i)
+            day_sessions = sessions.filter(created_at__date=date.date())
+            if day_sessions.exists():
+                success_count = day_sessions.filter(status='completed').count()
+                total_count = day_sessions.count()
+                success_rate = (success_count / total_count * 100) if total_count > 0 else 0
+                daily_success.append({
+                    'date': date.strftime('%Y-%m-%d'),
+                    'success_rate': round(success_rate, 2)
+                })
+        
+        return {
+            'avg_duration': avg_duration,
+            'daily_success': daily_success,
+            'total_sessions': sessions.count(),
+            'success_rate': campaign.success_rate,
+        }
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignQueueView(CampaignBaseView):
+    """Real-time queue monitoring view."""
+    
+    def get(self, request):
+        tenant_id = request.tenant_flags['tenant_id']
+        
+        # Get Redis queue information
+        queue_status = self._get_detailed_queue_status(tenant_id)
+        
+        # Get campaigns in queue
+        queued_campaigns = Campaign.objects.filter(
+            tenant_id=tenant_id,
+            status='active'
+        ).order_by('-created_at')
+        
+        # Get recent sessions
+        recent_sessions = CampaignSession.objects.filter(
+            tenant_id=tenant_id
+        ).select_related('campaign').order_by('-created_at')[:20]
+        
+        context = {
+            'queue_status': queue_status,
+            'queued_campaigns': queued_campaigns,
+            'recent_sessions': recent_sessions,
+        }
+        
+        return render(request, 'campaigns/queue_monitor.html', context)
+    
+    def _get_detailed_queue_status(self, tenant_id):
+        """Get detailed Redis queue status."""
+        try:
+            redis_client = redis.Redis.from_url(settings.REDIS_URL)
+            stream_name = f"campaign_queue:{tenant_id}"
+            
+            # Get stream info
+            stream_info = redis_client.xinfo_stream(stream_name)
+            stream_length = stream_info.get('length', 0)
+            
+            # Get consumer groups
+            groups = redis_client.xinfo_groups(stream_name)
+            
+            # Get recent messages
+            recent_messages = redis_client.xrevrange(stream_name, count=10)
+            
+            # Parse message data
+            parsed_messages = []
+            for msg_id, fields in recent_messages:
+                message_data = {}
+                for i in range(0, len(fields), 2):
+                    key = fields[i].decode('utf-8') if isinstance(fields[i], bytes) else fields[i]
+                    value = fields[i+1].decode('utf-8') if isinstance(fields[i+1], bytes) else fields[i+1]
+                    message_data[key] = value
+                
+                parsed_messages.append({
+                    'id': msg_id.decode('utf-8') if isinstance(msg_id, bytes) else msg_id,
+                    'data': message_data
+                })
+            
+            return {
+                'stream_length': stream_length,
+                'consumer_groups': len(groups),
+                'recent_messages': parsed_messages,
+                'status': 'active' if stream_length > 0 else 'idle',
+                'last_updated': timezone.now()
+            }
+        except Exception as e:
+            return {
+                'stream_length': 0,
+                'consumer_groups': 0,
+                'recent_messages': [],
+                'status': 'error',
+                'error': str(e),
+                'last_updated': timezone.now()
+            }
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignActionView(CampaignBaseView):
+    """Handle campaign actions (launch, pause, stop, etc.)."""
+    
+    def post(self, request, campaign_id):
+        tenant_id = request.tenant_flags['tenant_id']
+        campaign = get_object_or_404(Campaign, id=campaign_id, tenant_id=tenant_id)
+        
+        action = request.POST.get('action')
+        
+        if action == 'launch':
+            return self._launch_campaign(request, campaign)
+        elif action == 'pause':
+            return self._pause_campaign(request, campaign)
+        elif action == 'resume':
+            return self._resume_campaign(request, campaign)
+        elif action == 'stop':
+            return self._stop_campaign(request, campaign)
+        elif action == 'retry_failed':
+            return self._retry_failed_sessions(request, campaign)
+        else:
+            return JsonResponse({'error': 'Invalid action'}, status=400)
+    
+    def _launch_campaign(self, request, campaign):
+        """Launch a campaign."""
+        try:
+            if campaign.status != 'draft':
+                return JsonResponse({'error': 'Only draft campaigns can be launched'}, status=400)
+            
+            # Update campaign status
+            campaign.status = 'active'
+            campaign.save()
+            
+            # Launch campaign using queue service
+            queue_service = CampaignQueueService()
+            success = queue_service.launch_campaign(campaign)
+            
+            if success:
+                messages.success(request, f'Campaign "{campaign.name}" launched successfully!')
+                return JsonResponse({'success': True, 'message': 'Campaign launched successfully'})
+            else:
+                campaign.status = 'draft'
+                campaign.save()
+                return JsonResponse({'error': 'Failed to launch campaign'}, status=500)
+                
+        except Exception as e:
+            campaign.status = 'draft'
+            campaign.save()
+            return JsonResponse({'error': f'Error launching campaign: {str(e)}'}, status=500)
+    
+    def _pause_campaign(self, request, campaign):
+        """Pause a campaign."""
+        if campaign.status != 'active':
+            return JsonResponse({'error': 'Only active campaigns can be paused'}, status=400)
+        
+        campaign.status = 'paused'
+        campaign.save()
+        
+        messages.success(request, f'Campaign "{campaign.name}" paused successfully!')
+        return JsonResponse({'success': True, 'message': 'Campaign paused successfully'})
+    
+    def _resume_campaign(self, request, campaign):
+        """Resume a paused campaign."""
+        if campaign.status != 'paused':
+            return JsonResponse({'error': 'Only paused campaigns can be resumed'}, status=400)
+        
+        campaign.status = 'active'
+        campaign.save()
+        
+        messages.success(request, f'Campaign "{campaign.name}" resumed successfully!')
+        return JsonResponse({'success': True, 'message': 'Campaign resumed successfully'})
+    
+    def _stop_campaign(self, request, campaign):
+        """Stop an active campaign."""
+        if campaign.status not in ['active', 'paused']:
+            return JsonResponse({'error': 'Only active or paused campaigns can be stopped'}, status=400)
+        
+        campaign.status = 'cancelled'
+        campaign.save()
+        
+        messages.success(request, f'Campaign "{campaign.name}" stopped successfully!')
+        return JsonResponse({'success': True, 'message': 'Campaign stopped successfully'})
+    
+    def _retry_failed_sessions(self, request, campaign):
+        """Retry failed sessions for a campaign."""
+        try:
+            failed_sessions = CampaignSession.objects.filter(
+                campaign=campaign,
+                status='failed'
+            )
+            
+            retry_count = 0
+            for session in failed_sessions:
+                session.status = 'queued'
+                session.retry_count += 1
+                session.error_message = ''
+                session.save()
+                retry_count += 1
+            
+            messages.success(request, f'Retried {retry_count} failed sessions for campaign "{campaign.name}"!')
+            return JsonResponse({'success': True, 'message': f'Retried {retry_count} failed sessions'})
+            
+        except Exception as e:
+            return JsonResponse({'error': f'Error retrying sessions: {str(e)}'}, status=500)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -156,7 +558,7 @@ class CampaignCreateView(CampaignBaseView):
         # Check campaign creation limit
         limit_check = check_tenant_limit(request, 'campaigns_per_month')
         
-        # Get assistants for this tenant
+        # Get assistants for this tenant (including all statuses for flexibility)
         tenant_id = request.tenant_flags['tenant_id']
         assistants = Assistant.objects.filter(
             client_id=tenant_id,
@@ -198,10 +600,11 @@ class CampaignCreateView(CampaignBaseView):
             assistant_id = request.POST.get('assistant')
             if assistant_id:
                 try:
+                    # Accept both draft and published assistants for flexibility
                     assistant = Assistant.objects.get(
                         id=assistant_id,
                         client_id=tenant_id,
-                        status='published'
+                        status__in=['draft', 'published']
                     )
                     campaign.assistant = assistant
                     campaign.save()
@@ -224,6 +627,35 @@ class CampaignCreateView(CampaignBaseView):
                 'retry_on': request.POST.getlist('retry_on'),
                 'backoff_seconds': request.POST.get('backoff_seconds', '60, 180, 600')
             }
+            
+            # Store contacts data
+            contacts_data = request.POST.get('contacts_data', '[]')
+            try:
+                campaign.contacts = json.loads(contacts_data)
+                # Ensure contacts have the required structure
+                if campaign.contacts:
+                    # Extract phone numbers for validation
+                    phone_numbers = []
+                    for contact in campaign.contacts:
+                        if isinstance(contact, dict) and contact.get('phone'):
+                            phone_numbers.append(contact['phone'])
+                        elif isinstance(contact, str):
+                            phone_numbers.append(contact)
+                    
+                    # Store phone numbers separately for easy access
+                    campaign.agent_config['phone_numbers'] = phone_numbers
+                    campaign.agent_config['total_contacts'] = len(campaign.contacts)
+                    
+                    logger.info(f"Campaign {campaign.id} created with {len(phone_numbers)} phone numbers: {phone_numbers}")
+                else:
+                    logger.warning(f"Campaign {campaign.id} created with no contacts")
+                    
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.error(f"Failed to parse contacts data for campaign {campaign.id}: {e}")
+                campaign.contacts = []
+                campaign.agent_config['phone_numbers'] = []
+                campaign.agent_config['total_contacts'] = 0
+            
             campaign.save()
             
             # Increment usage
@@ -250,10 +682,10 @@ class CampaignEditView(CampaignBaseView):
         tenant_id = request.tenant_flags['tenant_id']
         campaign = get_object_or_404(Campaign, id=campaign_id, tenant_id=tenant_id)
         
-        # Get assistants for this tenant
+        # Get assistants for this tenant (including draft for flexibility)
         assistants = Assistant.objects.filter(
             client_id=tenant_id,
-            status='published'
+            status__in=['draft', 'published']
         ).order_by('name')
         
         context = {
@@ -281,10 +713,11 @@ class CampaignEditView(CampaignBaseView):
             assistant_id = request.POST.get('assistant')
             if assistant_id:
                 try:
+                    # Accept both draft and published assistants for flexibility
                     assistant = Assistant.objects.get(
                         id=assistant_id,
                         client_id=tenant_id,
-                        status='published'
+                        status__in=['draft', 'published']
                     )
                     campaign.assistant = assistant
                 except Assistant.DoesNotExist:
@@ -340,22 +773,70 @@ class CampaignLaunchView(CampaignBaseView):
             }, status=429)
         
         try:
-            # Update campaign status
-            campaign.status = 'active'
-            campaign.start_date = timezone.now()
-            campaign.save()
+            # Get phone numbers from the campaign's stored contacts
+            phone_numbers = []
             
-            # Increment concurrent usage
-            increment_tenant_usage(request, 'concurrent_campaigns', 1)
+            # First try to get from contacts field
+            if campaign.contacts:
+                for contact in campaign.contacts:
+                    if isinstance(contact, dict) and contact.get('phone'):
+                        phone_numbers.append(contact['phone'])
+                    elif isinstance(contact, str):
+                        phone_numbers.append(contact)
             
-            # Log the launch
-            tenant_audit_log(request, 'campaign_launched', f'campaign_{campaign.id}', {
-                'tenant_id': tenant_id,
-                'campaign_id': campaign.id,
-                'campaign_name': campaign.name
-            })
+            # Fallback to agent_config if no phone numbers found in contacts
+            if not phone_numbers and campaign.agent_config.get('phone_numbers'):
+                phone_numbers = campaign.agent_config['phone_numbers']
+                logger.info(f"Using phone numbers from agent_config: {phone_numbers}")
             
-            return JsonResponse({'message': 'Campaign launched successfully'})
+            if not phone_numbers:
+                logger.error(f"Campaign {campaign.id} has no phone numbers. Contacts: {campaign.contacts}, Agent config: {campaign.agent_config}")
+                return JsonResponse({
+                    'error': 'No phone numbers provided for campaign. Please add contacts before launching.'
+                }, status=400)
+            
+            # Initialize queue service
+            queue_service = CampaignQueueService()
+            
+            try:
+                # Publish campaign to Redis queue
+                publish_result = queue_service.publish_campaign(campaign, phone_numbers)
+                
+                if not publish_result['success']:
+                    return JsonResponse({
+                        'error': f'Failed to publish campaign to queue: {publish_result["error"]}'
+                    }, status=500)
+                
+                # Update campaign status
+                campaign.status = 'active'
+                campaign.start_date = timezone.now()
+                campaign.save()
+                
+                # Increment concurrent usage
+                increment_tenant_usage(request, 'concurrent_campaigns', 1)
+                
+                # Log the launch
+                tenant_audit_log(request, 'campaign_launched', f'campaign_{campaign.id}', {
+                    'tenant_id': tenant_id,
+                    'campaign_id': campaign.id,
+                    'campaign_name': campaign.name,
+                    'queue_message_id': publish_result['message_id'],
+                    'total_calls': publish_result['total_calls']
+                })
+                
+                return JsonResponse({
+                    'message': 'Campaign launched successfully',
+                    'queue_info': {
+                        'message_id': publish_result['message_id'],
+                        'stream_name': publish_result['stream_name'],
+                        'total_calls': publish_result['total_calls'],
+                        'published_at': publish_result['published_at']
+                    }
+                })
+                
+            finally:
+                # Always close the queue service connection
+                queue_service.close()
             
         except Exception as e:
             return JsonResponse({'error': f'Failed to launch campaign: {str(e)}'}, status=500)
@@ -399,6 +880,38 @@ class QueueTrackerView(CampaignBaseView):
         }
         
         return render(request, 'campaigns/queue_tracker.html', context)
+
+
+@method_decorator(login_required, name='dispatch')
+class QueueStatusView(CampaignBaseView):
+    """Get real-time status of the Redis queue for campaigns."""
+    
+    def get(self, request):
+        tenant_id = request.tenant_flags['tenant_id']
+        
+        try:
+            # Initialize queue service
+            queue_service = CampaignQueueService()
+            
+            try:
+                # Get queue status
+                queue_status = queue_service.get_queue_status(tenant_id)
+                
+                return JsonResponse({
+                    'success': True,
+                    'queue_status': queue_status,
+                    'tenant_id': tenant_id
+                })
+                
+            finally:
+                # Always close the queue service connection
+                queue_service.close()
+                
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
 
 
 @method_decorator(login_required, name='dispatch')

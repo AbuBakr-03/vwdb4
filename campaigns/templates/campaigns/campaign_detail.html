@@ -1,0 +1,583 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{{ campaign.name }}
+- Campaign Details - Watchtower{% endblock %} {% block content %}
+<div class="space-y-6">
+  <!-- Page header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold">{{ campaign.name }}</h1>
+      <p class="text-base-content/70">Campaign Details & Management</p>
+    </div>
+    <div class="flex gap-3">
+      <a
+        href="{% url 'campaigns:campaign_edit' campaign.id %}"
+        class="btn btn-outline border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300"
+      >
+        <svg
+          class="w-4 h-4 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          ></path>
+        </svg>
+        Edit Campaign
+      </a>
+      <a
+        href="{% url 'campaigns:campaign_list' %}"
+        class="btn btn-outline border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300"
+      >
+        <svg
+          class="w-4 h-4 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          ></path>
+        </svg>
+        Back to Campaigns
+      </a>
+    </div>
+  </div>
+
+  <!-- Campaign Overview -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Campaign Information -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Basic Info Card -->
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <h3 class="card-title">
+            <svg
+              class="w-5 h-5 text-primary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            Campaign Information
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Status</span>
+              </label>
+              <div
+                class="badge badge-{{ campaign.status|yesno:'success,warning,info,error,neutral' }} badge-lg"
+              >
+                {{ campaign.get_status_display }}
+              </div>
+            </div>
+
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Priority</span>
+              </label>
+              <div
+                class="badge badge-{{ campaign.priority|yesno:'error,warning,success,info' }} badge-lg"
+              >
+                {{ campaign.get_priority_display }}
+              </div>
+            </div>
+
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Created By</span>
+              </label>
+              <p class="text-base-content/70">
+                {{
+                campaign.created_by.get_full_name|default:campaign.created_by.username
+                }}
+              </p>
+            </div>
+
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Created Date</span>
+              </label>
+              <p class="text-base-content/70">
+                {{ campaign.created_at|date:"M d, Y H:i" }}
+              </p>
+            </div>
+          </div>
+
+          {% if campaign.description %}
+          <div class="mt-4">
+            <label class="label">
+              <span class="label-text font-medium">Description</span>
+            </label>
+            <p class="text-base-content/70">{{ campaign.description }}</p>
+          </div>
+          {% endif %} {% if campaign.assistant %}
+          <div class="mt-4">
+            <label class="label">
+              <span class="label-text font-medium">AI Assistant</span>
+            </label>
+            <p class="text-base-content/70">{{ campaign.assistant.name }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Script Template Card -->
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <h3 class="card-title">
+            <svg
+              class="w-5 h-5 text-info"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              ></path>
+            </svg>
+            Script Template
+          </h3>
+          <div class="bg-base-200 p-4 rounded-lg">
+            <pre class="whitespace-pre-wrap text-sm">
+{{ campaign.prompt_template }}</pre
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuration Card -->
+      {% if campaign.agent_config %}
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <h3 class="card-title">
+            <svg
+              class="w-5 h-5 text-warning"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              ></path>
+            </svg>
+            Campaign Configuration
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% if campaign.agent_config.use_case %}
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Use Case</span>
+              </label>
+              <p class="text-base-content/70">
+                {{ campaign.agent_config.use_case }}
+              </p>
+            </div>
+            {% endif %} {% if campaign.agent_config.channel %}
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Channel</span>
+              </label>
+              <p class="text-base-content/70">
+                {{ campaign.agent_config.channel|title }}
+              </p>
+            </div>
+            {% endif %} {% if campaign.agent_config.language %}
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Language</span>
+              </label>
+              <p class="text-base-content/70">
+                {{ campaign.agent_config.language|upper }}
+              </p>
+            </div>
+            {% endif %} {% if campaign.agent_config.max_attempts %}
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Max Attempts</span>
+              </label>
+              <p class="text-base-content/70">
+                {{ campaign.agent_config.max_attempts }}
+              </p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Campaign Statistics -->
+    <div class="space-y-6">
+      <!-- Stats Card -->
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <h3 class="card-title">
+            <svg
+              class="w-5 h-5 text-success"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              ></path>
+            </svg>
+            Statistics
+          </h3>
+
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-base-content/70">Total Calls</span>
+              <span class="font-bold text-lg">{{ campaign.total_calls }}</span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-base-content/70">Successful Calls</span>
+              <span class="font-bold text-success"
+                >{{ campaign.successful_calls }}</span
+              >
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-base-content/70">Failed Calls</span>
+              <span class="font-bold text-error"
+                >{{ campaign.failed_calls }}</span
+              >
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-base-content/70">Success Rate</span>
+              <span class="font-bold text-info"
+                >{{ campaign.success_rate|floatformat:1 }}%</span
+              >
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-base-content/70">Max Calls</span>
+              <span class="font-bold">{{ campaign.max_calls }}</span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-base-content/70">Max Concurrent</span>
+              <span class="font-bold">{{ campaign.max_concurrent }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <h3 class="card-title">
+            <svg
+              class="w-5 h-5 text-warning"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              ></path>
+            </svg>
+            Quick Actions
+          </h3>
+
+          <div class="space-y-3">
+            {% if campaign.status == 'draft' %}
+            <form
+              method="post"
+              action="{% url 'campaigns:campaign_launch' campaign.id %}"
+              class="inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success w-full">
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                Launch Campaign
+              </button>
+            </form>
+            {% elif campaign.status == 'active' %}
+            <button class="btn btn-warning w-full" disabled>
+              <svg
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              Campaign Active
+            </button>
+            {% endif %}
+
+            <a
+              href="{% url 'campaigns:campaign_edit' campaign.id %}"
+              class="btn btn-outline w-full"
+            >
+              <svg
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                ></path>
+              </svg>
+              Edit Campaign
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campaign Sessions -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h3 class="card-title">
+        <svg
+          class="w-5 h-5 text-info"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+          ></path>
+        </svg>
+        Campaign Sessions
+        <span class="badge badge-primary badge-lg">{{ sessions.count }}</span>
+      </h3>
+
+      {% if sessions %}
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Session ID</th>
+              <th>Phone Number</th>
+              <th>Status</th>
+              <th>Duration</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for session in sessions %}
+            <tr>
+              <td class="font-mono text-sm">
+                {{ session.session_id|truncatechars:12 }}
+              </td>
+              <td>{{ session.phone_number }}</td>
+              <td>
+                <span
+                  class="badge badge-{{ session.status|yesno:'success,warning,info,error,neutral' }}"
+                >
+                  {{ session.get_status_display }}
+                </span>
+              </td>
+              <td>{{ session.duration_formatted }}</td>
+              <td>{{ session.created_at|date:"M d, Y H:i" }}</td>
+              <td>
+                <button
+                  class="btn btn-ghost btn-xs"
+                  onclick="viewSessionDetails('{{ session.id }}')"
+                >
+                  View
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-8 text-base-content/50">
+        <svg
+          class="w-16 h-16 mx-auto mb-4 opacity-50"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+          ></path>
+        </svg>
+        <p class="text-lg font-medium">No sessions yet</p>
+        <p class="text-sm">
+          Campaign sessions will appear here once the campaign is launched
+        </p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Queue Items -->
+  {% if queue_items %}
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h3 class="card-title">
+        <svg
+          class="w-5 h-5 text-warning"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 10h16M4 14h16M4 18h16"
+          ></path>
+        </svg>
+        Queue Items
+        <span class="badge badge-warning badge-lg"
+          >{{ queue_items.count }}</span
+        >
+      </h3>
+
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>Priority</th>
+              <th>Session</th>
+              <th>Status</th>
+              <th>Queued At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in queue_items %}
+            <tr>
+              <td>{{ item.position }}</td>
+              <td>
+                <span
+                  class="badge badge-{{ item.priority|yesno:'error,warning,success,info' }}"
+                >
+                  {{ item.get_priority_display }}
+                </span>
+              </td>
+              <td class="font-mono text-sm">
+                {{ item.session.session_id|truncatechars:12 }}
+              </td>
+              <td>
+                {% if item.is_processing %}
+                <span class="badge badge-info">Processing</span>
+                {% else %}
+                <span class="badge badge-neutral">Queued</span>
+                {% endif %}
+              </td>
+              <td>{{ item.queued_at|date:"M d, Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Session Details Modal -->
+<div id="session-modal" class="modal">
+  <div class="modal-box w-11/12 max-w-4xl">
+    <h3 class="font-bold text-lg mb-4">Session Details</h3>
+    <div id="session-details-content">
+      <!-- Session details will be loaded here -->
+    </div>
+    <div class="modal-action">
+      <button class="btn btn-ghost" onclick="closeSessionModal()">Close</button>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  function viewSessionDetails(sessionId) {
+    // This would typically load session details via AJAX
+    // For now, just show a placeholder
+    document.getElementById("session-details-content").innerHTML = `
+        <div class="text-center py-8">
+            <p class="text-base-content/70">Session details for ID: ${sessionId}</p>
+            <p class="text-sm text-base-content/50">This would show detailed session information</p>
+        </div>
+    `;
+
+    // Show modal
+    document.getElementById("session-modal").classList.add("modal-open");
+  }
+
+  function closeSessionModal() {
+    document.getElementById("session-modal").classList.remove("modal-open");
+  }
+
+  // Close modal when clicking outside
+  document
+    .getElementById("session-modal")
+    .addEventListener("click", function (e) {
+      if (e.target === this) {
+        this.classList.remove("modal-open");
+      }
+    });
+</script>
+{% endblock %}
+

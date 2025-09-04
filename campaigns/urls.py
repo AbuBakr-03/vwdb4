@@ -8,18 +8,24 @@ from . import views
 app_name = 'campaigns'
 
 urlpatterns = [
+    # Enhanced dashboard and monitoring
+    path('', views.CampaignDashboardView.as_view(), name='dashboard'),
+    path('list/', views.CampaignListView.as_view(), name='campaign_list'),
+    path('queue/', views.CampaignQueueView.as_view(), name='queue_monitor'),
+    
     # Campaign management
-    path('', views.CampaignListView.as_view(), name='campaign_list'),
-    path('new/', views.CampaignCreateView.as_view(), name='campaign_create'),  # Changed from 'create/'
+    path('create/', views.CampaignCreateView.as_view(), name='campaign_create'),
     path('<int:campaign_id>/', views.CampaignDetailView.as_view(), name='campaign_detail'),
     path('<int:campaign_id>/edit/', views.CampaignEditView.as_view(), name='campaign_edit'),
-    path('<int:campaign_id>/launch/', views.CampaignLaunchView.as_view(), name='campaign_launch'),
     
-    # Queue and sessions
-    path('queue/', views.QueueTrackerView.as_view(), name='queue_tracker'),
-    path('sessions/', views.SessionsView.as_view(), name='sessions'),
+    # Campaign actions
+    path('<int:campaign_id>/action/', views.CampaignActionView.as_view(), name='campaign_action'),
+    
+    # Legacy URLs for backward compatibility
+    path('campaigns/', views.CampaignListView.as_view(), name='campaigns_list'),
+    path('campaign/<int:campaign_id>/', views.CampaignDetailView.as_view(), name='campaign_detail_legacy'),
     
     # API endpoints
-    path('api/stats/', views.campaign_stats_api, name='campaign_stats_api'),
-    path('api/queue-status/', views.queue_status_api, name='queue_status_api'),
+    path('api/launch/<int:campaign_id>/', views.CampaignLaunchView.as_view(), name='campaign_launch'),
+    path('api/queue-status/', views.QueueStatusView.as_view(), name='queue_status'),
 ]
