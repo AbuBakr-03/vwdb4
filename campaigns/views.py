@@ -584,6 +584,10 @@ class CampaignCreateView(CampaignBaseView):
             }, status=429)
         
         try:
+            # Debug: Log the received form data
+            logger.info(f"Creating campaign with form data: {dict(request.POST)}")
+            logger.info(f"Contacts data received: {request.POST.get('contacts_data', '[]')}")
+            
             # Create campaign
             campaign = Campaign.objects.create(
                 name=request.POST.get('name'),
@@ -630,21 +634,31 @@ class CampaignCreateView(CampaignBaseView):
             
             # Store contacts data
             contacts_data = request.POST.get('contacts_data', '[]')
+            logger.info(f"Raw contacts_data: {contacts_data}")
+            
             try:
                 campaign.contacts = json.loads(contacts_data)
+                logger.info(f"Parsed contacts: {campaign.contacts}")
+                
                 # Ensure contacts have the required structure
                 if campaign.contacts:
                     # Extract phone numbers for validation
                     phone_numbers = []
                     for contact in campaign.contacts:
+                        logger.info(f"Processing contact: {contact}")
                         if isinstance(contact, dict) and contact.get('phone'):
                             phone_numbers.append(contact['phone'])
+                            logger.info(f"Added phone number: {contact['phone']}")
                         elif isinstance(contact, str):
                             phone_numbers.append(contact)
+                            logger.info(f"Added string phone: {contact}")
                     
                     # Store phone numbers separately for easy access
+                    # Ensure phone_numbers is stored as a proper list, not a string
                     campaign.agent_config['phone_numbers'] = phone_numbers
                     campaign.agent_config['total_contacts'] = len(campaign.contacts)
+                    
+                    logger.info(f"Stored phone_numbers in agent_config: {phone_numbers} (type: {type(phone_numbers)})")
                     
                     logger.info(f"Campaign {campaign.id} created with {len(phone_numbers)} phone numbers: {phone_numbers}")
                 else:
@@ -657,6 +671,8 @@ class CampaignCreateView(CampaignBaseView):
                 campaign.agent_config['total_contacts'] = 0
             
             campaign.save()
+            logger.info(f"Final campaign.contacts: {campaign.contacts}")
+            logger.info(f"Final campaign.agent_config: {campaign.agent_config}")
             
             # Increment usage
             increment_tenant_usage(request, 'campaigns_per_month', 1)
@@ -773,21 +789,71 @@ class CampaignLaunchView(CampaignBaseView):
             }, status=429)
         
         try:
+            # Debug: Log campaign data
+            logger.info(f"Launching campaign {campaign.id}")
+            logger.info(f"Campaign contacts: {campaign.contacts}")
+            logger.info(f"Campaign agent_config: {campaign.agent_config}")
+            
+            print(f"DEBUG: Campaign {campaign.id} agent_config: {campaign.agent_config}")
+            print(f"DEBUG: Campaign {campaign.id} agent_config keys: {list(campaign.agent_config.keys())}")
+            
             # Get phone numbers from the campaign's stored contacts
             phone_numbers = []
             
             # First try to get from contacts field
             if campaign.contacts:
+                logger.info(f"Processing {len(campaign.contacts)} contacts from contacts field")
                 for contact in campaign.contacts:
+                    logger.info(f"Processing contact: {contact}")
                     if isinstance(contact, dict) and contact.get('phone'):
                         phone_numbers.append(contact['phone'])
+                        logger.info(f"Added phone from dict: {contact['phone']}")
                     elif isinstance(contact, str):
                         phone_numbers.append(contact)
+                        logger.info(f"Added phone from string: {contact}")
             
             # Fallback to agent_config if no phone numbers found in contacts
-            if not phone_numbers and campaign.agent_config.get('phone_numbers'):
-                phone_numbers = campaign.agent_config['phone_numbers']
-                logger.info(f"Using phone numbers from agent_config: {phone_numbers}")
+            # Check both possible keys for phone numbers
+            logger.info(f"Checking agent_config keys: {list(campaign.agent_config.keys())}")
+            logger.info(f"Looking for phone numbers in agent_config...")
+            
+            agent_phone_numbers = None
+            if campaign.agent_config.get('phone_numbers'):
+                agent_phone_numbers = campaign.agent_config['phone_numbers']
+                logger.info(f"Found phone numbers in agent_config['phone_numbers']: {agent_phone_numbers}")
+            elif campaign.agent_config.get('agent_config_phone_numbers'):
+                agent_phone_numbers = campaign.agent_config['agent_config_phone_numbers']
+                logger.info(f"Found phone numbers in agent_config['agent_config_phone_numbers']: {agent_phone_numbers}")
+            else:
+                logger.warning(f"No phone numbers found in agent_config. Available keys: {list(campaign.agent_config.keys())}")
+            
+            if agent_phone_numbers:
+                print(f"DEBUG: Found agent_phone_numbers: {agent_phone_numbers} (type: {type(agent_phone_numbers)})")
+                
+                # Handle both list and string representations
+                if isinstance(agent_phone_numbers, str):
+                    try:
+                        # Try to parse as JSON if it's a string
+                        import ast
+                        phone_numbers = ast.literal_eval(agent_phone_numbers)
+                        print(f"DEBUG: Parsed phone numbers from string: {phone_numbers}")
+                        logger.info(f"Parsed phone numbers from string: {phone_numbers}")
+                    except (ValueError, SyntaxError) as e:
+                        print(f"DEBUG: Failed to parse phone numbers string: {e}")
+                        logger.error(f"Failed to parse phone numbers string: {e}")
+                        phone_numbers = []
+                elif isinstance(agent_phone_numbers, list):
+                    phone_numbers = agent_phone_numbers
+                    print(f"DEBUG: Using phone numbers from list: {phone_numbers}")
+                    logger.info(f"Using phone numbers from list: {phone_numbers}")
+                else:
+                    print(f"DEBUG: Unexpected phone_numbers type: {type(agent_phone_numbers)}")
+                    logger.error(f"Unexpected phone_numbers type: {type(agent_phone_numbers)}")
+                    phone_numbers = []
+            else:
+                print(f"DEBUG: No agent_phone_numbers found")
+            
+            logger.info(f"Final phone_numbers list: {phone_numbers}")
             
             if not phone_numbers:
                 logger.error(f"Campaign {campaign.id} has no phone numbers. Contacts: {campaign.contacts}, Agent config: {campaign.agent_config}")

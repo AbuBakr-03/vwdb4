@@ -4,14 +4,14 @@ Watchtower{% endblock %} {% block extra_head %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 {% endblock %} {% block content %}
 <div class="space-y-6">
-    <!-- Page header -->
-    <div class="flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-bold">Create New Campaign</h1>
+  <!-- Page header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold">Create New Campaign</h1>
       <p class="text-base-content/70">
         Set up your AI agent campaign with detailed configuration
       </p>
-        </div>
+    </div>
     <a
       href="{% url 'campaigns:campaign_list' %}"
       class="btn btn-outline border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300"
@@ -28,19 +28,19 @@ Watchtower{% endblock %} {% block extra_head %}
           stroke-width="2"
           d="M10 19l-7-7m0 0l7-7m-7 7h18"
         ></path>
-            </svg>
-            Back to Campaigns
-        </a>
-    </div>
+      </svg>
+      Back to Campaigns
+    </a>
+  </div>
 
-    <!-- Campaign Creation Form -->
-    <form method="post" class="space-y-6">
-        {% csrf_token %}
-        
-        <!-- Basic Information -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body">
-                <h3 class="card-title">
+  <!-- Campaign Creation Form -->
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- Basic Information -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <h3 class="card-title">
           <svg
             class="w-5 h-5 text-primary"
             fill="none"
@@ -53,49 +53,49 @@ Watchtower{% endblock %} {% block extra_head %}
               stroke-width="2"
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             ></path>
-                    </svg>
-                    Basic Information
-                </h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Campaign Name *</span>
-                        </label>
+          </svg>
+          Basic Information
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Campaign Name *</span>
+            </label>
             <input
               type="text"
               name="name"
               required
-                               placeholder="Enter campaign name" 
+              placeholder="Enter campaign name"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >A descriptive name for your campaign</span
               >
-                        </label>
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">AI Assistant *</span>
-                        </label>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">AI Assistant *</span>
+            </label>
             <select
               name="assistant"
               required
               class="select select-bordered w-full"
             >
-                            <option value="">Select an AI Assistant</option>
-                            {% for assistant in assistants %}
+              <option value="">Select an AI Assistant</option>
+              {% for assistant in assistants %}
               <option value="{{ assistant.id }}">
                 {{ assistant.name }} - {{ assistant.description|truncatechars:50
                 }}
               </option>
-                            {% empty %}
-                            <option value="" disabled>No assistants available</option>
-                            {% endfor %}
-                        </select>
-                        <label class="label">
+              {% empty %}
+              <option value="" disabled>No assistants available</option>
+              {% endfor %}
+            </select>
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >Select the AI assistant to use for this campaign</span
               >
@@ -122,21 +122,21 @@ Watchtower{% endblock %} {% block extra_head %}
               <span class="label-text-alt text-base-content/70"
                 >Voice to use for the AI assistant</span
               >
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Description</span>
-                    </label>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Description</span>
+          </label>
           <textarea
             name="description"
             rows="3"
-                              placeholder="Describe your campaign goals and objectives" 
+            placeholder="Describe your campaign goals and objectives"
             class="textarea textarea-bordered w-full"
           ></textarea>
-                    <label class="label">
+          <label class="label">
             <span class="label-text-alt text-base-content/70"
               >Optional detailed description</span
             >
@@ -161,20 +161,20 @@ Watchtower{% endblock %} {% block extra_head %}
               >Required: The script template that guides your AI assistant's
               conversation</span
             >
-                    </label>
-                </div>
-                
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Campaign Tags</span>
-                    </label>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Campaign Tags</span>
+          </label>
           <input
             type="text"
             name="campaign_tags"
-                           placeholder="Enter tags separated by commas (e.g., urgent, q4, follow-up)" 
+            placeholder="Enter tags separated by commas (e.g., urgent, q4, follow-up)"
             class="input input-bordered w-full"
           />
-                    <label class="label">
+          <label class="label">
             <span class="label-text-alt text-base-content/70"
               >Tags to categorize and organize your campaign</span
             >
@@ -366,15 +366,15 @@ Watchtower{% endblock %} {% block extra_head %}
             <span class="label-text-alt text-base-content/70"
               >When to retry failed calls</span
             >
-                    </label>
-                </div>
-            </div>
+          </label>
         </div>
+      </div>
+    </div>
 
-        <!-- Scheduling & Timing -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body">
-                <h3 class="card-title">
+    <!-- Scheduling & Timing -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <h3 class="card-title">
           <svg
             class="w-5 h-5 text-info"
             fill="none"
@@ -387,159 +387,159 @@ Watchtower{% endblock %} {% block extra_head %}
               stroke-width="2"
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
             ></path>
-                    </svg>
-                    Scheduling & Timing
-                </h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Start Date & Time</span>
-                        </label>
+          </svg>
+          Scheduling & Timing
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Start Date & Time</span>
+            </label>
             <input
               type="datetime-local"
               name="start_date"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >When to start the campaign</span
               >
-                        </label>
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">End Date & Time</span>
-                        </label>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">End Date & Time</span>
+            </label>
             <input
               type="datetime-local"
               name="end_date"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >When to end the campaign</span
               >
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Start Time (Daily)</span>
-                        </label>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Start Time (Daily)</span>
+            </label>
             <input
               type="time"
               name="start_local_time"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >Daily start time in local timezone</span
               >
-                        </label>
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">End Time (Daily)</span>
-                        </label>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">End Time (Daily)</span>
+            </label>
             <input
               type="time"
               name="end_local_time"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >Daily end time in local timezone</span
               >
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-medium">Days of Week</span>
-                    </label>
-                    <div class="flex flex-wrap gap-2">
-                        <label class="label cursor-pointer">
+            </label>
+          </div>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Days of Week</span>
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <label class="label cursor-pointer">
               <input
                 type="checkbox"
                 name="days_of_week"
                 value="0"
                 class="checkbox checkbox-primary mr-2"
               />
-                            <span class="label-text">Mon</span>
-                        </label>
-                        <label class="label cursor-pointer">
+              <span class="label-text">Mon</span>
+            </label>
+            <label class="label cursor-pointer">
               <input
                 type="checkbox"
                 name="days_of_week"
                 value="1"
                 class="checkbox checkbox-primary mr-2"
               />
-                            <span class="label-text">Tue</span>
-                        </label>
-                        <label class="label cursor-pointer">
+              <span class="label-text">Tue</span>
+            </label>
+            <label class="label cursor-pointer">
               <input
                 type="checkbox"
                 name="days_of_week"
                 value="2"
                 class="checkbox checkbox-primary mr-2"
               />
-                            <span class="label-text">Wed</span>
-                        </label>
-                        <label class="label cursor-pointer">
+              <span class="label-text">Wed</span>
+            </label>
+            <label class="label cursor-pointer">
               <input
                 type="checkbox"
                 name="days_of_week"
                 value="3"
                 class="checkbox checkbox-primary mr-2"
               />
-                            <span class="label-text">Thu</span>
-                        </label>
-                        <label class="label cursor-pointer">
+              <span class="label-text">Thu</span>
+            </label>
+            <label class="label cursor-pointer">
               <input
                 type="checkbox"
                 name="days_of_week"
                 value="4"
                 class="checkbox checkbox-primary mr-2"
               />
-                            <span class="label-text">Fri</span>
-                        </label>
-                        <label class="label cursor-pointer">
+              <span class="label-text">Fri</span>
+            </label>
+            <label class="label cursor-pointer">
               <input
                 type="checkbox"
                 name="days_of_week"
                 value="5"
                 class="checkbox checkbox-primary mr-2"
               />
-                            <span class="label-text">Sat</span>
-                        </label>
-                        <label class="label cursor-pointer">
+              <span class="label-text">Sat</span>
+            </label>
+            <label class="label cursor-pointer">
               <input
                 type="checkbox"
                 name="days_of_week"
                 value="6"
                 class="checkbox checkbox-primary mr-2"
               />
-                            <span class="label-text">Sun</span>
-                        </label>
-                    </div>
-                    <label class="label">
+              <span class="label-text">Sun</span>
+            </label>
+          </div>
+          <label class="label">
             <span class="label-text-alt text-base-content/70"
               >Select which days to run the campaign</span
             >
-                    </label>
-                </div>
-            </div>
+          </label>
         </div>
-           <!-- Retry Policy -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body">
-                <h3 class="card-title">
+      </div>
+    </div>
+    <!-- Retry Policy -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <h3 class="card-title">
           <svg
             class="w-5 h-5 text-error"
             fill="none"
@@ -552,15 +552,15 @@ Watchtower{% endblock %} {% block extra_head %}
               stroke-width="2"
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             ></path>
-                    </svg>
-                    Retry Policy
-                </h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Max Retry Attempts</span>
-                        </label>
+          </svg>
+          Retry Policy
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Max Retry Attempts</span>
+            </label>
             <input
               type="number"
               name="max_attempts"
@@ -569,19 +569,19 @@ Watchtower{% endblock %} {% block extra_head %}
               max="10"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >Maximum number of retry attempts</span
               >
-                        </label>
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label">
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
               <span class="label-text font-medium"
                 >Retry Time Interval (seconds)</span
               >
-                        </label>
+            </label>
             <input
               type="number"
               name="retry_interval"
@@ -590,20 +590,20 @@ Watchtower{% endblock %} {% block extra_head %}
               max="3600"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >Time to wait between retry attempts</span
               >
-                        </label>
-                    </div>
-                </div>
-            </div>
+            </label>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Campaign Limits & Settings -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body">
-                <h3 class="card-title">
+    <!-- Campaign Limits & Settings -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <h3 class="card-title">
           <svg
             class="w-5 h-5 text-warning"
             fill="none"
@@ -616,32 +616,32 @@ Watchtower{% endblock %} {% block extra_head %}
               stroke-width="2"
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
             ></path>
-                    </svg>
-                    Campaign Limits & Settings
-                </h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Priority</span>
-                        </label>
-                        <select name="priority" class="select select-bordered w-full">
-                            <option value="low">Low</option>
-                            <option value="normal" selected>Normal</option>
-                            <option value="high">High</option>
-                            <option value="urgent">Urgent</option>
-                        </select>
-                        <label class="label">
+          </svg>
+          Campaign Limits & Settings
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Priority</span>
+            </label>
+            <select name="priority" class="select select-bordered w-full">
+              <option value="low">Low</option>
+              <option value="normal" selected>Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >Campaign priority level</span
               >
-                        </label>
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Max Calls</span>
-                        </label>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Max Calls</span>
+            </label>
             <input
               type="number"
               name="max_calls"
@@ -650,17 +650,17 @@ Watchtower{% endblock %} {% block extra_head %}
               max="100000"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >Maximum number of calls</span
               >
-                        </label>
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Max Concurrent</span>
-                        </label>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Max Concurrent</span>
+            </label>
             <input
               type="number"
               name="max_concurrent"
@@ -669,20 +669,20 @@ Watchtower{% endblock %} {% block extra_head %}
               max="100"
               class="input input-bordered w-full"
             />
-                        <label class="label">
+            <label class="label">
               <span class="label-text-alt text-base-content/70"
                 >Maximum concurrent calls</span
               >
-                        </label>
-                    </div>
-                </div>
-            </div>
+            </label>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Audience & Contacts -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body">
-                <h3 class="card-title">
+    <!-- Audience & Contacts -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <h3 class="card-title">
           <svg
             class="w-5 h-5 text-success"
             fill="none"
@@ -695,17 +695,17 @@ Watchtower{% endblock %} {% block extra_head %}
               stroke-width="2"
               d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
             ></path>
-                    </svg>
-                    Audience & Contacts
-                </h3>
-                
-                <!-- Contact Source Selection -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                         <!-- Upload File -->
-                     <div class="form-control">
-                         <label class="label">
-                             <span class="label-text font-medium">Upload CSV/Excel</span>
-                         </label>
+          </svg>
+          Audience & Contacts
+        </h3>
+
+        <!-- Contact Source Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <!-- Upload File -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Upload CSV/Excel</span>
+            </label>
             <div
               class="border-2 border-dashed border-base-300 rounded-lg p-3 text-center hover:border-[#20D5F9]/50 transition-colors"
             >
@@ -721,7 +721,7 @@ Watchtower{% endblock %} {% block extra_head %}
                   stroke-width="2"
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                 ></path>
-                            </svg>
+              </svg>
               <input
                 type="file"
                 id="contact-file-input"
@@ -735,21 +735,21 @@ Watchtower{% endblock %} {% block extra_head %}
                 Expected columns: phone_number, first_name, last_name, email,
                 external_id
               </p>
-                        </div>
-                     </div>
-                    
-                                         <!-- Address Book -->
-                     <div class="form-control">
-                         <label class="label">
-                             <span class="label-text font-medium">From Address Book</span>
-                         </label>
-                         <div class="space-y-2">
+            </div>
+          </div>
+
+          <!-- Address Book -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">From Address Book</span>
+            </label>
+            <div class="space-y-2">
               <button
                 type="button"
                 id="open-address-book-btn"
                 class="btn bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 h-20 w-full"
               >
-                                <div class="text-center">
+                <div class="text-center">
                   <svg
                     class="w-6 h-6 mx-auto mb-1"
                     fill="none"
@@ -762,10 +762,10 @@ Watchtower{% endblock %} {% block extra_head %}
                       stroke-width="2"
                       d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                     ></path>
-                                    </svg>
-                                    <span class="text-sm">Browse Contacts</span>
-                                </div>
-                            </button>
+                  </svg>
+                  <span class="text-sm">Browse Contacts</span>
+                </div>
+              </button>
 
               <button
                 type="button"
@@ -784,23 +784,23 @@ Watchtower{% endblock %} {% block extra_head %}
                     stroke-width="2"
                     d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   ></path>
-                                 </svg>
-                                 Download CSV Template
-                             </button>
-                         </div>
-                     </div>
-                    
-                    <!-- Manual Entry -->
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text font-medium">Manual Entry</span>
-                        </label>
+                </svg>
+                Download CSV Template
+              </button>
+            </div>
+          </div>
+
+          <!-- Manual Entry -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Manual Entry</span>
+            </label>
             <button
               type="button"
               id="show-manual-entry"
               class="btn btn-outline border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black h-20"
             >
-                            <div class="text-center">
+              <div class="text-center">
                 <svg
                   class="w-6 h-6 mx-auto mb-1"
                   fill="none"
@@ -813,23 +813,23 @@ Watchtower{% endblock %} {% block extra_head %}
                     stroke-width="2"
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   ></path>
-                                </svg>
-                                <span class="text-sm">Add Manually</span>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Manual Entry Form (Hidden by default) -->
-                <div id="manual-entry-form" class="hidden mb-4">
-                    <div class="bg-base-200 rounded-lg p-4">
-                                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+                </svg>
+                <span class="text-sm">Add Manually</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Manual Entry Form (Hidden by default) -->
+        <div id="manual-entry-form" class="hidden mb-4">
+          <div class="bg-base-200 rounded-lg p-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
               <input
                 type="tel"
                 name="manual_phone"
                 placeholder="30123456"
-                                   class="input input-bordered input-sm" 
-                                   pattern="[0-9]+"
+                class="input input-bordered input-sm"
+                pattern="[0-9]+"
                 title="Enter 8-digit Bahraini phone number (e.g., 30123456, 66123456)"
               />
               <input
@@ -850,8 +850,8 @@ Watchtower{% endblock %} {% block extra_head %}
                 placeholder="External ID (optional)"
                 class="input input-bordered input-sm"
               />
-                        </div>
-                        <div class="flex justify-center">
+            </div>
+            <div class="flex justify-center">
               <button
                 type="button"
                 id="add-contact-btn"
@@ -869,25 +869,25 @@ Watchtower{% endblock %} {% block extra_head %}
                     stroke-width="2"
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   ></path>
-                                </svg>
-                                Add Contact
-                            </button>
-                        </div>
-                        <div class="text-xs text-base-content/50 mb-2">
+                </svg>
+                Add Contact
+              </button>
+            </div>
+            <div class="text-xs text-base-content/50 mb-2">
               <strong>Format:</strong> 8-digit Bahraini number starting with 3,
               6, 7, or 9 (e.g., 30123456, 66123456, 77123456, 99123456)
-                        </div>
-                        <div class="text-xs text-base-content/40 mb-2">
+            </div>
+            <div class="text-xs text-base-content/40 mb-2">
               <strong>External ID:</strong> Optional identifier for your CRM
               system, customer database, or tracking purposes
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Contact List & Summary -->
-                <div class="bg-base-200 rounded-lg p-4">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-2">
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact List & Summary -->
+        <div class="bg-base-200 rounded-lg p-4">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
               <svg
                 class="w-5 h-5 text-base-content/70"
                 fill="none"
@@ -900,36 +900,36 @@ Watchtower{% endblock %} {% block extra_head %}
                   stroke-width="2"
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                 ></path>
-                            </svg>
-                            <span class="font-medium">Selected Contacts</span>
+              </svg>
+              <span class="font-medium">Selected Contacts</span>
               <span class="badge badge-primary badge-sm" id="contact-count"
                 >0</span
               >
-                        </div>
-                        <div class="flex gap-2">
+            </div>
+            <div class="flex gap-2">
               <button
                 type="button"
                 id="clear-contacts-btn"
                 class="btn btn-outline btn-xs border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black"
               >
-                                Clear All
-                            </button>
+                Clear All
+              </button>
               <button
                 type="button"
                 id="export-contacts-btn"
                 class="btn btn-outline btn-xs border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black"
               >
-                                Export
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Contact List Display -->
+                Export
+              </button>
+            </div>
+          </div>
+
+          <!-- Contact List Display -->
           <div
             id="contact-list"
             class="min-h-[80px] max-h-[200px] overflow-y-auto"
           >
-                        <div class="text-center text-base-content/50 py-6">
+            <div class="text-center text-base-content/50 py-6">
               <svg
                 class="w-8 h-8 mx-auto mb-2"
                 fill="none"
@@ -942,36 +942,36 @@ Watchtower{% endblock %} {% block extra_head %}
                   stroke-width="2"
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                 ></path>
-                            </svg>
-                            <p class="text-sm">No contacts selected</p>
-                            <p class="text-xs">Choose a method above to add contacts</p>
-                        </div>
-                    </div>
-                </div>
-                
-                    <!-- Hidden input for storing contact data -->
+              </svg>
+              <p class="text-sm">No contacts selected</p>
+              <p class="text-xs">Choose a method above to add contacts</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden input for storing contact data -->
         <input
           type="hidden"
           name="contacts_data"
           id="contacts-data"
           value="[]"
         />
-                
-                <!-- Export Options Modal -->
-                <div id="export-options-modal" class="modal">
+
+        <!-- Export Options Modal -->
+        <div id="export-options-modal" class="modal">
           <div
             class="modal-box w-96 bg-base-100 shadow-xl rounded-lg p-6 mx-auto"
           >
-                        <h3 class="font-bold text-lg mb-4">Export Contacts</h3>
-                        <p class="text-base-content/70 mb-4">
+            <h3 class="font-bold text-lg mb-4">Export Contacts</h3>
+            <p class="text-base-content/70 mb-4">
               Choose your preferred export format for
               <span class="font-semibold text-primary" id="export-contact-count"
                 >0</span
               >
               contacts:
-                        </p>
-                        
-                        <div class="space-y-3">
+            </p>
+
+            <div class="space-y-3">
               <button
                 type="button"
                 id="export-csv-btn"
@@ -989,10 +989,10 @@ Watchtower{% endblock %} {% block extra_head %}
                     stroke-width="2"
                     d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   ></path>
-                                </svg>
-                                Export as CSV
-                            </button>
-                            
+                </svg>
+                Export as CSV
+              </button>
+
               <button
                 type="button"
                 id="export-excel-btn"
@@ -1010,72 +1010,72 @@ Watchtower{% endblock %} {% block extra_head %}
                     stroke-width="2"
                     d="M12 10v6m0 0l-3 3m0 0l-3-3m3 3V9"
                   ></path>
-                                </svg>
-                                Export as Excel (.xlsx)
-                            </button>
-                        </div>
-                        
-                        <div class="modal-action">
+                </svg>
+                Export as Excel (.xlsx)
+              </button>
+            </div>
+
+            <div class="modal-action">
               <button
                 type="button"
                 id="close-export-modal-btn"
                 class="btn btn-ghost btn-sm hover:bg-[#20D5F9]/20 hover:text-[#20D5F9] transition-all duration-300"
               >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
 
-                <!-- Address Book Modal -->
-                <div id="address-book-modal" class="modal">
+        <!-- Address Book Modal -->
+        <div id="address-book-modal" class="modal">
           <div
             class="modal-box w-11/12 max-w-6xl bg-base-100 shadow-xl rounded-lg p-6 mx-auto"
           >
             <h3 class="font-bold text-lg mb-4">
               Select Contacts from Address Book
             </h3>
-                        
-                        <!-- Search and Filters -->
-                        <div class="flex gap-4 mb-4">
-                            <div class="form-control flex-1">
+
+            <!-- Search and Filters -->
+            <div class="flex gap-4 mb-4">
+              <div class="form-control flex-1">
                 <input
                   type="text"
                   id="address-book-search"
                   placeholder="Search contacts by name, email, company..."
                   class="input input-bordered w-full"
                 />
-                            </div>
-                            <div class="form-control">
+              </div>
+              <div class="form-control">
                 <select
                   id="address-book-segment-filter"
                   class="select select-bordered"
                 >
-                                    <option value="">All Segments</option>
-                                    <!-- Segments will be populated dynamically -->
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <!-- Loading State -->
-                        <div id="address-book-loading" class="text-center py-8">
+                  <option value="">All Segments</option>
+                  <!-- Segments will be populated dynamically -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="address-book-loading" class="text-center py-8">
               <div
                 class="loading loading-spinner loading-lg text-primary"
               ></div>
-                            <p class="mt-2 text-base-content/70">Loading contacts...</p>
-                        </div>
-                        
-                        <!-- Contacts List -->
+              <p class="mt-2 text-base-content/70">Loading contacts...</p>
+            </div>
+
+            <!-- Contacts List -->
             <div
               id="address-book-contacts-container"
               class="max-h-96 overflow-y-auto"
             >
-                            <div id="address-book-contacts" class="space-y-2">
-                                <!-- Contacts will be populated dynamically -->
-                            </div>
-                        </div>
-                        
-                        <!-- Pagination -->
+              <div id="address-book-contacts" class="space-y-2">
+                <!-- Contacts will be populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Pagination -->
             <div
               id="address-book-pagination"
               class="flex justify-center items-center gap-2 mt-4 pt-4 border-t"
@@ -1085,68 +1085,68 @@ Watchtower{% endblock %} {% block extra_head %}
                 id="prev-page-btn"
                 class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black"
               >
-                                Previous
-                            </button>
-                            <span class="text-sm text-base-content/70">
+                Previous
+              </button>
+              <span class="text-sm text-base-content/70">
                 Page <span id="current-page">1</span> of
                 <span id="total-pages">1</span>
-                            </span>
+              </span>
               <button
                 type="button"
                 id="next-page-btn"
                 class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black"
               >
-                                Next
-                            </button>
-                        </div>
-                        
-                        <!-- Selection Summary -->
-                        <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                            <div class="text-sm text-base-content/70">
-                                <span id="selected-count">0</span> contacts selected
+                Next
+              </button>
+            </div>
+
+            <!-- Selection Summary -->
+            <div class="flex justify-between items-center mt-4 pt-4 border-t">
+              <div class="text-sm text-base-content/70">
+                <span id="selected-count">0</span> contacts selected
                 <span
                   id="duplicate-warning"
                   class="text-warning ml-2"
                   style="display: none"
                 >
-                                    ⚠️ Some contacts already exist in campaign
-                                </span>
-                            </div>
-                            <div class="flex gap-2">
+                  ⚠️ Some contacts already exist in campaign
+                </span>
+              </div>
+              <div class="flex gap-2">
                 <button
                   type="button"
                   id="select-all-btn"
                   class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300"
                 >
-                                    Select All
-                                </button>
+                  Select All
+                </button>
                 <button
                   type="button"
                   id="clear-selection-btn"
                   class="btn btn-outline btn-sm border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300"
                 >
-                                    Clear Selection
-                                </button>
+                  Clear Selection
+                </button>
                 <button
                   type="button"
                   id="add-selected-btn"
                   class="btn btn-sm bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                                    Add Selected to Campaign
-                                </button>
+                  Add Selected to Campaign
+                </button>
                 <button
                   type="button"
                   id="close-address-book-btn"
                   class="btn btn-ghost btn-sm hover:bg-[#20D5F9]/20 hover:text-[#20D5F9] transition-all duration-300"
                 >
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Error Messages (Hidden by default) -->
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Messages (Hidden by default) -->
         <div
           id="csv-errors"
           class="alert alert-error mt-3"
@@ -1164,13 +1164,13 @@ Watchtower{% endblock %} {% block extra_head %}
               stroke-width="2"
               d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
             ></path>
-                    </svg>
-                    <div>
-                        <h3 class="font-bold">CSV Processing Errors</h3>
-                        <div class="text-xs" id="error-details"></div>
-                    </div>
-                </div>
-                
+          </svg>
+          <div>
+            <h3 class="font-bold">CSV Processing Errors</h3>
+            <div class="text-xs" id="error-details"></div>
+          </div>
+        </div>
+
         <div
           id="duplicate-errors"
           class="alert alert-warning mt-3"
@@ -1188,23 +1188,23 @@ Watchtower{% endblock %} {% block extra_head %}
               stroke-width="2"
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
             ></path>
-                    </svg>
-                    <div>
-                        <h3 class="font-bold">Duplicate Contacts Detected</h3>
-                        <div class="text-xs" id="duplicate-details"></div>
-                    </div>
-                </div>
-            </div>
+          </svg>
+          <div>
+            <h3 class="font-bold">Duplicate Contacts Detected</h3>
+            <div class="text-xs" id="duplicate-details"></div>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Form Actions -->
-        <div class="flex justify-end gap-4 pt-6">
+    <!-- Form Actions -->
+    <div class="flex justify-end gap-4 pt-6">
       <a
         href="{% url 'campaigns:campaign_list' %}"
         class="btn btn-outline border-[#20D5F9] text-[#20D5F9] hover:bg-[#20D5F9] hover:text-black transition-all duration-300"
       >
-                Cancel
-            </a>
+        Cancel
+      </a>
       <button
         type="submit"
         class="btn bg-[#20D5F9] hover:bg-[#20D5F9]/80 text-black border-0 shadow-lg hover:shadow-xl transition-all duration-300"
@@ -1221,16 +1221,16 @@ Watchtower{% endblock %} {% block extra_head %}
             stroke-width="2"
             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
           ></path>
-                </svg>
-                Create Campaign
-            </button>
-        </div>
-    </form>
+        </svg>
+        Create Campaign
+      </button>
+    </div>
+  </form>
 </div>
 {% endblock %} {% block extra_js %}
 <style>
-/* Ensure modal is visible when modal-open class is present */
-.modal.modal-open {
+  /* Ensure modal is visible when modal-open class is present */
+  .modal.modal-open {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -1241,55 +1241,55 @@ Watchtower{% endblock %} {% block extra_head %}
     height: 100% !important;
     background-color: rgba(0, 0, 0, 0.5) !important;
     z-index: 9999 !important;
-}
+  }
 
-/* Export button disabled state */
-.btn:disabled {
+  /* Export button disabled state */
+  .btn:disabled {
     opacity: 0.5 !important;
     cursor: not-allowed !important;
-}
+  }
 
-/* Export modal specific styles */
-#export-options-modal .modal-box {
+  /* Export modal specific styles */
+  #export-options-modal .modal-box {
     max-width: 24rem;
-}
+  }
 
-/* Input validation styles */
-.input-error {
+  /* Input validation styles */
+  .input-error {
     border-color: hsl(var(--er)) !important;
     box-shadow: 0 0 0 1px hsl(var(--er)) !important;
-}
+  }
 
-.input-success {
+  .input-success {
     border-color: hsl(var(--su)) !important;
     box-shadow: 0 0 0 1px hsl(var(--su)) !important;
-}
+  }
 
-.input-warning {
+  .input-warning {
     border-color: hsl(var(--wa)) !important;
     box-shadow: 0 0 0 1px hsl(var(--wa)) !important;
-}
+  }
 
-/* Duplicate warning styles */
-#duplicate-warning {
+  /* Duplicate warning styles */
+  #duplicate-warning {
     max-width: 100%;
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
-}
+  }
 
-#duplicate-warning span {
+  #duplicate-warning span {
     line-height: 1.2;
     max-width: 100%;
-}
+  }
 </style>
 
 <script>
-// Audience & Contacts functionality
+  // Audience & Contacts functionality
   document.addEventListener("DOMContentLoaded", function () {
     let contacts = [];
     let currentPage = 1; // Add this variable
-    
+
     const contactList = document.getElementById("contact-list");
     const contactCount = document.getElementById("contact-count");
     const contactsDataInput = document.getElementById("contacts-data");
@@ -1307,7 +1307,7 @@ Watchtower{% endblock %} {% block extra_head %}
       "close-address-book-btn"
     );
     const addressBookSearch = document.getElementById("address-book-search");
-    
+
     // Export modal elements
     const exportOptionsModal = document.getElementById("export-options-modal");
     const exportCsvBtn = document.getElementById("export-csv-btn");
@@ -1332,12 +1332,12 @@ Watchtower{% endblock %} {% block extra_head %}
 
     // Clean up any existing duplicates on page load
     removeDuplicateContacts();
-    
+
     // Manual entry toggle
     showManualEntryBtn.addEventListener("click", function () {
       manualEntryForm.classList.toggle("hidden");
       if (manualEntryForm.classList.contains("hidden")) {
-            showManualEntryBtn.innerHTML = `
+        showManualEntryBtn.innerHTML = `
                 <div class="text-center">
                     <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -1345,8 +1345,8 @@ Watchtower{% endblock %} {% block extra_head %}
                     <span class="text-sm">Add Manually</span>
                 </div>
             `;
-        } else {
-            showManualEntryBtn.innerHTML = `
+      } else {
+        showManualEntryBtn.innerHTML = `
                 <div class="text-center">
                     <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -1354,7 +1354,7 @@ Watchtower{% endblock %} {% block extra_head %}
                     <span class="text-sm">Hide Manual Entry</span>
                 </div>
             `;
-        }
+      }
     });
 
     // Add contact manually
@@ -1372,99 +1372,99 @@ Watchtower{% endblock %} {% block extra_head %}
         .querySelector('input[name="manual_external_id"]')
         .value.trim();
 
-        if (!phone) {
+      if (!phone) {
         showToast("Phone number is required", "error");
-            return;
-        }
+        return;
+      }
 
-        // Validate phone number
-        const validationResult = validatePhoneNumber(phone);
-        if (!validationResult.isValid) {
+      // Validate phone number
+      const validationResult = validatePhoneNumber(phone);
+      if (!validationResult.isValid) {
         showToast(validationResult.error, "error");
-            return;
-        }
+        return;
+      }
 
-        // Check for phone duplicates first (most important)
+      // Check for phone duplicates first (most important)
       const isDuplicate = contacts.some(
         (contact) => contact.phone === validationResult.formatted
-        );
-        if (isDuplicate) {
+      );
+      if (isDuplicate) {
         showToast(
           "A contact with this phone number is already in the list",
           "warning"
         );
-            return;
-        }
+        return;
+      }
 
-        const contact = {
-            id: Date.now(),
-            phone: validationResult.formatted,
-            first_name: firstName,
-            last_name: lastName,
+      const contact = {
+        id: Date.now(),
+        phone: validationResult.formatted,
+        first_name: firstName,
+        last_name: lastName,
         email: "",
-            external_id: externalId,
-            company: externalId, // Keep for backward compatibility
+        external_id: externalId,
+        company: externalId, // Keep for backward compatibility
         type: "person",
         country_code: validationResult.countryCode,
-        };
+      };
 
-        contacts.push(contact);
-        updateContactDisplay();
-        updateContactsData();
+      contacts.push(contact);
+      updateContactDisplay();
+      updateContactsData();
 
-        // Clear form
+      // Clear form
       document.querySelector('input[name="manual_phone"]').value = "";
       document.querySelector('input[name="manual_first_name"]').value = "";
       document.querySelector('input[name="manual_last_name"]').value = "";
       document.querySelector('input[name="manual_external_id"]').value = "";
-        
-        // Hide any existing validation error
-        hideValidationError();
-        
-        // Show success message
+
+      // Hide any existing validation error
+      hideValidationError();
+
+      // Show success message
       showToast("Contact added successfully", "success");
     });
 
     // Clear all contacts
     clearContactsBtn.addEventListener("click", function () {
       if (confirm("Are you sure you want to clear all contacts?")) {
-            contacts = [];
-            updateContactDisplay();
-            updateContactsData();
+        contacts = [];
+        updateContactDisplay();
+        updateContactsData();
         showToast("All contacts cleared successfully", "success");
-        }
+      }
     });
 
     // Export contacts
     exportContactsBtn.addEventListener("click", function () {
-        if (contacts.length === 0) {
+      if (contacts.length === 0) {
         showToast("No contacts to export", "warning");
-            return;
-        }
+        return;
+      }
 
-        // Show export options
-        showExportOptions();
+      // Show export options
+      showExportOptions();
     });
 
     // Address book modal
     if (openAddressBookBtn) {
       openAddressBookBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
+        e.preventDefault();
+        e.stopPropagation();
         console.log("Browse Contacts button clicked");
-            
-            if (!addressBookModal) {
+
+        if (!addressBookModal) {
           console.error("Address book modal not found");
           showToast(
             "Address book modal not found. Please check the page structure.",
             "error"
           );
-                return;
-            }
-            
+          return;
+        }
+
         console.log("Modal found, opening...");
-            try {
-                // Show modal using DaisyUI
+        try {
+          // Show modal using DaisyUI
           addressBookModal.classList.add("modal-open");
           console.log(
             "Modal classes after opening:",
@@ -1475,71 +1475,71 @@ Watchtower{% endblock %} {% block extra_head %}
             "Modal display style:",
             window.getComputedStyle(addressBookModal).display
           );
-                
-                // Load contacts immediately
-                loadAddressBookContacts();
-            } catch (error) {
+
+          // Load contacts immediately
+          loadAddressBookContacts();
+        } catch (error) {
           console.error("Error opening modal:", error);
           showToast("Error opening modal: " + error.message, "error");
-            }
-        });
+        }
+      });
     } else {
       console.error("Open address book button not found");
     }
 
     if (closeAddressBookBtn) {
       closeAddressBookBtn.addEventListener("click", function () {
-            if (addressBookModal) {
+        if (addressBookModal) {
           addressBookModal.classList.remove("modal-open");
           console.log("Modal closed");
-            }
-        });
+        }
+      });
     }
 
     // Close modal when clicking outside
     if (addressBookModal) {
       addressBookModal.addEventListener("click", function (e) {
-            if (e.target === addressBookModal) {
+        if (e.target === addressBookModal) {
           addressBookModal.classList.remove("modal-open");
           console.log("Modal closed by clicking outside");
-            }
-        });
+        }
+      });
     }
 
     // Export modal event listeners
     if (exportCsvBtn) {
       exportCsvBtn.addEventListener("click", function () {
-            exportContactsAsCSV();
-            if (exportOptionsModal) {
+        exportContactsAsCSV();
+        if (exportOptionsModal) {
           exportOptionsModal.classList.remove("modal-open");
-            }
-        });
+        }
+      });
     }
-    
+
     if (exportExcelBtn) {
       exportExcelBtn.addEventListener("click", function () {
-            exportContactsAsExcel();
-            if (exportOptionsModal) {
+        exportContactsAsExcel();
+        if (exportOptionsModal) {
           exportOptionsModal.classList.remove("modal-open");
-            }
-        });
+        }
+      });
     }
-    
+
     if (closeExportModalBtn) {
       closeExportModalBtn.addEventListener("click", function () {
-            if (exportOptionsModal) {
+        if (exportOptionsModal) {
           exportOptionsModal.classList.remove("modal-open");
-            }
-        });
+        }
+      });
     }
-    
+
     // Close export modal when clicking outside
     if (exportOptionsModal) {
       exportOptionsModal.addEventListener("click", function (e) {
-            if (e.target === exportOptionsModal) {
+        if (e.target === exportOptionsModal) {
           exportOptionsModal.classList.remove("modal-open");
-            }
-        });
+        }
+      });
     }
 
     // Address book search and filters
@@ -1556,69 +1556,69 @@ Watchtower{% endblock %} {% block extra_head %}
     // Select all contacts
     if (selectAllBtn) {
       selectAllBtn.addEventListener("click", function () {
-            if (addressBookContacts) {
+        if (addressBookContacts) {
           const checkboxes = addressBookContacts.querySelectorAll(
             'input[type="checkbox"]'
           );
           checkboxes.forEach((checkbox) => (checkbox.checked = true));
-                updateSelectedCount();
-            }
-        });
+          updateSelectedCount();
+        }
+      });
     }
 
     // Clear selection
     if (clearSelectionBtn) {
       clearSelectionBtn.addEventListener("click", function () {
-            if (addressBookContacts) {
+        if (addressBookContacts) {
           const checkboxes = addressBookContacts.querySelectorAll(
             'input[type="checkbox"]'
           );
           checkboxes.forEach((checkbox) => (checkbox.checked = false));
-                updateSelectedCount();
-            }
-        });
+          updateSelectedCount();
+        }
+      });
     }
 
     // Add selected contacts
     if (addSelectedBtn) {
       addSelectedBtn.addEventListener("click", function () {
-            if (addressBookContacts) {
+        if (addressBookContacts) {
           const checkboxes = addressBookContacts.querySelectorAll(
             'input[type="checkbox"]:checked'
           );
-                const selectedContacts = [];
+          const selectedContacts = [];
 
           checkboxes.forEach((checkbox) => {
-                    const contactData = JSON.parse(checkbox.dataset.contact);
+            const contactData = JSON.parse(checkbox.dataset.contact);
             const phone =
               contactData.primary_phone ||
               (contactData.phones && contactData.phones.length > 0
                 ? contactData.phones[0]
                 : "");
-                    
-                    if (!phone) {
+
+            if (!phone) {
               showToast(
                 `Contact ${contactData.display_name} has no phone number`,
                 "warning"
               );
-                        return;
-                    }
+              return;
+            }
 
-                    // Check for phone duplicates first (most important)
+            // Check for phone duplicates first (most important)
             const isDuplicate = contacts.some((c) => c.phone === phone);
 
-                    if (isDuplicate) {
+            if (isDuplicate) {
               showToast(
                 `A contact with phone number ${phone} is already in the campaign`,
                 "warning"
               );
-                        return;
-                    }
+              return;
+            }
 
-                    // Create contact object for campaign
-                    const campaignContact = {
-                        id: Date.now() + Math.random(), // Unique ID
-                        phone: phone,
+            // Create contact object for campaign
+            const campaignContact = {
+              id: Date.now() + Math.random(), // Unique ID
+              phone: phone,
               first_name: contactData.first_name || "",
               last_name: contactData.last_name || "",
               email: contactData.email || "",
@@ -1628,36 +1628,36 @@ Watchtower{% endblock %} {% block extra_head %}
               country_code: phone.startsWith("+") ? phone.split(" ")[0] : "+1",
               source: "address_book",
               original_id: contactData.id,
-                    };
+            };
 
-                    selectedContacts.push(campaignContact);
-                });
+            selectedContacts.push(campaignContact);
+          });
 
-                if (selectedContacts.length > 0) {
-                    contacts.push(...selectedContacts);
-                    updateContactDisplay();
-                    updateContactsData();
-                    
-                    // Close modal and show success
-                    if (addressBookModal) {
+          if (selectedContacts.length > 0) {
+            contacts.push(...selectedContacts);
+            updateContactDisplay();
+            updateContactsData();
+
+            // Close modal and show success
+            if (addressBookModal) {
               addressBookModal.classList.remove("modal-open");
-                    }
+            }
             showToast(
               `Added ${selectedContacts.length} contacts to campaign`,
               "success"
             );
-                    
-                    // Clear selection
+
+            // Clear selection
             checkboxes.forEach((checkbox) => (checkbox.checked = false));
-                    updateSelectedCount();
-                } else {
+            updateSelectedCount();
+          } else {
             showToast(
               "No new contacts selected or all contacts already exist",
               "warning"
             );
-                }
-            }
-        });
+          }
+        }
+      });
     }
 
     // File upload handling
@@ -1666,124 +1666,124 @@ Watchtower{% endblock %} {% block extra_head %}
 
     // Download CSV template
     downloadTemplateBtn.addEventListener("click", function () {
-        const csvContent = generateCSVTemplate();
+      const csvContent = generateCSVTemplate();
       const blob = new Blob([csvContent], { type: "text/csv" });
-        const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
-        a.href = url;
+      a.href = url;
       a.download = "contact_upload_template.csv";
-        a.click();
-        window.URL.revokeObjectURL(url);
+      a.click();
+      window.URL.revokeObjectURL(url);
       showToast("CSV template downloaded successfully", "success");
     });
 
     // Real-time phone validation and duplicate checking
     const phoneInput = document.querySelector('input[name="manual_phone"]');
     phoneInput.addEventListener("input", function () {
-        const phone = this.value.trim();
-        if (phone.length > 0) {
-            const validationResult = validatePhoneNumber(phone);
-            if (validationResult.isValid) {
+      const phone = this.value.trim();
+      if (phone.length > 0) {
+        const validationResult = validatePhoneNumber(phone);
+        if (validationResult.isValid) {
           this.classList.remove("input-error");
           this.classList.add("input-success");
-                hideValidationError();
-                
-                // Check for duplicates in real-time
+          hideValidationError();
+
+          // Check for duplicates in real-time
           const isDuplicate = contacts.some(
             (contact) => contact.phone === validationResult.formatted
           );
-                if (isDuplicate) {
-                    // Add a subtle warning class
+          if (isDuplicate) {
+            // Add a subtle warning class
             this.classList.add("input-warning");
-                    // Show a small warning below the input
+            // Show a small warning below the input
             showDuplicateWarning(
               "This phone number is already in your contacts list"
             );
-                } else {
+          } else {
             this.classList.remove("input-warning");
-                    hideDuplicateWarning();
-                }
-            } else {
+            hideDuplicateWarning();
+          }
+        } else {
           this.classList.remove("input-success", "input-warning");
           this.classList.add("input-error");
-                showValidationError(validationResult.error);
-                hideDuplicateWarning();
-            }
-        } else {
-        this.classList.remove("input-error", "input-success", "input-warning");
-            hideValidationError();
-            hideDuplicateWarning();
+          showValidationError(validationResult.error);
+          hideDuplicateWarning();
         }
+      } else {
+        this.classList.remove("input-error", "input-success", "input-warning");
+        hideValidationError();
+        hideDuplicateWarning();
+      }
     });
 
     // Functions
     function removeDuplicateContacts() {
-        // Remove duplicates based on phone number, keeping the first occurrence
-        const seenPhones = new Set();
-        const originalLength = contacts.length;
+      // Remove duplicates based on phone number, keeping the first occurrence
+      const seenPhones = new Set();
+      const originalLength = contacts.length;
       contacts = contacts.filter((contact) => {
-            if (seenPhones.has(contact.phone)) {
-                return false; // Remove duplicate
-            }
-            seenPhones.add(contact.phone);
-            return true; // Keep first occurrence
-        });
-        
-        // If duplicates were removed, show a message
-        if (contacts.length < originalLength) {
-            const removedCount = originalLength - contacts.length;
+        if (seenPhones.has(contact.phone)) {
+          return false; // Remove duplicate
+        }
+        seenPhones.add(contact.phone);
+        return true; // Keep first occurrence
+      });
+
+      // If duplicates were removed, show a message
+      if (contacts.length < originalLength) {
+        const removedCount = originalLength - contacts.length;
         showToast(
           `Removed ${removedCount} duplicate phone number(s)`,
           "warning"
         );
-        }
+      }
     }
-    
+
     function showDuplicateWarning(message) {
-        // Remove any existing duplicate warning
-        hideDuplicateWarning();
-        
-        // Create and show duplicate warning
+      // Remove any existing duplicate warning
+      hideDuplicateWarning();
+
+      // Create and show duplicate warning
       const warningDiv = document.createElement("div");
       warningDiv.id = "duplicate-warning";
       warningDiv.className =
         "text-warning text-xs mt-1 flex items-start gap-1 break-words";
-        warningDiv.innerHTML = `
+      warningDiv.innerHTML = `
             <svg class="w-3 h-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
             </svg>
             <span class="break-words">${message}</span>
         `;
-        
-        // Find the phone input field and insert warning in the row below it
-        const phoneInput = document.querySelector('input[name="manual_phone"]');
-        if (phoneInput) {
-            // Find the parent form group or row container
+
+      // Find the phone input field and insert warning in the row below it
+      const phoneInput = document.querySelector('input[name="manual_phone"]');
+      if (phoneInput) {
+        // Find the parent form group or row container
         const formGroup =
           phoneInput.closest(".form-control") ||
           phoneInput.closest(".form-group") ||
           phoneInput.parentNode;
-            
-            // Insert the warning after the form group
-            if (formGroup && formGroup.parentNode) {
-                formGroup.parentNode.insertBefore(warningDiv, formGroup.nextSibling);
-            }
+
+        // Insert the warning after the form group
+        if (formGroup && formGroup.parentNode) {
+          formGroup.parentNode.insertBefore(warningDiv, formGroup.nextSibling);
         }
+      }
     }
-    
+
     function hideDuplicateWarning() {
       const warningDiv = document.getElementById("duplicate-warning");
-        if (warningDiv) {
-            warningDiv.remove();
-        }
+      if (warningDiv) {
+        warningDiv.remove();
+      }
     }
-    
+
     function updateContactDisplay() {
-        // Remove any existing duplicates before displaying
-        removeDuplicateContacts();
-        
-        if (contacts.length === 0) {
-            contactList.innerHTML = `
+      // Remove any existing duplicates before displaying
+      removeDuplicateContacts();
+
+      if (contacts.length === 0) {
+        contactList.innerHTML = `
                 <div class="text-center text-base-content/50 py-6">
                     <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -1792,7 +1792,7 @@ Watchtower{% endblock %} {% block extra_head %}
                     <p class="text-xs">Choose a method above to add contacts</p>
                 </div>
             `;
-        } else {
+      } else {
         const contactsHtml = contacts
           .map(
             (contact) => `
@@ -1811,41 +1811,41 @@ Watchtower{% endblock %} {% block extra_head %}
             `
           )
           .join("");
-            
-            contactList.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">${contactsHtml}</div>`;
-        }
-        
-        contactCount.textContent = contacts.length;
-        
-        // Update export button state
-        updateExportButtonState();
+
+        contactList.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">${contactsHtml}</div>`;
+      }
+
+      contactCount.textContent = contacts.length;
+
+      // Update export button state
+      updateExportButtonState();
     }
 
     function updateExportButtonState() {
-        // Enable/disable export button based on whether there are contacts
-        if (exportContactsBtn) {
-            if (contacts.length === 0) {
-                exportContactsBtn.disabled = true;
+      // Enable/disable export button based on whether there are contacts
+      if (exportContactsBtn) {
+        if (contacts.length === 0) {
+          exportContactsBtn.disabled = true;
           exportContactsBtn.classList.add("opacity-50", "cursor-not-allowed");
-            } else {
-                exportContactsBtn.disabled = false;
+        } else {
+          exportContactsBtn.disabled = false;
           exportContactsBtn.classList.remove(
             "opacity-50",
             "cursor-not-allowed"
           );
-            }
         }
+      }
     }
 
     function updateContactsData() {
-        contactsDataInput.value = JSON.stringify(contacts);
-        window.contacts = contacts; // Update global reference
+      contactsDataInput.value = JSON.stringify(contacts);
+      window.contacts = contacts; // Update global reference
     }
 
     function removeContact(contactId) {
       contacts = contacts.filter((contact) => contact.id !== contactId);
-        updateContactDisplay();
-        updateContactsData();
+      updateContactDisplay();
+      updateContactsData();
     }
 
     function generateCSV(contacts) {
@@ -1862,21 +1862,21 @@ Watchtower{% endblock %} {% block extra_head %}
         const row = headers.map((header) => {
           let value = "";
           if (header === "phone_number") {
-                    // Handle both 'phone' and 'phone_number' fields for compatibility
+            // Handle both 'phone' and 'phone_number' fields for compatibility
             value = contact.phone || contact.phone_number || "";
           } else if (header === "external_id") {
-                    // Map external_id from company field for backward compatibility
+            // Map external_id from company field for backward compatibility
             value = contact.external_id || contact.company || "";
-                } else {
+          } else {
             value = contact[header] || "";
-                }
-                // Escape quotes and wrap in quotes to handle commas and special characters
-                const escapedValue = String(value).replace(/"/g, '""');
-                return `"${escapedValue}"`;
-            });
-        csvRows.push(row.join(","));
+          }
+          // Escape quotes and wrap in quotes to handle commas and special characters
+          const escapedValue = String(value).replace(/"/g, '""');
+          return `"${escapedValue}"`;
         });
-        
+        csvRows.push(row.join(","));
+      });
+
       return csvRows.join("\n");
     }
 
@@ -1888,7 +1888,7 @@ Watchtower{% endblock %} {% block extra_head %}
         "email",
         "external_id",
       ];
-        const examples = [
+      const examples = [
         ["30123456", "Ahmed", "Al-Rashid", "ahmed@example.com", "CUST001"],
         ["66123456", "Fatima", "Al-Sayed", "fatima@example.com", "CUST002"],
         ["77123456", "Omar", "Al-Khalil", "omar@example.com", "CUST003"],
@@ -1907,42 +1907,42 @@ Watchtower{% endblock %} {% block extra_head %}
 
     // Export functions
     function showExportOptions() {
-        if (exportOptionsModal) {
-            // Update the contact count in the modal
+      if (exportOptionsModal) {
+        // Update the contact count in the modal
         const exportContactCount = document.getElementById(
           "export-contact-count"
         );
-            if (exportContactCount) {
-                exportContactCount.textContent = contacts.length;
-            }
-            
-        exportOptionsModal.classList.add("modal-open");
+        if (exportContactCount) {
+          exportContactCount.textContent = contacts.length;
         }
+
+        exportOptionsModal.classList.add("modal-open");
+      }
     }
 
     function exportContactsAsCSV() {
-        if (contacts.length === 0) {
+      if (contacts.length === 0) {
         showToast("No contacts to export", "warning");
-            return;
-        }
+        return;
+      }
 
-        // Ensure contacts are properly formatted for export
+      // Ensure contacts are properly formatted for export
       const formattedContacts = contacts.map((contact) => ({
         phone_number: contact.phone || contact.phone_number || "",
         first_name: contact.first_name || "",
         last_name: contact.last_name || "",
         email: contact.email || "",
         external_id: contact.external_id || contact.company || "",
-        }));
+      }));
 
-        const csvContent = generateCSV(formattedContacts);
+      const csvContent = generateCSV(formattedContacts);
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
-        a.href = url;
+      a.href = url;
       a.download = `campaign_contacts_${new Date().toISOString().split("T")[0]}.csv`;
-        a.click();
-        window.URL.revokeObjectURL(url);
+      a.click();
+      window.URL.revokeObjectURL(url);
       showToast(
         `Exported ${contacts.length} contacts as CSV successfully`,
         "success"
@@ -1950,48 +1950,48 @@ Watchtower{% endblock %} {% block extra_head %}
     }
 
     function exportContactsAsExcel() {
-        if (contacts.length === 0) {
+      if (contacts.length === 0) {
         showToast("No contacts to export", "warning");
-            return;
-        }
+        return;
+      }
 
-        // Check if XLSX library is available
+      // Check if XLSX library is available
       if (typeof XLSX === "undefined") {
         showToast(
           "Excel export library not loaded. Please try CSV export instead.",
           "error"
         );
-            return;
-        }
+        return;
+      }
 
-        try {
-            // Ensure contacts are properly formatted for export
+      try {
+        // Ensure contacts are properly formatted for export
         const formattedContacts = contacts.map((contact) => ({
           phone_number: contact.phone || contact.phone_number || "",
           first_name: contact.first_name || "",
           last_name: contact.last_name || "",
           email: contact.email || "",
           external_id: contact.external_id || contact.company || "",
-            }));
+        }));
 
-            // Create workbook and worksheet
-            const workbook = XLSX.utils.book_new();
-            const worksheet = XLSX.utils.json_to_sheet(formattedContacts);
+        // Create workbook and worksheet
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(formattedContacts);
 
-            // Set column widths
-            const columnWidths = [
-                { wch: 15 }, // phone_number
-                { wch: 15 }, // first_name
-                { wch: 15 }, // last_name
-                { wch: 25 }, // email
+        // Set column widths
+        const columnWidths = [
+          { wch: 15 }, // phone_number
+          { wch: 15 }, // first_name
+          { wch: 15 }, // last_name
+          { wch: 25 }, // email
           { wch: 20 }, // external_id
-            ];
+        ];
         worksheet["!cols"] = columnWidths;
 
-            // Add worksheet to workbook
+        // Add worksheet to workbook
         XLSX.utils.book_append_sheet(workbook, worksheet, "Campaign Contacts");
 
-            // Generate Excel file
+        // Generate Excel file
         const excelBuffer = XLSX.write(workbook, {
           bookType: "xlsx",
           type: "array",
@@ -1999,29 +1999,29 @@ Watchtower{% endblock %} {% block extra_head %}
         const blob = new Blob([excelBuffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
-            const url = window.URL.createObjectURL(blob);
+        const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
-            a.href = url;
+        a.href = url;
         a.download = `campaign_contacts_${new Date().toISOString().split("T")[0]}.xlsx`;
-            a.click();
-            window.URL.revokeObjectURL(url);
+        a.click();
+        window.URL.revokeObjectURL(url);
         showToast(
           `Exported ${contacts.length} contacts as Excel successfully`,
           "success"
         );
-        } catch (error) {
+      } catch (error) {
         console.error("Error exporting to Excel:", error);
         showToast(
           "Error exporting to Excel. Please try CSV export instead.",
           "error"
         );
-        }
+      }
     }
 
     function loadAddressBookContacts() {
       console.log("Loading address book contacts...");
-        try {
-            // Show loading state
+      try {
+        // Show loading state
         const loadingEl = document.getElementById("address-book-loading");
         const contactsContainer = document.getElementById(
           "address-book-contacts-container"
@@ -2031,36 +2031,36 @@ Watchtower{% endblock %} {% block extra_head %}
         if (loadingEl) loadingEl.style.display = "block";
         if (contactsContainer) contactsContainer.style.display = "none";
         if (paginationEl) paginationEl.style.display = "none";
-            
-            // Get current filters
+
+        // Get current filters
         const searchQuery =
           document.getElementById("address-book-search")?.value || "";
         const segmentFilter =
           document.getElementById("address-book-segment-filter")?.value || "";
-            
-            // Build API URL
-            const params = new URLSearchParams({
-                search: searchQuery,
-                segment: segmentFilter,
-                page: currentPage,
+
+        // Build API URL
+        const params = new URLSearchParams({
+          search: searchQuery,
+          segment: segmentFilter,
+          page: currentPage,
           per_page: 20,
-            });
-            
-            const apiUrl = `/people/api/contacts/?${params}`;
+        });
+
+        const apiUrl = `/people/api/contacts/?${params}`;
         console.log("Fetching from API:", apiUrl);
-            
-            // Fetch contacts from API
+
+        // Fetch contacts from API
         console.log("🔍 Fetching contacts from:", apiUrl);
-            
-            // Get CSRF token
+
+        // Get CSRF token
         const csrfToken = document.querySelector(
           "[name=csrfmiddlewaretoken]"
         )?.value;
         console.log("🔍 CSRF token:", csrfToken ? "Found" : "Not found");
-            
-            fetch(apiUrl, {
+
+        fetch(apiUrl, {
           method: "GET",
-                headers: {
+          headers: {
             Accept: "application/json",
             "X-Requested-With": "XMLHttpRequest",
             "X-CSRFToken": csrfToken || "",
@@ -2070,28 +2070,28 @@ Watchtower{% endblock %} {% block extra_head %}
           .then((response) => {
             console.log("🔍 API response status:", response.status);
             console.log("🔍 API response headers:", response.headers);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
           .then((data) => {
             console.log("🔍 API response data:", data);
-                    if (data.success) {
+            if (data.success) {
               console.log(
                 "🔍 Success! Found",
                 data.contacts.length,
                 "contacts"
               );
-                        renderAddressBookContacts(data.contacts);
-                        renderSegments(data.segments);
-                        updatePagination(data.pagination);
-                        
-                        // Hide loading, show contacts
+              renderAddressBookContacts(data.contacts);
+              renderSegments(data.segments);
+              updatePagination(data.pagination);
+
+              // Hide loading, show contacts
               if (loadingEl) loadingEl.style.display = "none";
               if (contactsContainer) contactsContainer.style.display = "block";
               if (paginationEl) paginationEl.style.display = "flex";
-                    } else {
+            } else {
               console.error("🔍 Failed to load contacts:", data.error);
               showToast(
                 "Failed to load contacts: " + (data.error || "Unknown error"),
@@ -2104,11 +2104,11 @@ Watchtower{% endblock %} {% block extra_head %}
             console.error("Error loading contacts:", error);
             showToast("Error loading contacts: " + error.message, "error");
             if (loadingEl) loadingEl.style.display = "none";
-                    
-                    // Show error message instead of fallback contacts
-                    if (contactsContainer) {
+
+            // Show error message instead of fallback contacts
+            if (contactsContainer) {
               contactsContainer.style.display = "block";
-                        contactsContainer.innerHTML = `
+              contactsContainer.innerHTML = `
                             <div class="text-center py-8">
                                 <div class="text-error text-lg mb-2">⚠️ Failed to load contacts</div>
                                 <div class="text-base-content/70 mb-4">${error.message}</div>
@@ -2117,17 +2117,17 @@ Watchtower{% endblock %} {% block extra_head %}
                                 </button>
                             </div>
                         `;
-                    }
-                });
-        } catch (error) {
+            }
+          });
+      } catch (error) {
         console.error("Error in loadAddressBookContacts:", error);
         showToast("Error loading contacts: " + error.message, "error");
         if (loadingEl) loadingEl.style.display = "none";
-            
-            // Show error message instead of fallback contacts
-            if (contactsContainer) {
+
+        // Show error message instead of fallback contacts
+        if (contactsContainer) {
           contactsContainer.style.display = "block";
-                contactsContainer.innerHTML = `
+          contactsContainer.innerHTML = `
                     <div class="text-center py-8">
                         <div class="text-error text-lg mb-2">⚠️ Failed to load contacts</div>
                         <div class="text-base-content/70 mb-4">${error.message}</div>
@@ -2136,28 +2136,28 @@ Watchtower{% endblock %} {% block extra_head %}
                         </button>
                     </div>
                 `;
-            }
         }
+      }
     }
 
     function renderSegments(segments) {
       const segmentFilter = document.getElementById(
         "address-book-segment-filter"
       );
-        if (!segmentFilter) return;
-        
-        // Keep the "All Segments" option
-        const allOption = segmentFilter.querySelector('option[value=""]');
+      if (!segmentFilter) return;
+
+      // Keep the "All Segments" option
+      const allOption = segmentFilter.querySelector('option[value=""]');
       segmentFilter.innerHTML = "";
-        if (allOption) segmentFilter.appendChild(allOption);
-        
-        // Add segment options
+      if (allOption) segmentFilter.appendChild(allOption);
+
+      // Add segment options
       segments.forEach((segment) => {
         const option = document.createElement("option");
-            option.value = segment.id;
-            option.textContent = segment.name;
-            segmentFilter.appendChild(option);
-        });
+        option.value = segment.id;
+        option.textContent = segment.name;
+        segmentFilter.appendChild(option);
+      });
     }
 
     function updatePagination(pagination) {
@@ -2175,28 +2175,28 @@ Watchtower{% endblock %} {% block extra_head %}
         !nextBtn
       )
         return;
-        
-        currentPageEl.textContent = pagination.page;
-        totalPagesEl.textContent = pagination.total_pages;
-        
-        prevBtn.disabled = !pagination.has_previous;
-        nextBtn.disabled = !pagination.has_next;
-        
-        // Update current page variable
-        currentPage = pagination.page;
+
+      currentPageEl.textContent = pagination.page;
+      totalPagesEl.textContent = pagination.total_pages;
+
+      prevBtn.disabled = !pagination.has_previous;
+      nextBtn.disabled = !pagination.has_next;
+
+      // Update current page variable
+      currentPage = pagination.page;
     }
 
     function renderAddressBookContacts(contacts) {
-        if (!addressBookContacts) {
+      if (!addressBookContacts) {
         console.error("Address book contacts container not found");
-            return;
-        }
-        
+        return;
+      }
+
       const contactsHtml = contacts
         .map((contact) => {
           const displayName =
             contact.first_name && contact.last_name
-                ? `${contact.first_name} ${contact.last_name}`.trim() 
+              ? `${contact.first_name} ${contact.last_name}`.trim()
               : contact.first_name || contact.last_name || "Unnamed Contact";
 
           const phone =
@@ -2204,21 +2204,21 @@ Watchtower{% endblock %} {% block extra_head %}
             (contact.phones && contact.phones.length > 0
               ? contact.phones[0]
               : "No phone");
-            
-            // Check if this contact is already in the campaign
+
+          // Check if this contact is already in the campaign
           const isDuplicate =
             window.contacts &&
             window.contacts.some(
               (c) =>
-                c.phone === phone && 
-                c.first_name === contact.first_name && 
+                c.phone === phone &&
+                c.first_name === contact.first_name &&
                 c.last_name === contact.last_name
             );
-            
+
           const duplicateClass = isDuplicate ? "opacity-50" : "";
           const duplicateText = isDuplicate ? " (Already in campaign)" : "";
-            
-            return `
+
+          return `
                 <div class="flex items-center justify-between bg-base-100 p-3 rounded-lg border border-base-300 hover:border-primary/30 transition-colors ${duplicateClass}">
                     <div class="flex items-center gap-3">
                         <input type="checkbox" class="checkbox checkbox-primary" value="${contact.id}" 
@@ -2240,34 +2240,34 @@ Watchtower{% endblock %} {% block extra_head %}
             `;
         })
         .join("");
-        
-        addressBookContacts.innerHTML = contactsHtml;
-        
-        // Add event listeners to checkboxes
+
+      addressBookContacts.innerHTML = contactsHtml;
+
+      // Add event listeners to checkboxes
       const checkboxes = addressBookContacts.querySelectorAll(
         'input[type="checkbox"]'
       );
       checkboxes.forEach((checkbox) => {
         checkbox.addEventListener("change", function () {
-                updateSelectedCount();
-            });
+          updateSelectedCount();
         });
-        
-        updateSelectedCount();
-        checkForDuplicates();
+      });
+
+      updateSelectedCount();
+      checkForDuplicates();
     }
 
     function checkForDuplicates() {
       const duplicateWarning = document.getElementById("duplicate-warning");
-        if (!duplicateWarning) return;
-        
+      if (!duplicateWarning) return;
+
       const checkboxes = addressBookContacts.querySelectorAll(
         'input[type="checkbox"]:checked'
       );
-        let hasDuplicates = false;
-        
+      let hasDuplicates = false;
+
       checkboxes.forEach((checkbox) => {
-            const contactData = JSON.parse(checkbox.dataset.contact);
+        const contactData = JSON.parse(checkbox.dataset.contact);
         const phone =
           contactData.primary_phone ||
           (contactData.phones && contactData.phones.length > 0
@@ -2278,31 +2278,31 @@ Watchtower{% endblock %} {% block extra_head %}
           window.contacts &&
           window.contacts.some(
             (c) =>
-                c.phone === phone && 
-                c.first_name === contactData.first_name && 
-                c.last_name === contactData.last_name
-            );
-            
-            if (isDuplicate) hasDuplicates = true;
-        });
-        
+              c.phone === phone &&
+              c.first_name === contactData.first_name &&
+              c.last_name === contactData.last_name
+          );
+
+        if (isDuplicate) hasDuplicates = true;
+      });
+
       duplicateWarning.style.display = hasDuplicates ? "inline" : "none";
     }
 
     function filterAddressBookContacts() {
-        // Reset to first page when filtering
-        currentPage = 1;
-        loadAddressBookContacts();
+      // Reset to first page when filtering
+      currentPage = 1;
+      loadAddressBookContacts();
     }
 
     function updateSelectedCount() {
-        if (addressBookContacts && selectedCount) {
+      if (addressBookContacts && selectedCount) {
         const checkboxes = addressBookContacts.querySelectorAll(
           'input[type="checkbox"]:checked'
         );
-            selectedCount.textContent = checkboxes.length;
-            checkForDuplicates();
-        }
+        selectedCount.textContent = checkboxes.length;
+        checkForDuplicates();
+      }
     }
 
     // Add pagination variables and functions
@@ -2313,36 +2313,36 @@ Watchtower{% endblock %} {% block extra_head %}
 
     if (prevPageBtn) {
       prevPageBtn.addEventListener("click", function () {
-            if (currentPage > 1) {
-                currentPage--;
-                loadAddressBookContacts();
-            }
-        });
+        if (currentPage > 1) {
+          currentPage--;
+          loadAddressBookContacts();
+        }
+      });
     }
 
     if (nextPageBtn) {
       nextPageBtn.addEventListener("click", function () {
-            currentPage++;
-            loadAddressBookContacts();
-        });
+        currentPage++;
+        loadAddressBookContacts();
+      });
     }
 
     function handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+      const file = event.target.files[0];
+      if (!file) return;
 
-        const reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = function (e) {
-            try {
-                const csvContent = e.target.result;
-                const contacts = parseCSV(csvContent);
-                addContactsFromFile(contacts);
-                    } catch (error) {
+        try {
+          const csvContent = e.target.result;
+          const contacts = parseCSV(csvContent);
+          addContactsFromFile(contacts);
+        } catch (error) {
           console.error("Error parsing file:", error);
           showToast("Error parsing file. Please check the format.", "error");
         }
-        };
-        reader.readAsText(file);
+      };
+      reader.readAsText(file);
     }
 
     function parseCSV(csvContent) {
@@ -2350,59 +2350,59 @@ Watchtower{% endblock %} {% block extra_head %}
       const headers = lines[0]
         .split(",")
         .map((h) => h.trim().replace(/"/g, ""));
-        const contacts = [];
+      const contacts = [];
 
-        for (let i = 1; i < lines.length; i++) {
-            if (lines[i].trim()) {
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim()) {
           const values = lines[i]
             .split(",")
             .map((v) => v.trim().replace(/"/g, ""));
-                const contact = {};
-                headers.forEach((header, index) => {
+          const contact = {};
+          headers.forEach((header, index) => {
             contact[header] = values[index] || "";
-                });
-                contacts.push(contact);
-            }
+          });
+          contacts.push(contact);
         }
+      }
 
-        return contacts;
+      return contacts;
     }
 
     function addContactsFromFile(fileContacts) {
-        const newContacts = [];
-        const duplicates = [];
-        const errors = [];
+      const newContacts = [];
+      const duplicates = [];
+      const errors = [];
 
-        fileContacts.forEach((contact, index) => {
-            // Handle both 'phone' and 'phone_number' columns (like in people module)
+      fileContacts.forEach((contact, index) => {
+        // Handle both 'phone' and 'phone_number' columns (like in people module)
         let phone = contact.phone || contact.phone_number || "";
-            
-            if (!phone) {
-                errors.push(`Row ${index + 2}: Missing phone number`);
-                return;
-            }
 
-            // Validate phone number
-            const validationResult = validatePhoneNumber(phone);
-            if (!validationResult.isValid) {
-                errors.push(`Row ${index + 2}: ${validationResult.error}`);
-                return;
-            }
+        if (!phone) {
+          errors.push(`Row ${index + 2}: Missing phone number`);
+          return;
+        }
 
-            // Check for duplicates
+        // Validate phone number
+        const validationResult = validatePhoneNumber(phone);
+        if (!validationResult.isValid) {
+          errors.push(`Row ${index + 2}: ${validationResult.error}`);
+          return;
+        }
+
+        // Check for duplicates
         const isDuplicate = contacts.some(
           (c) => c.phone === validationResult.formatted
         );
-            if (isDuplicate) {
+        if (isDuplicate) {
           duplicates.push(
             `${contact.first_name || "Unknown"} ${contact.last_name || ""} (${validationResult.formatted})`
           );
-                return;
-            }
+          return;
+        }
 
-            const newContact = {
-                id: Date.now() + index,
-                phone: validationResult.formatted,
+        const newContact = {
+          id: Date.now() + index,
+          phone: validationResult.formatted,
           first_name: contact.first_name || "",
           last_name: contact.last_name || "",
           email: contact.email || "",
@@ -2410,115 +2410,115 @@ Watchtower{% endblock %} {% block extra_head %}
           company: contact.external_id || contact.company || "", // Keep for backward compatibility
           type: "person",
           country_code: validationResult.countryCode,
-            };
+        };
 
-            newContacts.push(newContact);
-        });
+        newContacts.push(newContact);
+      });
 
-        // Add new contacts
-        if (newContacts.length > 0) {
-            contacts.push(...newContacts);
-            updateContactDisplay();
-            updateContactsData();
-        }
+      // Add new contacts
+      if (newContacts.length > 0) {
+        contacts.push(...newContacts);
+        updateContactDisplay();
+        updateContactsData();
+      }
 
-        // Show errors
-        if (errors.length > 0) {
+      // Show errors
+      if (errors.length > 0) {
         errorDetails.innerHTML = errors
           .map((error) => `<div>${error}</div>`)
           .join("");
         csvErrors.style.display = "block";
-        }
+      }
 
-        // Show duplicates
-        if (duplicates.length > 0) {
+      // Show duplicates
+      if (duplicates.length > 0) {
         duplicateDetails.innerHTML = duplicates
           .map((dup) => `<div>${dup}</div>`)
           .join("");
         duplicateErrors.style.display = "block";
-        }
+      }
 
-        if (newContacts.length > 0) {
+      if (newContacts.length > 0) {
         showToast(
           `Successfully added ${newContacts.length} contacts`,
           "success"
         );
-        }
+      }
     }
 
     // Phone number validation functions for Bahraini numbers
     function validatePhoneNumber(phone) {
-        // Remove all non-digit characters
+      // Remove all non-digit characters
       let cleaned = phone.replace(/\D/g, "");
-        
-        // Check if it's a Bahraini number (8 digits starting with 3, 6, 7, or 9)
-        if (cleaned.length === 8 && /^[3679]/.test(cleaned)) {
-            return {
-                isValid: true,
-                error: null,
-                formatted: cleaned,
+
+      // Check if it's a Bahraini number (8 digits starting with 3, 6, 7, or 9)
+      if (cleaned.length === 8 && /^[3679]/.test(cleaned)) {
+        return {
+          isValid: true,
+          error: null,
+          formatted: cleaned,
           countryCode: "+973",
           fullNumber: "+973" + cleaned,
-            };
-        }
-        
-        // Check if it's already a full Bahraini number with +973
+        };
+      }
+
+      // Check if it's already a full Bahraini number with +973
       if (cleaned.startsWith("973") && cleaned.length === 11) {
-            const number = cleaned.substring(3);
-            if (/^[3679]/.test(number)) {
-                return {
-                    isValid: true,
-                    error: null,
-                    formatted: number,
+        const number = cleaned.substring(3);
+        if (/^[3679]/.test(number)) {
+          return {
+            isValid: true,
+            error: null,
+            formatted: number,
             countryCode: "+973",
             fullNumber: "+973" + number,
-                };
-            }
+          };
         }
-        
-        return {
-            isValid: false,
+      }
+
+      return {
+        isValid: false,
         error:
           "Phone number must be 8 digits starting with 3, 6, 7, or 9 (Bahraini format)",
-            formatted: null,
-            countryCode: null,
+        formatted: null,
+        countryCode: null,
         fullNumber: null,
-        };
+      };
     }
-    
+
     function showValidationError(message) {
-        // Create or update validation error display
+      // Create or update validation error display
       let errorDiv = document.getElementById("phone-validation-error");
-        if (!errorDiv) {
+      if (!errorDiv) {
         errorDiv = document.createElement("div");
         errorDiv.id = "phone-validation-error";
         errorDiv.className = "alert alert-error mt-2";
-            errorDiv.innerHTML = `
+        errorDiv.innerHTML = `
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <span>${message}</span>
             `;
-            
-            // Insert after the manual entry form
+
+        // Insert after the manual entry form
         const manualEntryForm = document.getElementById("manual-entry-form");
-            if (manualEntryForm) {
+        if (manualEntryForm) {
           manualEntryForm.parentNode.insertBefore(
             errorDiv,
             manualEntryForm.nextSibling
           );
-            }
-        } else {
+        }
+      } else {
         errorDiv.querySelector("span").textContent = message;
         errorDiv.style.display = "block";
-        }
+      }
     }
-    
+
     function hideValidationError() {
       const errorDiv = document.getElementById("phone-validation-error");
-        if (errorDiv) {
+      if (errorDiv) {
         errorDiv.style.display = "none";
-        }
+      }
     }
 
     // Use global toast functions from base template
@@ -2531,11 +2531,11 @@ Watchtower{% endblock %} {% block extra_head %}
     updateContactDisplay();
     updateContactsData();
     updateExportButtonState();
-    
+
     // Ensure export button is properly initialized
     if (exportContactsBtn) {
-        exportContactsBtn.disabled = contacts.length === 0;
+      exportContactsBtn.disabled = contacts.length === 0;
     }
-});
+  });
 </script>
 {% endblock %}

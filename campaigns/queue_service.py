@@ -287,13 +287,41 @@ class CampaignQueueService:
                 'retry_interval_min': 5,  # 5 minutes between retries
             }
             
+            # Debug logging
+            logger.info(f"Publishing campaign {campaign.id} with phone_numbers: {phone_numbers}")
+            logger.info(f"Campaign agent_config: {campaign.agent_config}")
+            logger.info(f"Message data structure: {message_data}")
+            
+            # Ensure phone_numbers is properly set
+            if not phone_numbers:
+                logger.error(f"Campaign {campaign.id} has no phone numbers!")
+                raise ValueError("No phone numbers provided for campaign")
+            
+            logger.info(f"Final phone_numbers for Redis: {phone_numbers}")
+            
+            # Add print statements for debugging
+            print(f"QUEUE SERVICE DEBUG: Campaign {campaign.id} phone_numbers: {phone_numbers}")
+            print(f"QUEUE SERVICE DEBUG: Message data: {message_data}")
+            
             # Publish to Redis stream
             stream_name = f"campaign_queue:{campaign.tenant_id}"
+            
+            # Flatten the message data for Redis
+            flattened_data = self._flatten_dict(message_data)
+            logger.info(f"Flattened data keys: {list(flattened_data.keys())}")
+            logger.info(f"Flattened scheduling_details: {[k for k in flattened_data.keys() if 'scheduling' in k]}")
+            logger.info(f"Flattened phone_numbers: {[k for k in flattened_data.keys() if 'phone' in k]}")
+            logger.info(f"Sample flattened data: {dict(list(flattened_data.items())[:5])}")
+            
+            # Add print statements for debugging
+            print(f"QUEUE SERVICE DEBUG: Flattened data keys: {list(flattened_data.keys())}")
+            print(f"QUEUE SERVICE DEBUG: Flattened phone_numbers keys: {[k for k in flattened_data.keys() if 'phone' in k]}")
+            print(f"QUEUE SERVICE DEBUG: Sample flattened data: {dict(list(flattened_data.items())[:5])}")
             
             # Add message to stream
             message_id = self.redis_client.xadd(
                 stream_name,
-                self._flatten_dict(message_data),
+                flattened_data,
                 maxlen=1000,  # Keep last 1000 messages
                 approximate=True
             )
@@ -384,10 +412,17 @@ class CampaignQueueService:
         """Flatten nested dictionary for Redis compatibility."""
         flattened = {}
         for key, value in data.items():
+            new_key = f"{prefix}{key}"
+            
             if isinstance(value, dict):
-                flattened.update(self._flatten_dict(value, f"{prefix}{key}_"))
+                # Recursively flatten nested dictionaries
+                nested = self._flatten_dict(value, f"{new_key}_")
+                flattened.update(nested)
             elif isinstance(value, list):
-                flattened[f"{prefix}{key}"] = self._safe_convert_value(value)
+                # Handle lists by converting to string
+                flattened[new_key] = self._safe_convert_value(value)
             else:
-                flattened[f"{prefix}{key}"] = self._safe_convert_value(value)
+                # Handle primitive values
+                flattened[new_key] = self._safe_convert_value(value)
+        
         return flattened
