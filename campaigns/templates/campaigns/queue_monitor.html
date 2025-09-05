@@ -1,0 +1,572 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Queue Monitor -
+Watchtower{% endblock %} {% block extra_head %}
+<!-- Real-time updates -->
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.10"></script>
+<style>
+  .queue-status {
+    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+  }
+  .queue-active {
+    @apply bg-green-100 text-green-800;
+  }
+  .queue-idle {
+    @apply bg-gray-100 text-gray-800;
+  }
+  .queue-error {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .message-item {
+    @apply p-3 bg-base-200 rounded-lg border-l-4;
+  }
+  .message-item:nth-child(odd) {
+    @apply bg-base-100;
+  }
+
+  .session-status {
+    @apply badge badge-sm;
+  }
+  .status-queued {
+    @apply badge-warning;
+  }
+  .status-in_progress {
+    @apply badge-info;
+  }
+  .status-completed {
+    @apply badge-success;
+  }
+  .status-failed {
+    @apply badge-error;
+  }
+  .status-cancelled {
+    @apply badge-neutral;
+  }
+
+  .refresh-indicator {
+    @apply inline-flex items-center gap-2 text-sm text-base-content/60;
+  }
+
+  .auto-refresh {
+    @apply flex items-center gap-2;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="space-y-6">
+  <!-- Page header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold">Queue Monitor</h1>
+      <p class="text-base-content/70">
+        Real-time monitoring of Redis queues and campaign sessions
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <div class="auto-refresh">
+        <label class="label cursor-pointer">
+          <span class="label-text mr-2">Auto-refresh</span>
+          <input
+            type="checkbox"
+            class="toggle toggle-primary"
+            id="autoRefresh"
+            checked
+          />
+        </label>
+      </div>
+      <button class="btn btn-outline" onclick="refreshData()">
+        <svg
+          class="w-5 h-5 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          ></path>
+        </svg>
+        Refresh Now
+      </button>
+      <a href="{% url 'campaigns:dashboard' %}" class="btn btn-primary">
+        <svg
+          class="w-5 h-5 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          ></path>
+        </svg>
+        Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Queue Status Overview -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Stream Length -->
+    <div class="stat bg-base-200 rounded-lg">
+      <div class="stat-title">Queue Length</div>
+      <div class="stat-value text-primary">
+        {{ queue_status.stream_length }}
+      </div>
+      <div class="stat-desc">
+        <span class="queue-status queue-{{ queue_status.status }}">
+          {{ queue_status.status|title }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Consumer Groups -->
+    <div class="stat bg-base-200 rounded-lg">
+      <div class="stat-title">Consumer Groups</div>
+      <div class="stat-value text-info">{{ queue_status.consumer_groups }}</div>
+      <div class="stat-desc">Active workers</div>
+    </div>
+
+    <!-- Recent Messages -->
+    <div class="stat bg-base-200 rounded-lg">
+      <div class="stat-title">Recent Messages</div>
+      <div class="stat-value text-warning">
+        {{ queue_status.recent_messages|length }}
+      </div>
+      <div class="stat-desc">Last 10 messages</div>
+    </div>
+
+    <!-- Last Updated -->
+    <div class="stat bg-base-200 rounded-lg">
+      <div class="stat-title">Last Updated</div>
+      <div class="stat-value text-success">
+        {{ queue_status.last_updated|time:"H:i:s" }}
+      </div>
+      <div class="stat-desc">{{ queue_status.last_updated|date:"M d, Y" }}</div>
+    </div>
+  </div>
+
+  <!-- Queue Details and Recent Sessions -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Redis Queue Messages -->
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="card-title">Redis Queue Messages</h3>
+          <div class="refresh-indicator">
+            <span id="lastRefresh"
+              >{{ queue_status.last_updated|time:"H:i:s" }}</span
+            >
+            {% if queue_status.status == 'error' %}
+            <span class="text-error">⚠️ Connection Error</span>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if queue_status.recent_messages %}
+        <div class="space-y-3 max-h-96 overflow-y-auto">
+          {% for message in queue_status.recent_messages %}
+          <div class="message-item border-l-blue-500">
+            <div class="flex justify-between items-start mb-2">
+              <div class="font-mono text-sm text-base-content/70">
+                ID: {{ message.id }}
+              </div>
+              <div class="text-xs text-base-content/50">
+                {{ forloop.counter }}
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              {% for key, value in message.data.items %}
+              <div class="flex justify-between text-xs">
+                <span class="font-medium">{{ key }}:</span>
+                <span class="text-base-content/60">
+                  {% if value|length > 50 %} {{ value|truncatechars:50 }} {%
+                  else %} {{ value }} {% endif %}
+                </span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-base-content/60">
+          <svg
+            class="w-12 h-12 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            ></path>
+          </svg>
+          <p>No messages in queue</p>
+          <p class="text-sm">Queue is currently idle</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Recent Sessions -->
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="card-title">Recent Sessions</h3>
+          <a href="#" class="btn btn-sm btn-ghost">View All</a>
+        </div>
+
+        {% if recent_sessions %}
+        <div class="space-y-3 max-h-96 overflow-y-auto">
+          {% for session in recent_sessions %}
+          <div
+            class="flex items-center justify-between p-3 bg-base-200 rounded-lg"
+          >
+            <div class="flex-1">
+              <div class="font-medium">{{ session.campaign.name }}</div>
+              <div class="text-sm text-base-content/60">
+                {{ session.phone_number }} • {{ session.created_at|timesince }}
+                ago
+              </div>
+              {% if session.error_message %}
+              <div class="text-xs text-error mt-1">
+                {{ session.error_message|truncatechars:60 }}
+              </div>
+              {% endif %}
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="session-status status-{{ session.status }}">
+                {{ session.status|title }}
+              </span>
+              {% if session.call_duration > 0 %}
+              <span class="text-xs text-base-content/60"
+                >{{ session.duration_formatted }}</span
+              >
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-base-content/60">
+          <svg
+            class="w-12 h-12 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            ></path>
+          </svg>
+          <p>No sessions yet</p>
+          <p class="text-sm">
+            Sessions will appear here when campaigns are processed
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Queued Campaigns -->
+  {% if queued_campaigns %}
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <h3 class="card-title">Campaigns in Queue</h3>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Campaign</th>
+              <th>Assistant</th>
+              <th>Status</th>
+              <th>Progress</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for campaign in queued_campaigns %}
+            <tr>
+              <td>
+                <div>
+                  <div class="font-medium">{{ campaign.name }}</div>
+                  <div class="text-sm text-base-content/60">
+                    {{ campaign.description|truncatechars:50 }}
+                  </div>
+                </div>
+              </td>
+              <td>
+                {% if campaign.assistant %}
+                <span class="badge badge-outline"
+                  >{{ campaign.assistant.name }}</span
+                >
+                {% else %}
+                <span class="text-base-content/60">No Assistant</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="badge badge-success"
+                  >{{ campaign.status|title }}</span
+                >
+              </td>
+              <td>
+                <div class="flex flex-col space-y-1">
+                  <div class="flex justify-between text-xs">
+                    <span
+                      >{{ campaign.total_calls }}/{{ campaign.max_calls }}</span
+                    >
+                    <span>{{ campaign.success_rate|floatformat:1 }}%</span>
+                  </div>
+                  <progress
+                    class="progress progress-success w-full"
+                    value="{{ campaign.total_calls }}"
+                    max="{{ campaign.max_calls }}"
+                  ></progress>
+                </div>
+              </td>
+              <td>
+                <div class="text-sm">
+                  <div>{{ campaign.created_at|date:"M d, Y" }}</div>
+                  <div class="opacity-50">
+                    {{ campaign.created_at|time:"H:i" }}
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="flex gap-2">
+                  <a
+                    href="{% url 'campaigns:campaign_detail' campaign.id %}"
+                    class="btn btn-xs btn-ghost"
+                    >View</a
+                  >
+                  <button
+                    class="btn btn-xs btn-warning"
+                    onclick="pauseCampaign({{ campaign.id }})"
+                  >
+                    Pause
+                  </button>
+                  <button
+                    class="btn btn-xs btn-error"
+                    onclick="stopCampaign({{ campaign.id }})"
+                  >
+                    Stop
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Queue Health Status -->
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <h3 class="card-title">Queue Health Status</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Connection Status -->
+        <div class="text-center p-4 bg-base-200 rounded-lg">
+          <div class="text-2xl mb-2">
+            {% if queue_status.status == 'error' %} ❌ {% elif
+            queue_status.status == 'active' %} ✅ {% else %} ⚠️ {% endif %}
+          </div>
+          <div class="font-medium">Connection</div>
+          <div class="text-sm text-base-content/60">
+            {% if queue_status.status == 'error' %} Failed {% elif
+            queue_status.status == 'active' %} Healthy {% else %} Idle {% endif
+            %}
+          </div>
+        </div>
+
+        <!-- Message Processing -->
+        <div class="text-center p-4 bg-base-200 rounded-lg">
+          <div class="text-2xl mb-2">
+            {% if queue_status.stream_length > 0 %} 🔄 {% else %} 💤 {% endif %}
+          </div>
+          <div class="font-medium">Processing</div>
+          <div class="text-sm text-base-content/60">
+            {% if queue_status.stream_length > 0 %} {{
+            queue_status.stream_length }} messages {% else %} No messages {%
+            endif %}
+          </div>
+        </div>
+
+        <!-- Worker Status -->
+        <div class="text-center p-4 bg-base-200 rounded-lg">
+          <div class="text-2xl mb-2">
+            {% if queue_status.consumer_groups > 0 %} 👥 {% else %} 🚫 {% endif
+            %}
+          </div>
+          <div class="font-medium">Workers</div>
+          <div class="text-sm text-base-content/60">
+            {% if queue_status.consumer_groups > 0 %} {{
+            queue_status.consumer_groups }} active {% else %} No workers {%
+            endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Campaign Action Modals -->
+<div id="campaignActionModal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Campaign Action</h3>
+    <p id="modalMessage" class="py-4"></p>
+    <div class="modal-action">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button id="confirmAction" class="btn btn-primary">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let autoRefreshInterval;
+
+  // Auto-refresh functionality
+  document
+    .getElementById("autoRefresh")
+    .addEventListener("change", function () {
+      if (this.checked) {
+        startAutoRefresh();
+      } else {
+        stopAutoRefresh();
+      }
+    });
+
+  function startAutoRefresh() {
+    autoRefreshInterval = setInterval(refreshData, 10000); // Refresh every 10 seconds
+  }
+
+  function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+    }
+  }
+
+  function refreshData() {
+    // Update last refresh time
+    document.getElementById("lastRefresh").textContent =
+      new Date().toLocaleTimeString();
+
+    // Refresh queue status
+    fetch("/campaigns/api/queue-status/")
+      .then((response) => response.json())
+      .then((data) => {
+        // Update queue status display
+        updateQueueStatus(data);
+      })
+      .catch((error) => {
+        console.error("Error refreshing queue status:", error);
+        updateQueueStatus({ status: "error", error: "Failed to refresh" });
+      });
+  }
+
+  function updateQueueStatus(data) {
+    // Update status badges
+    const statusElements = document.querySelectorAll(".queue-status");
+    statusElements.forEach((element) => {
+      element.textContent = data.status;
+      element.className = `queue-status queue-${data.status}`;
+    });
+
+    // Update connection status
+    if (data.status === "error") {
+      document.querySelector(".refresh-indicator").innerHTML = `
+            <span>${new Date().toLocaleTimeString()}</span>
+            <span class="text-error">⚠️ Connection Error</span>
+        `;
+    }
+  }
+
+  // Campaign Actions
+  function pauseCampaign(campaignId) {
+    showModal("Are you sure you want to pause this campaign?", () => {
+      performCampaignAction(campaignId, "pause");
+    });
+  }
+
+  function stopCampaign(campaignId) {
+    showModal(
+      "Are you sure you want to stop this campaign? This action cannot be undone.",
+      () => {
+        performCampaignAction(campaignId, "stop");
+      }
+    );
+  }
+
+  function performCampaignAction(campaignId, action) {
+    fetch(`/campaigns/${campaignId}/action/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: `action=${action}`,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert("Error: " + data.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("An error occurred while performing the action.");
+      });
+  }
+
+  // Modal functions
+  function showModal(message, onConfirm) {
+    document.getElementById("modalMessage").textContent = message;
+    document.getElementById("confirmAction").onclick = onConfirm;
+    document.getElementById("campaignActionModal").classList.add("modal-open");
+  }
+
+  function closeModal() {
+    document
+      .getElementById("campaignActionModal")
+      .classList.remove("modal-open");
+  }
+
+  // Utility functions
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  // Start auto-refresh on page load
+  document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("autoRefresh").checked) {
+      startAutoRefresh();
+    }
+  });
+</script>
+{% endblock %}

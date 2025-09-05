@@ -8,49 +8,83 @@
     <div class="flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-bold">Campaigns</h1>
-            <p class="text-base-content/70">Manage your AI agent campaigns</p>
+            <p class="text-base-content/70">Manage your AI agent campaigns with advanced filtering and monitoring</p>
         </div>
-        <a href="{% url 'campaigns:campaign_create' %}" class="btn text-black bg-[#20D5F9] border-[#20D5F9] hover:bg-[#20D5F9]/90 hover:border-[#20D5F9]/90">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            New Campaign
-        </a>
+        <div class="flex gap-3">
+            <a href="{% url 'campaigns:dashboard' %}" class="btn btn-outline">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Dashboard
+            </a>
+            <a href="{% url 'campaigns:campaign_create' %}" class="btn text-black bg-[#20D5F9] border-[#20D5F9] hover:bg-[#20D5F9]/90 hover:border-[#20D5F9]/90">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                New Campaign
+            </a>
+        </div>
     </div>
 
-    <!-- Statistics cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Enhanced statistics cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat bg-base-200 rounded-lg">
             <div class="stat-title">Total Campaigns</div>
             <div class="stat-value text-primary">{{ stats.total }}</div>
+            <div class="stat-desc">
+                <span class="text-success">+{{ stats.active }} active</span>
+            </div>
         </div>
         <div class="stat bg-base-200 rounded-lg">
-            <div class="stat-title">Active</div>
-            <div class="stat-value text-success">{{ stats.active }}</div>
+            <div class="stat-title">Total Calls</div>
+            <div class="stat-value text-info">{{ stats.total_calls }}</div>
+            <div class="stat-desc">
+                <span class="text-success">{{ stats.successful_calls }} successful</span>
+            </div>
         </div>
         <div class="stat bg-base-200 rounded-lg">
-            <div class="stat-title">Draft</div>
-            <div class="stat-value text-warning">{{ stats.draft }}</div>
+            <div class="stat-title">Success Rate</div>
+            <div class="stat-value text-success">
+                {% if stats.total_calls > 0 %}
+                    {{ stats.successful_calls|floatformat:0 }}/{{ stats.total_calls|floatformat:0 }}
+                {% else %}
+                    0/0
+                {% endif %}
+            </div>
+                            <div class="stat-desc">
+                    {% if stats.total_calls > 0 %}
+                        {% widthratio stats.successful_calls stats.total_calls 100 %}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </div>
         </div>
         <div class="stat bg-base-200 rounded-lg">
-            <div class="stat-title">Completed</div>
-            <div class="stat-value text-info">{{ stats.completed }}</div>
+            <div class="stat-title">Queue Status</div>
+            <div class="stat-value text-warning">{{ queue_status.stream_length }}</div>
+            <div class="stat-desc">
+                <span class="queue-status queue-{{ queue_status.status }}">
+                    {{ queue_status.status|title }}
+                </span>
+            </div>
         </div>
     </div>
 
-    <!-- Search and filters -->
+    <!-- Advanced search and filters -->
     <div class="card bg-base-100 shadow-sm">
         <div class="card-body">
-            <form method="get" class="flex flex-wrap gap-4 items-end">
+            <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Search -->
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">Search</span>
                     </label>
                     <input type="text" name="search" value="{{ search_query }}" 
                            placeholder="Search campaigns..." 
-                           class="input input-bordered w-full md:w-64" />
+                           class="input input-bordered w-full" />
                 </div>
                 
+                <!-- Status Filter -->
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">Status</span>
@@ -65,6 +99,34 @@
                     </select>
                 </div>
                 
+                <!-- Priority Filter -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Priority</span>
+                    </label>
+                    <select name="priority" class="select select-bordered">
+                        <option value="">All Priorities</option>
+                        <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>Low</option>
+                        <option value="normal" {% if priority_filter == 'normal' %}selected{% endif %}>Normal</option>
+                        <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>High</option>
+                        <option value="urgent" {% if priority_filter == 'urgent' %}selected{% endif %}>Urgent</option>
+                    </select>
+                </div>
+                
+                <!-- Date Filter -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Date Range</span>
+                    </label>
+                    <select name="date" class="select select-bordered">
+                        <option value="">All Time</option>
+                        <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today</option>
+                        <option value="week" {% if date_filter == 'week' %}selected{% endif %}>This Week</option>
+                        <option value="month" {% if date_filter == 'month' %}selected{% endif %}>This Month</option>
+                    </select>
+                </div>
+                
+                <!-- Assistant Filter -->
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">Assistant</span>
@@ -77,20 +139,40 @@
                     </select>
                 </div>
                 
+                <!-- Sort -->
                 <div class="form-control">
-                    <button type="submit" class="btn text-black bg-[#20D5F9] border-[#20D5F9] hover:bg-[#20D5F9]/90 hover:border-[#20D5F9]/90">Filter</button>
+                    <label class="label">
+                        <span class="label-text">Sort By</span>
+                    </label>
+                    <select name="sort" class="select select-bordered">
+                        <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest First</option>
+                        <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Oldest First</option>
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A-Z</option>
+                        <option value="-name" {% if sort_by == '-name' %}selected{% endif %}>Name Z-A</option>
+                        <option value="status" {% if sort_by == 'status' %}selected{% endif %}>Status A-Z</option>
+                        <option value="-status" {% if sort_by == '-status' %}selected{% endif %}>Status Z-A</option>
+                        <option value="priority" {% if sort_by == 'priority' %}selected{% endif %}>Priority Low-High</option>
+                        <option value="-priority" {% if sort_by == '-priority' %}selected{% endif %}>Priority High-Low</option>
+                    </select>
                 </div>
                 
-                {% if search_query or status_filter or assistant_filter %}
+                <!-- Action Buttons -->
                 <div class="form-control">
-                    <a href="{% url 'campaigns:campaign_list' %}" class="btn btn-ghost">Clear</a>
+                    <label class="label">
+                        <span class="label-text">&nbsp;</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        {% if search_query or status_filter or assistant_filter or priority_filter or date_filter %}
+                        <a href="{% url 'campaigns:campaign_list' %}" class="btn btn-ghost">Clear All</a>
+                        {% endif %}
+                    </div>
                 </div>
-                {% endif %}
             </form>
         </div>
     </div>
 
-    <!-- Campaigns list -->
+    <!-- Campaigns list with enhanced table -->
     <div class="card bg-base-100 shadow-sm">
         <div class="card-body">
             {% if campaigns %}
@@ -98,85 +180,114 @@
                 <table class="table table-zebra w-full">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>
+                                <label>
+                                    <input type="checkbox" class="checkbox" id="selectAll" />
+                                </label>
+                            </th>
+                            <th>Campaign</th>
                             <th>Assistant</th>
                             <th>Status</th>
                             <th>Priority</th>
-                            <th>Calls</th>
-                            <th>Success Rate</th>
+                            <th>Progress</th>
                             <th>Created</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for campaign in campaigns %}
-                        <tr>
+                        <tr class="hover:bg-base-200">
                             <td>
-                                <div>
-                                    <div class="font-bold">{{ campaign.name }}</div>
-                                    <div class="text-sm opacity-70">{{ campaign.description|truncatechars:50 }}</div>
-                                </div>
+                                <label>
+                                    <input type="checkbox" class="checkbox campaign-checkbox" value="{{ campaign.id }}" />
+                                </label>
                             </td>
                             <td>
-                                <div class="text-sm">
-                                    {% if campaign.assistant %}
-                                        <div>{{ campaign.assistant.name }}</div>
-                                        <div class="text-xs opacity-70">{{ campaign.assistant.description|truncatechars:30 }}</div>
-                                    {% else %}
-                                        <div class="text-xs opacity-50">No assistant assigned</div>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td>
-                                {% if campaign.status == 'active' %}
-                                    <span class="badge badge-success">Active</span>
-                                {% elif campaign.status == 'draft' %}
-                                    <span class="badge badge-warning">Draft</span>
-                                {% elif campaign.status == 'paused' %}
-                                    <span class="badge badge-info">Paused</span>
-                                {% elif campaign.status == 'completed' %}
-                                    <span class="badge badge-neutral">Completed</span>
-                                {% else %}
-                                    <span class="badge badge-error">{{ campaign.status|title }}</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if campaign.priority == 'urgent' %}
-                                    <span class="badge badge-error">Urgent</span>
-                                {% elif campaign.priority == 'high' %}
-                                    <span class="badge badge-warning">High</span>
-                                {% elif campaign.priority == 'normal' %}
-                                    <span class="badge badge-info">Normal</span>
-                                {% else %}
-                                    <span class="badge badge-neutral">Low</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="text-sm">
-                                    <div>{{ campaign.total_calls }}/{{ campaign.max_calls }}</div>
-                                    <div class="text-xs opacity-70">{{ campaign.successful_calls }} successful</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="flex items-center gap-2">
-                                    <div class="radial-progress text-sm" 
-                                         style="--value:{{ campaign.success_rate|floatformat:0 }}; --size:2rem;">
-                                        {{ campaign.success_rate|floatformat:0 }}%
+                                <div class="flex items-center space-x-3">
+                                    <div class="avatar placeholder">
+                                        <div class="bg-neutral text-neutral-content rounded-full w-12">
+                                            <span class="text-lg">{{ campaign.name|first|upper }}</span>
+                                        </div>
                                     </div>
+                                    <div>
+                                        <div class="font-bold">{{ campaign.name }}</div>
+                                        <div class="text-sm opacity-50">{{ campaign.description|truncatechars:60 }}</div>
+                                        <div class="text-xs opacity-50">ID: {{ campaign.id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if campaign.assistant %}
+                                <div class="flex items-center space-x-2">
+                                    <div class="badge badge-outline badge-success">{{ campaign.assistant.name }}</div>
+                                </div>
+                                {% else %}
+                                <div class="badge badge-outline badge-warning">No Assistant</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge-sm 
+                                    {% if campaign.status == 'active' %}badge-success
+                                    {% elif campaign.status == 'draft' %}badge-warning
+                                    {% elif campaign.status == 'paused' %}badge-info
+                                    {% elif campaign.status == 'completed' %}badge-neutral
+                                    {% elif campaign.status == 'cancelled' %}badge-error
+                                    {% endif %}">
+                                    {{ campaign.status|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-sm 
+                                    {% if campaign.priority == 'urgent' %}badge-error
+                                    {% elif campaign.priority == 'high' %}badge-warning
+                                    {% elif campaign.priority == 'normal' %}badge-info
+                                    {% elif campaign.priority == 'low' %}badge-neutral
+                                    {% endif %}">
+                                    {{ campaign.priority|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="flex flex-col space-y-1">
+                                    <div class="flex justify-between text-xs">
+                                        <span>{{ campaign.total_calls }}/{{ campaign.max_calls }}</span>
+                                        <span>{{ campaign.success_rate|floatformat:1 }}%</span>
+                                    </div>
+                                    <progress class="progress progress-success w-full" 
+                                             value="{{ campaign.total_calls }}" 
+                                             max="{{ campaign.max_calls }}"></progress>
                                 </div>
                             </td>
                             <td>
                                 <div class="text-sm">
                                     <div>{{ campaign.created_at|date:"M d, Y" }}</div>
-                                    <div class="text-xs opacity-70">{{ campaign.created_at|time:"H:i" }}</div>
+                                    <div class="opacity-50">{{ campaign.created_at|time:"H:i" }}</div>
                                 </div>
                             </td>
                             <td>
-                                <div class="flex gap-2">
-                                    <a href="{% url 'campaigns:campaign_detail' campaign.id %}" 
-                                       class="btn btn-sm btn-ghost">View</a>
-                                    <a href="{% url 'campaigns:campaign_edit' campaign.id %}" 
-                                       class="btn btn-sm btn-outline">Edit</a>
+                                <div class="dropdown dropdown-end">
+                                    <label tabindex="0" class="btn btn-sm btn-ghost">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a6 6 0 110 12 6 6 0 010-12z"></path>
+                                        </svg>
+                                    </label>
+                                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                                        <li><a href="{% url 'campaigns:campaign_detail' campaign.id %}">View Details</a></li>
+                                        <li><a href="{% url 'campaigns:campaign_edit' campaign.id %}">Edit Campaign</a></li>
+                                        
+                                        {% if campaign.status == 'draft' %}
+                                        <li><a href="#" onclick="launchCampaign({{ campaign.id }})">Launch Campaign</a></li>
+                                        {% elif campaign.status == 'active' %}
+                                        <li><a href="#" onclick="pauseCampaign({{ campaign.id }})">Pause Campaign</a></li>
+                                        <li><a href="#" onclick="stopCampaign({{ campaign.id }})">Stop Campaign</a></li>
+                                        {% elif campaign.status == 'paused' %}
+                                        <li><a href="#" onclick="resumeCampaign({{ campaign.id }})">Resume Campaign</a></li>
+                                        <li><a href="#" onclick="stopCampaign({{ campaign.id }})">Stop Campaign</a></li>
+                                        {% endif %}
+                                        
+                                        <li><a href="#" onclick="retryFailedSessions({{ campaign.id }})">Retry Failed Sessions</a></li>
+                                        <li><hr class="my-2"></li>
+                                        <li><a href="#" class="text-error" onclick="deleteCampaign({{ campaign.id }})">Delete Campaign</a></li>
+                                    </ul>
                                 </div>
                             </td>
                         </tr>
@@ -184,71 +295,194 @@
                     </tbody>
                 </table>
             </div>
-
+            
             <!-- Pagination -->
             {% if campaigns.has_other_pages %}
             <div class="flex justify-center mt-6">
                 <div class="join">
                     {% if campaigns.has_previous %}
-                        <a href="?page={{ campaigns.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if assistant_filter %}&assistant={{ assistant_filter }}{% endif %}" 
-                           class="join-item btn">«</a>
+                        <a href="?page={{ campaigns.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if assistant_filter %}&assistant={{ assistant_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="join-item btn">«</a>
                     {% endif %}
                     
                     {% for num in campaigns.paginator.page_range %}
                         {% if campaigns.number == num %}
                             <span class="join-item btn btn-active">{{ num }}</span>
                         {% elif num > campaigns.number|add:'-3' and num < campaigns.number|add:'3' %}
-                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if assistant_filter %}&assistant={{ assistant_filter }}{% endif %}" 
-                               class="join-item btn">{{ num }}</a>
+                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if assistant_filter %}&assistant={{ assistant_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="join-item btn">{{ num }}</a>
                         {% endif %}
                     {% endfor %}
                     
                     {% if campaigns.has_next %}
-                        <a href="?page={{ campaigns.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if assistant_filter %}&assistant={{ assistant_filter }}{% endif %}" 
-                           class="join-item btn">»</a>
+                        <a href="?page={{ campaigns.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if assistant_filter %}&assistant={{ assistant_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="join-item btn">»</a>
                     {% endif %}
                 </div>
             </div>
             {% endif %}
-
+            
             {% else %}
             <div class="text-center py-12">
-                <svg class="w-16 h-16 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                <svg class="w-16 h-16 mx-auto mb-4 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>
-                <h3 class="text-lg font-semibold mb-2">No campaigns found</h3>
-                <p class="text-base-content/70 mb-4">
-                    {% if search_query or status_filter or assistant_filter %}
-                        Try adjusting your search criteria or filters.
+                <h3 class="text-lg font-medium mb-2">No campaigns found</h3>
+                <p class="text-base-content/60 mb-4">
+                    {% if search_query or status_filter or assistant_filter or priority_filter or date_filter %}
+                        Try adjusting your filters or search terms.
                     {% else %}
-                        Create your first campaign to get started.
+                        Get started by creating your first campaign.
                     {% endif %}
                 </p>
-                {% if not search_query and not status_filter %}
-                <a href="{% url 'campaigns:campaign_create' %}" class="btn text-black bg-[#20D5F9] border-[#20D5F9] hover:bg-[#20D5F9]/90 hover:border-[#20D5F9]/90">
-                    Create Campaign
-                </a>
-                {% endif %}
+                <a href="{% url 'campaigns:campaign_create' %}" class="btn btn-primary">Create Campaign</a>
             </div>
             {% endif %}
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
+<!-- Bulk Actions Modal -->
+<div id="bulkActionModal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Bulk Actions</h3>
+        <p id="bulkModalMessage" class="py-4"></p>
+        <div class="modal-action">
+            <button class="btn" onclick="closeBulkModal()">Cancel</button>
+            <button id="confirmBulkAction" class="btn btn-primary">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Campaign Action Modals -->
+<div id="campaignActionModal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Campaign Action</h3>
+        <p id="modalMessage" class="py-4"></p>
+        <div class="modal-action">
+            <button class="btn" onclick="closeModal()">Cancel</button>
+            <button id="confirmAction" class="btn btn-primary">Confirm</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Auto-refresh statistics every 30 seconds
-    setInterval(function() {
-        fetch('{% url "campaigns:campaign_stats_api" %}')
-            .then(response => response.json())
-            .then(data => {
-                // Update stats display
-                document.querySelector('[data-stat="total"]').textContent = data.total_campaigns;
-                document.querySelector('[data-stat="active"]').textContent = data.active_campaigns;
-                // Add more stat updates as needed
-            })
-            .catch(error => console.error('Error updating stats:', error));
-    }, 30000);
+// Select all functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.campaign-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+
+// Campaign Actions
+function launchCampaign(campaignId) {
+    showModal('Are you sure you want to launch this campaign?', () => {
+        performCampaignAction(campaignId, 'launch');
+    });
+}
+
+function pauseCampaign(campaignId) {
+    showModal('Are you sure you want to pause this campaign?', () => {
+        performCampaignAction(campaignId, 'pause');
+    });
+}
+
+function resumeCampaign(campaignId) {
+    showModal('Are you sure you want to resume this campaign?', () => {
+        performCampaignAction(campaignId, 'resume');
+    });
+}
+
+function stopCampaign(campaignId) {
+    showModal('Are you sure you want to stop this campaign? This action cannot be undone.', () => {
+        performCampaignAction(campaignId, 'stop');
+    });
+}
+
+function retryFailedSessions(campaignId) {
+    showModal('Are you sure you want to retry all failed sessions for this campaign?', () => {
+        performCampaignAction(campaignId, 'retry_failed');
+    });
+}
+
+function deleteCampaign(campaignId) {
+    showModal('Are you sure you want to delete this campaign? This action cannot be undone.', () => {
+        // Implement delete functionality
+        console.log('Delete campaign:', campaignId);
+    });
+}
+
+function performCampaignAction(campaignId, action) {
+    fetch(`/campaigns/${campaignId}/action/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: `action=${action}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while performing the action.');
+    });
+}
+
+// Modal functions
+function showModal(message, onConfirm) {
+    document.getElementById('modalMessage').textContent = message;
+    document.getElementById('confirmAction').onclick = onConfirm;
+    document.getElementById('campaignActionModal').classList.add('modal-open');
+}
+
+function closeModal() {
+    document.getElementById('campaignActionModal').classList.remove('modal-open');
+}
+
+function showBulkModal(message, onConfirm) {
+    document.getElementById('bulkModalMessage').textContent = message;
+    document.getElementById('confirmBulkAction').onclick = onConfirm;
+    document.getElementById('bulkActionModal').classList.add('modal-open');
+}
+
+function closeBulkModal() {
+    document.getElementById('bulkActionModal').classList.remove('modal-open');
+}
+
+// Utility functions
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Auto-refresh queue status every 30 seconds
+setInterval(() => {
+    fetch('/campaigns/api/queue-status/')
+        .then(response => response.json())
+        .then(data => {
+            // Update queue status display
+            const queueStatusElements = document.querySelectorAll('.queue-status');
+            queueStatusElements.forEach(element => {
+                element.textContent = data.status;
+                element.className = `queue-status queue-${data.status}`;
+            });
+        })
+        .catch(error => console.error('Error refreshing queue status:', error));
+}, 30000);
 </script>
 {% endblock %}

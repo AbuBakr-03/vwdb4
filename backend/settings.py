@@ -192,5 +192,22 @@ TENANT_SKIP_PATHS = [
     '/campaigns/queue/',
 ]
 
-# Optional: Redis configuration for production caching
-# REDIS_URL = "redis://localhost:6379/1"
+import os
+
+# Redis configuration for campaign queue and caching
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/1")
+
+# Redis connection settings
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_DB = int(os.getenv("REDIS_DB", "1"))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", None)
+
+# Tenant Limits Configuration
+TENANT_LIMITS = {
+    "default": {
+        "campaigns_per_month": 100,
+        "concurrent_campaigns": 10,
+        "max_calls_per_campaign": 10000,
+    }
+}

@@ -129,17 +129,42 @@ class TenantFlagsMiddleware(MiddlewareMixin):
             # Get company-specific tenant ID from settings
             company_tenant_id = getattr(settings, 'TENANT_ID', 'default_company')
             
+            # Check if user is authenticated and is a superuser
+            is_superuser = False
+            if hasattr(request, 'user') and request.user.is_authenticated:
+                is_superuser = request.user.is_superuser
+            
             # For web requests, create a company-specific tenant context
             # This allows the views to handle authentication themselves
-            request.tenant_flags = {
-                "tenant_id": company_tenant_id,
-                "system_enabled": True,
-                "features": ["campaigns", "dashboard"],  # Default features for web users
-                "limits": {},
-                "plan": "web",
-                "jti": None,
-                "exp": None
-            }
+            if is_superuser:
+                # Superusers get unlimited access
+                request.tenant_flags = {
+                    "tenant_id": company_tenant_id,
+                    "system_enabled": True,
+                    "features": ["campaigns", "dashboard", "admin"],  # Admin features for superusers
+                    "limits": {
+                        "campaigns_per_month": 999999,  # Effectively unlimited
+                        "concurrent_campaigns": 999999,  # Effectively unlimited
+                        "max_calls_per_campaign": 999999,  # Effectively unlimited
+                    },
+                    "plan": "superuser",
+                    "jti": None,
+                    "exp": None,
+                    "is_superuser": True
+                }
+            else:
+                # Regular web users get default limits
+                default_limits = getattr(settings, 'TENANT_LIMITS', {}).get('default', {})
+                request.tenant_flags = {
+                    "tenant_id": company_tenant_id,
+                    "system_enabled": True,
+                    "features": ["campaigns", "dashboard"],  # Default features for web users
+                    "limits": default_limits,
+                    "plan": "web",
+                    "jti": None,
+                    "exp": None,
+                    "is_superuser": False
+                }
             return None
         
         # Extract the token

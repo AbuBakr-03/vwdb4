@@ -160,6 +160,16 @@ def check_tenant_limit(request, limit_name, current_usage=None):
             'error': 'No tenant context'
         }
     
+    # Check if user is a superuser - superusers bypass all limits
+    if request.tenant_flags.get('is_superuser', False):
+        return {
+            'within_limit': True,
+            'limit': 999999,  # Effectively unlimited
+            'usage': current_usage or 0,
+            'remaining': 999999,  # Effectively unlimited
+            'is_superuser': True
+        }
+    
     tenant_limits = request.tenant_flags.get('limits', {})
     limit_value = tenant_limits.get(limit_name, 0)
     
@@ -175,7 +185,8 @@ def check_tenant_limit(request, limit_name, current_usage=None):
         'within_limit': within_limit,
         'limit': limit_value,
         'usage': current_usage,
-        'remaining': remaining
+        'remaining': remaining,
+        'is_superuser': False
     }
 
 
@@ -195,6 +206,18 @@ def increment_tenant_usage(request, limit_name, amount=1, ttl=300):
     if not hasattr(request, 'tenant_flags'):
         return {'error': 'No tenant context'}
     
+    # Superusers don't need usage tracking for limits
+    if request.tenant_flags.get('is_superuser', False):
+        return {
+            'previous_usage': 0,
+            'new_usage': 0,
+            'incremented_by': amount,
+            'cache_key': None,
+            'ttl': ttl,
+            'is_superuser': True,
+            'message': 'Superuser - usage not tracked'
+        }
+    
     tenant_id = request.tenant_flags['tenant_id']
     cache_key = f"usage:{tenant_id}:{limit_name}"
     
@@ -210,7 +233,8 @@ def increment_tenant_usage(request, limit_name, amount=1, ttl=300):
         'new_usage': new_usage,
         'incremented_by': amount,
         'cache_key': cache_key,
-        'ttl': ttl
+        'ttl': ttl,
+        'is_superuser': False
     }
 
 
